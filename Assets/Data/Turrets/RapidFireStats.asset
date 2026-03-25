@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d8f7650b8bd1742a540918ca7f15a2, type: 3}
   m_Name: RapidFireStats
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.TurretStatData
-  turretType: 11
-  autoScale: 1
+  turretType: 12
+  autoScale: 0
   useCustomShape: 0
   tileShape:
   - {x: 0, y: 0}
+  - {x: 1, y: 0}
+  - {x: 2, y: 0}
   passableTileIndices: 
   levels:
   - level: 1

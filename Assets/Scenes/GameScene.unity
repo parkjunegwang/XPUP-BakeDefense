@@ -826,6 +826,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 71f32271c9a4be04680fe3957d900085, type: 2}
   - {fileID: 11400000, guid: fe9bfa6e61a329e42b1ffbd29cd9f160, type: 2}
   bossStats: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
+  poolSizePerPrefab: 15
 --- !u!1 &1590951672
 GameObject:
   m_ObjectHideFlags: 0

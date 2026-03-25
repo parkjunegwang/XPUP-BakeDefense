@@ -234,7 +234,7 @@ public bool CanPlaceAt(Tile tile, TurretType type) { var sd = GetStatData(type);
             AssignTiles(turret, tiles, type, sd);
             _all.Add(turret);
 
-            if (turret is RangedTurret rt && projectilePrefab != null)
+            if (turret is RangedTurret rt && rt.projectilePrefab == null && projectilePrefab != null)
                 rt.projectilePrefab = projectilePrefab;
 
             MonsterManager.Instance.RequestPathRecalc();

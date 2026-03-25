@@ -9,7 +9,7 @@ namespace Underdark
         public const int MonsterHPBg   = 5;
         public const int MonsterHPFill = 6;
         public const int Effect        = 200;
-        public const int Projectile    = 210;
+        public const int Projectile    = 9999; // 발사체 - 항상 최상위
         public const int Ghost         = 300;
     }
 

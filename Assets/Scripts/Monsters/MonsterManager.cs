@@ -14,7 +14,7 @@ namespace Underdark
         [Header("Wave Settings")]
         public float spawnInterval     = 0.8f;
         public float bossSpawnInterval = 1.5f;
-        [Tooltip("5마다 보스 웨이브. 0이면 보스 없음")]
+        [Tooltip("N웨이브마다 보스. 0이면 보스 없음")]
         public int   bossWaveInterval  = 5;
 
         [Header("Monster Stat Data")]
@@ -22,6 +22,10 @@ namespace Underdark
         public MonsterStatData[] waveStats;
         [Tooltip("보스 전용 스탯 데이터")]
         public MonsterStatData   bossStats;
+
+        [Header("Object Pool")]
+        [Tooltip("프리팹별 미리 생성할 풀 크기")]
+        public int poolSizePerPrefab = 15;
 
         public List<Monster> ActiveMonsters { get; private set; } = new List<Monster>();
 
@@ -31,13 +35,21 @@ namespace Underdark
 
         private Dictionary<Vector2Int, List<Vector2Int>> _pathCache
             = new Dictionary<Vector2Int, List<Vector2Int>>();
+
+        // ── 오브젝트 풀 ───────────────────────────────────────────────
+        // key: prefabName, value: 풀 큐
+        private Dictionary<string, Queue<Monster>> _pool
+            = new Dictionary<string, Queue<Monster>>();
         private Dictionary<string, GameObject> _prefabCache
             = new Dictionary<string, GameObject>();
+        private Transform _poolRoot;
 
         private void Awake()
         {
             if (Instance != null && Instance != this) { Destroy(gameObject); return; }
             Instance = this;
+            _poolRoot = new GameObject("MonsterPool").transform;
+            _poolRoot.SetParent(transform);
         }
 
         // ── 프리팹 로드 ───────────────────────────────────────────────
@@ -55,15 +67,66 @@ namespace Underdark
             return prefab;
         }
 
-        // ── 웨이브 스탯 선택 ──────────────────────────────────────────
-        private bool IsBossWave(int waveIndex)
-            => bossWaveInterval > 0 && (waveIndex + 1) % bossWaveInterval == 0;
-
-        private MonsterStatData GetStatForWave(int waveIndex)
+        // ── 풀에서 꺼내기 ─────────────────────────────────────────────
+        private Monster GetFromPool(string prefabName)
         {
-            if (waveStats == null || waveStats.Length == 0) return null;
-            int idx = Mathf.Min(waveIndex, waveStats.Length - 1);
-            return waveStats[idx];
+            if (!_pool.ContainsKey(prefabName))
+                _pool[prefabName] = new Queue<Monster>();
+
+            var q = _pool[prefabName];
+
+            // 풀에 비활성화된 게 있으면 재사용
+            while (q.Count > 0)
+            {
+                var m = q.Dequeue();
+                if (m != null)
+                {
+                    m.gameObject.SetActive(true);
+                    return m;
+                }
+            }
+
+            // 없으면 새로 생성
+            return CreateNewMonster(prefabName);
+        }
+
+        private Monster CreateNewMonster(string prefabName)
+        {
+            var prefab = LoadPrefab(prefabName);
+            if (prefab == null) return null;
+
+            var go = Instantiate(prefab, _poolRoot);
+            var m  = go.GetComponent<Monster>() ?? go.AddComponent<Monster>();
+
+            SetupMonsterReferences(go, m);
+            go.SetActive(false);
+            return m;
+        }
+
+        // ── 풀에 반납 ─────────────────────────────────────────────────
+        public void ReturnToPool(Monster m, string prefabName)
+        {
+            if (m == null) return;
+            m.gameObject.SetActive(false);
+            if (!_pool.ContainsKey(prefabName))
+                _pool[prefabName] = new Queue<Monster>();
+            _pool[prefabName].Enqueue(m);
+        }
+
+        // ── bodyRenderer / hpBarFill 자동 연결 ───────────────────────
+        private void SetupMonsterReferences(GameObject go, Monster m)
+        {
+            if (m.bodyRenderer == null)
+                m.bodyRenderer = go.GetComponent<SpriteRenderer>()
+                               ?? go.GetComponentInChildren<SpriteRenderer>();
+
+            if (m.hpBarFill == null)
+            {
+                var fillTf = FindChildByName(go.transform, "HpFill")
+                          ?? FindChildByName(go.transform, "HPFill")
+                          ?? FindChildByName(go.transform, "hp_fill");
+                if (fillTf != null) m.hpBarFill = fillTf.GetComponent<SpriteRenderer>();
+            }
         }
 
         // ── 경로 재계산 ───────────────────────────────────────────────
@@ -105,20 +168,28 @@ namespace Underdark
         // ── 웨이브 시작 ───────────────────────────────────────────────
         public void StartWave(int waveIndex)
         {
-            bool isBoss   = IsBossWave(waveIndex);
-            var  stat     = isBoss
-                          ? (bossStats != null ? bossStats : GetStatForWave(waveIndex))
-                          : GetStatForWave(waveIndex);
+            bool isBoss = IsBossWave(waveIndex);
+            var  stat   = isBoss
+                        ? (bossStats != null ? bossStats : GetStatForWave(waveIndex))
+                        : GetStatForWave(waveIndex);
 
-            int count     = isBoss ? 1 : (stat != null ? stat.GetCount(waveIndex) : 8 + waveIndex * 2);
+            int count        = isBoss ? 1 : (stat != null ? stat.GetCount(waveIndex) : 8 + waveIndex * 2);
             _monstersToSpawn = count;
             _monstersAlive   = count;
             _waveFinished    = false;
 
             RecalcAllPaths();
-
             if (isBoss) Debug.Log($"[MonsterManager] BOSS WAVE {waveIndex + 1}!");
             StartCoroutine(SpawnRoutine(waveIndex, stat, isBoss));
+        }
+
+        private bool IsBossWave(int waveIndex)
+            => bossWaveInterval > 0 && (waveIndex + 1) % bossWaveInterval == 0;
+
+        private MonsterStatData GetStatForWave(int waveIndex)
+        {
+            if (waveStats == null || waveStats.Length == 0) return null;
+            return waveStats[Mathf.Min(waveIndex, waveStats.Length - 1)];
         }
 
         private IEnumerator SpawnRoutine(int waveIndex, MonsterStatData stat, bool isBoss)
@@ -144,26 +215,13 @@ namespace Underdark
                                    int waveIndex, MonsterStatData stat, bool isBoss)
         {
             string prefabName = stat != null ? stat.prefabName : (isBoss ? "Boss_0" : "Enemy_0");
-            var prefab = LoadPrefab(prefabName);
-            if (prefab == null) { Debug.LogError("[MonsterManager] No prefab!"); return; }
 
-            var go = Instantiate(prefab,
-                MapManager.Instance.GridToWorld(spawnGrid.x, spawnGrid.y),
-                Quaternion.identity);
+            // 풀에서 꺼내기
+            var m = GetFromPool(prefabName);
+            if (m == null) { Debug.LogError("[MonsterManager] No monster from pool!"); return; }
 
-            var m = go.GetComponent<Monster>() ?? go.AddComponent<Monster>();
-
-            if (m.bodyRenderer == null)
-                m.bodyRenderer = go.GetComponent<SpriteRenderer>()
-                               ?? go.GetComponentInChildren<SpriteRenderer>();
-
-            if (m.hpBarFill == null)
-            {
-                var fillTf = FindChildByName(go.transform, "HpFill")
-                          ?? FindChildByName(go.transform, "HPFill")
-                          ?? FindChildByName(go.transform, "hp_fill");
-                if (fillTf != null) m.hpBarFill = fillTf.GetComponent<SpriteRenderer>();
-            }
+            // 참조 재확인 (풀 재사용 시 누락될 수 있으므로)
+            SetupMonsterReferences(m.gameObject, m);
 
             // 스탯 적용
             if (stat != null)
@@ -171,37 +229,30 @@ namespace Underdark
                 m.maxHp  = stat.GetHp(waveIndex);
                 m.speed  = stat.GetSpeed(waveIndex);
                 m.reward = stat.GetReward(waveIndex);
-
                 if (isBoss)
                 {
-                    m.maxHp  *= stat.bossHpMult;
-                    m.speed  *= stat.bossSpeedMult;
-                    if (stat.bossSizeScale != 1f)
-                        go.transform.localScale *= stat.bossSizeScale;
+                    m.maxHp *= stat.bossHpMult;
+                    m.speed *= stat.bossSpeedMult;
                 }
             }
             else
             {
-                // fallback: 데이터 없을 때 기본값
                 m.maxHp  = isBoss ? 100f + waveIndex * 80f : 10f + waveIndex * 20f;
                 m.speed  = isBoss ? 1.2f + waveIndex * 0.1f : 1.8f + waveIndex * 0.12f;
                 m.reward = isBoss ? 30 + waveIndex * 5 : 5 + waveIndex;
-                if (isBoss) go.transform.localScale *= 1.8f;
             }
 
+            // 보스 크기 (Init 전에 설정해야 _originalScale에 반영)
+            m.transform.localScale = Vector3.one;
+            if (isBoss && stat != null && stat.bossSizeScale != 1f)
+                m.transform.localScale *= stat.bossSizeScale;
+            else if (isBoss && stat == null)
+                m.transform.localScale *= 1.8f;
+
+            m.SetPrefabName(prefabName);
+            m.transform.position = MapManager.Instance.GridToWorld(spawnGrid.x, spawnGrid.y);
             m.Init(path, Color.white);
             ActiveMonsters.Add(m);
-        }
-
-        private Transform FindChildByName(Transform parent, string name)
-        {
-            foreach (Transform child in parent)
-            {
-                if (child.name == name) return child;
-                var found = FindChildByName(child, name);
-                if (found != null) return found;
-            }
-            return null;
         }
 
         // ── 몬스터 사망 ───────────────────────────────────────────────
@@ -219,8 +270,22 @@ namespace Underdark
         public void ClearAll()
         {
             var snapshot = new List<Monster>(ActiveMonsters);
-            foreach (var m in snapshot) if (m != null) Destroy(m.gameObject);
+            foreach (var m in snapshot)
+            {
+                if (m != null) ReturnToPool(m, m.PrefabName);
+            }
             ActiveMonsters.Clear();
+        }
+
+        private Transform FindChildByName(Transform parent, string name)
+        {
+            foreach (Transform child in parent)
+            {
+                if (child.name == name) return child;
+                var found = FindChildByName(child, name);
+                if (found != null) return found;
+            }
+            return null;
         }
     }
 }
