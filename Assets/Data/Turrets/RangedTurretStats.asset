@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d8f7650b8bd1742a540918ca7f15a2, type: 3}
+  m_Name: RangedTurretStats
+  m_EditorClassIdentifier: Assembly-CSharp::Underdark.TurretStatData
+  turretType: 1
+  levels:
+  - level: 1
+    damage: 12
+    range: 2.8
+    fireRate: 1
+    hp: 60
+    attackTiles: 1
+  - level: 2
+    damage: 20
+    range: 3.2
+    fireRate: 1.4
+    hp: 90
+    attackTiles: 1
+  - level: 3
+    damage: 32
+    range: 3.6
+    fireRate: 1.8
+    hp: 130
+    attackTiles: 1
