@@ -17,6 +17,12 @@ namespace Underdark
         public GameObject wall2x1Prefab;
         public GameObject wall1x2Prefab;
         public GameObject wall2x2Prefab;
+        public GameObject areaDamagePrefab;
+        public GameObject explosiveCannonPrefab;
+        public GameObject slowShooterPrefab;
+        public GameObject rapidFirePrefab;
+        public GameObject tornadoPrefab;
+        public GameObject lavaRainPrefab;
         public GameObject projectilePrefab;
 
         [Header("Turret Definitions")]
@@ -31,7 +37,7 @@ namespace Underdark
             if (turretDefs.Count == 0) InitDefaultDefs();
         }
 
-private void InitDefaultDefs() { turretDefs.Add(new TurretDef { type=TurretType.RangedTurret, sizeX=1, sizeY=1, cost=15, color=new Color(0.3f,0.6f,1f),       label="Ranged",    emoji="Gun",  isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.MeleeTurret,  sizeX=1, sizeY=1, cost=12, color=new Color(0.9f,0.7f,0.2f),     label="Melee",     emoji="Sword",isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.SpikeTrap,    sizeX=2, sizeY=1, cost=10, color=new Color(0.4f,0.35f,0.3f),   label="Spikes",    emoji="Trap", isPassable=true  }); turretDefs.Add(new TurretDef { type=TurretType.ElectricGate, sizeX=3, sizeY=1, cost=20, color=new Color(0.9f,0.8f,0.1f),     label="Elec Gate", emoji="Elec", isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.Wall,   sizeX=1, sizeY=1, cost=5, color=new Color(0.55f,0.45f,0.35f), label="Wall 1x1", emoji="Wall", isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.Wall2x1, sizeX=2, sizeY=1, cost=8, color=new Color(0.50f,0.40f,0.30f), label="Wall 2x1", emoji="Wall", isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.Wall1x2, sizeX=1, sizeY=2, cost=8, color=new Color(0.50f,0.40f,0.30f), label="Wall 1x2", emoji="Wall", isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.Wall2x2, sizeX=2, sizeY=2, cost=12, color=new Color(0.45f,0.35f,0.25f), label="Wall 2x2", emoji="Wall", isPassable=false }); }
+private void InitDefaultDefs() { turretDefs.Add(new TurretDef { type=TurretType.RangedTurret, sizeX=1, sizeY=1, cost=15, color=new Color(0.3f,0.6f,1f), label="Ranged", emoji="Gun", isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.MeleeTurret, sizeX=1, sizeY=1, cost=12, color=new Color(0.9f,0.7f,0.2f), label="Melee", emoji="Sword", isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.SpikeTrap, sizeX=2, sizeY=1, cost=10, color=new Color(0.4f,0.35f,0.3f), label="Spikes", emoji="Trap", isPassable=true }); turretDefs.Add(new TurretDef { type=TurretType.ElectricGate, sizeX=3, sizeY=1, cost=20, color=new Color(0.9f,0.8f,0.1f), label="Elec Gate", emoji="Elec", isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.Wall, sizeX=1, sizeY=1, cost=5, color=new Color(0.55f,0.45f,0.35f), label="Wall 1x1", emoji="Wall", isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.Wall2x1, sizeX=2, sizeY=1, cost=8, color=new Color(0.50f,0.40f,0.30f), label="Wall 2x1", emoji="Wall", isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.Wall1x2, sizeX=1, sizeY=2, cost=8, color=new Color(0.50f,0.40f,0.30f), label="Wall 1x2", emoji="Wall", isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.Wall2x2, sizeX=2, sizeY=2, cost=12, color=new Color(0.45f,0.35f,0.25f), label="Wall 2x2", emoji="Wall", isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.AreaDamage, sizeX=1, sizeY=1, cost=18, color=new Color(0.7f,0.2f,0.85f), label="Area Dmg", emoji="Area", isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.ExplosiveCannon, sizeX=1, sizeY=1, cost=22, color=new Color(1f,0.4f,0.1f), label="Cannon", emoji="Bomb", isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.SlowShooter, sizeX=1, sizeY=1, cost=16, color=new Color(0.3f,0.6f,1f), label="Slow", emoji="Ice", isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.RapidFire, sizeX=1, sizeY=1, cost=14, color=new Color(1f,0.85f,0.2f), label="Rapid", emoji="Fast", isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.Tornado, sizeX=1, sizeY=1, cost=25, color=new Color(0.5f,0.85f,1f), label="Tornado", emoji="Wind", isPassable=false }); turretDefs.Add(new TurretDef { type=TurretType.LavaRain, sizeX=1, sizeY=1, cost=20, color=new Color(1f,0.3f,0f), label="Lava Rain", emoji="Lava", isPassable=false }); }
 
         public TurretDef GetDef(TurretType type)
         {
@@ -186,7 +192,7 @@ public bool CanPlaceAt(Tile tile, TurretType type) { var sd = GetStatData(type);
             prefab.SetActive(was);
 
             // AutoScale (statData 기준)
-            bool shouldAutoScale = sd != null ? sd.autoScale : false;
+            bool shouldAutoScale = sd != null ? sd.autoScale : IsWallType(type);
             if (shouldAutoScale)
             {
                 float step   = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
@@ -232,6 +238,7 @@ public bool CanPlaceAt(Tile tile, TurretType type) { var sd = GetStatData(type);
                 rt.projectilePrefab = projectilePrefab;
 
             MonsterManager.Instance.RequestPathRecalc();
+            turret.UpdateSortingOrder();
         }
 
         // ── 타일 배정 ─────────────────────────────────────────────────
@@ -306,7 +313,7 @@ public void TryMerge(Tile from, Tile to) { TurretBase tFrom = from.placedTurret;
             return sum / tiles.Count;
         }
 
-private GameObject GetPrefab(TurretType type) => type switch { TurretType.RangedTurret => rangedTurretPrefab, TurretType.MeleeTurret  => meleeTurretPrefab, TurretType.SpikeTrap    => spikeTrapPrefab, TurretType.ElectricGate => electricGatePrefab, TurretType.Wall         => wallPrefab, TurretType.Wall2x1      => wall2x1Prefab != null ? wall2x1Prefab : wallPrefab, TurretType.Wall1x2      => wall1x2Prefab != null ? wall1x2Prefab : wallPrefab, TurretType.Wall2x2      => wall2x2Prefab != null ? wall2x2Prefab : wallPrefab, _ => null };
+private GameObject GetPrefab(TurretType type) => type switch { TurretType.RangedTurret => rangedTurretPrefab, TurretType.MeleeTurret => meleeTurretPrefab, TurretType.SpikeTrap => spikeTrapPrefab, TurretType.ElectricGate => electricGatePrefab, TurretType.Wall => wallPrefab, TurretType.Wall2x1 => wall2x1Prefab != null ? wall2x1Prefab : wallPrefab, TurretType.Wall1x2 => wall1x2Prefab != null ? wall1x2Prefab : wallPrefab, TurretType.Wall2x2 => wall2x2Prefab != null ? wall2x2Prefab : wallPrefab, TurretType.AreaDamage => areaDamagePrefab, TurretType.ExplosiveCannon => explosiveCannonPrefab, TurretType.SlowShooter => slowShooterPrefab, TurretType.RapidFire => rapidFirePrefab, TurretType.Tornado => tornadoPrefab, TurretType.LavaRain => lavaRainPrefab, _ => null };
 
         public List<TurretBase> GetAll() => _all;
 

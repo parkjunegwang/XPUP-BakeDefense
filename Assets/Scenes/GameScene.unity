@@ -163,14 +163,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 240b64bdc455212478b73c206c0cb4ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.TurretManager
-  rangedTurretPrefab: {fileID: 0}
-  meleeTurretPrefab: {fileID: 0}
-  spikeTrapPrefab: {fileID: 0}
-  electricGatePrefab: {fileID: 0}
-  wallPrefab: {fileID: 0}
-  wall2x1Prefab: {fileID: 0}
-  wall1x2Prefab: {fileID: 0}
-  wall2x2Prefab: {fileID: 0}
+  rangedTurretPrefab: {fileID: 1070692512632793525, guid: fb1371d3957d7e348adb57ff8e1ff1af, type: 3}
+  meleeTurretPrefab: {fileID: 3455424580391969573, guid: 0c5b00c103f1ddb4ea7f77f78f5246e8, type: 3}
+  spikeTrapPrefab: {fileID: 56163832344639542, guid: 72b9aea2bc120d94babb1621c1d548e5, type: 3}
+  electricGatePrefab: {fileID: 7035528861799589883, guid: 52f2b4f28d8cbde4ea999e0a14413c0c, type: 3}
+  wallPrefab: {fileID: 3894489620708773690, guid: 0a45027f7959b2742b83a640be01efa4, type: 3}
+  wall2x1Prefab: {fileID: 3894489620708773690, guid: 264bc8c00fa6a2b4283d5b41602e34c7, type: 3}
+  wall1x2Prefab: {fileID: 3894489620708773690, guid: 02ec81ffdaaea564c81aa4525d2b9808, type: 3}
+  wall2x2Prefab: {fileID: 3894489620708773690, guid: 38d427f320b038045828b3dcee03d537, type: 3}
   projectilePrefab: {fileID: 0}
   turretDefs: []
 --- !u!1 &39192861
@@ -800,7 +800,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.MonsterManager
   monsterPrefab: {fileID: 0}
-  spawnInterval: 0.1
+  spawnInterval: 0.3
   bossSpawnInterval: 1.5
   bossWaveInterval: 5
   waveStats:

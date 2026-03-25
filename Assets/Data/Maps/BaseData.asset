@@ -30,13 +30,10 @@ MonoBehaviour:
     wallSize: 0
   - gridX: 0
     gridY: 1
-    wallSize: 0
+    wallSize: 3
   - gridX: 13
     gridY: 1
     wallSize: 0
-  - gridX: 0
-    gridY: 2
-    wallSize: 0
   - gridX: 13
     gridY: 2
     wallSize: 0
@@ -57,34 +54,19 @@ MonoBehaviour:
     wallSize: 0
   - gridX: 1
     gridY: 5
-    wallSize: 0
-  - gridX: 2
-    gridY: 5
-    wallSize: 0
+    wallSize: 3
   - gridX: 3
     gridY: 5
-    wallSize: 0
-  - gridX: 4
-    gridY: 5
-    wallSize: 0
+    wallSize: 3
   - gridX: 5
     gridY: 5
-    wallSize: 0
-  - gridX: 6
-    gridY: 5
-    wallSize: 0
+    wallSize: 3
   - gridX: 7
     gridY: 5
-    wallSize: 0
-  - gridX: 8
-    gridY: 5
-    wallSize: 0
+    wallSize: 3
   - gridX: 9
     gridY: 5
-    wallSize: 0
-  - gridX: 10
-    gridY: 5
-    wallSize: 0
+    wallSize: 3
   - gridX: 13
     gridY: 5
     wallSize: 0
@@ -111,34 +93,19 @@ MonoBehaviour:
     wallSize: 0
   - gridX: 3
     gridY: 9
-    wallSize: 0
-  - gridX: 4
-    gridY: 9
-    wallSize: 0
+    wallSize: 3
   - gridX: 5
     gridY: 9
-    wallSize: 0
-  - gridX: 6
-    gridY: 9
-    wallSize: 0
+    wallSize: 3
   - gridX: 7
     gridY: 9
-    wallSize: 0
-  - gridX: 8
-    gridY: 9
-    wallSize: 0
+    wallSize: 3
   - gridX: 9
     gridY: 9
-    wallSize: 0
-  - gridX: 10
-    gridY: 9
-    wallSize: 0
+    wallSize: 3
   - gridX: 11
     gridY: 9
-    wallSize: 0
-  - gridX: 12
-    gridY: 9
-    wallSize: 0
+    wallSize: 3
   - gridX: 13
     gridY: 9
     wallSize: 0
@@ -165,34 +132,19 @@ MonoBehaviour:
     wallSize: 0
   - gridX: 1
     gridY: 13
-    wallSize: 0
-  - gridX: 2
-    gridY: 13
-    wallSize: 0
+    wallSize: 3
   - gridX: 3
     gridY: 13
-    wallSize: 0
-  - gridX: 4
-    gridY: 13
-    wallSize: 0
+    wallSize: 3
   - gridX: 5
     gridY: 13
-    wallSize: 0
-  - gridX: 6
-    gridY: 13
-    wallSize: 0
+    wallSize: 3
   - gridX: 7
     gridY: 13
-    wallSize: 0
-  - gridX: 8
-    gridY: 13
-    wallSize: 0
+    wallSize: 3
   - gridX: 9
     gridY: 13
-    wallSize: 0
-  - gridX: 10
-    gridY: 13
-    wallSize: 0
+    wallSize: 3
   - gridX: 13
     gridY: 13
     wallSize: 0
@@ -219,44 +171,23 @@ MonoBehaviour:
     wallSize: 0
   - gridX: 2
     gridY: 17
-    wallSize: 0
-  - gridX: 3
-    gridY: 17
-    wallSize: 0
+    wallSize: 3
   - gridX: 4
     gridY: 17
-    wallSize: 0
+    wallSize: 3
+  - gridX: 6
+    gridY: 17
+    wallSize: 3
   - gridX: 8
     gridY: 17
-    wallSize: 0
-  - gridX: 9
-    gridY: 17
-    wallSize: 0
+    wallSize: 3
   - gridX: 10
     gridY: 17
-    wallSize: 0
-  - gridX: 11
-    gridY: 17
-    wallSize: 0
+    wallSize: 3
   - gridX: 12
     gridY: 17
-    wallSize: 0
-  - gridX: 13
-    gridY: 17
-    wallSize: 0
+    wallSize: 3
   - gridX: 0
-    gridY: 18
-    wallSize: 0
-  - gridX: 5
-    gridY: 18
-    wallSize: 0
-  - gridX: 6
-    gridY: 18
-    wallSize: 0
-  - gridX: 7
-    gridY: 18
-    wallSize: 0
-  - gridX: 13
     gridY: 18
     wallSize: 0
   - gridX: 0

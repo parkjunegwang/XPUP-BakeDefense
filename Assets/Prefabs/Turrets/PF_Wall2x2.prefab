@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 413768193288389480}
   - component: {fileID: 5869785529044874542}
   m_Layer: 0
-  m_Name: PF_Wall
+  m_Name: PF_Wall2x2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -82,12 +82,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: c2e12a44ec2987c448a7628232c9153a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 78133c13cfc200c4e91a7030b3484c54, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.28, y: 1.74}
+  m_Size: {x: 2.56, y: 3.15}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -106,7 +106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.WallTurret
   turretType: 5
   level: 1
-  statData: {fileID: 11400000, guid: 392d644414d3b8444aa0f07be3edb444, type: 2}
+  statData: {fileID: 11400000, guid: b10e22916de632346abbee98a92b2456, type: 2}
   damage: 0
   range: 0
   fireRate: 0

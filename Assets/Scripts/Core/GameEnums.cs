@@ -26,5 +26,12 @@ namespace Underdark
         Wall2x1,        // 벽 2x1 (가로)
         Wall1x2,        // 벽 1x2 (세로)
         Wall2x2,        // 벽 2x2
+        // ── 신규 터렛 ──
+        AreaDamage,     // 1. 범위 지속 데미지
+        ExplosiveCannon,// 2. 폭발 포탄
+        SlowShooter,    // 3. 슬로우 발사체
+        RapidFire,      // 4. 빠른 공격속도
+        Tornado,        // 5. 회오리
+        LavaRain,       // 6. 마그마 비
     }
 }

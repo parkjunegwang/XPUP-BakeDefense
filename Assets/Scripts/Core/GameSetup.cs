@@ -18,6 +18,12 @@ namespace Underdark
         public GameObject wall2x1Prefab;
         public GameObject wall1x2Prefab;
         public GameObject wall2x2Prefab;
+        public GameObject areaDamagePrefab;
+        public GameObject explosiveCannonPrefab;
+        public GameObject slowShooterPrefab;
+        public GameObject rapidFirePrefab;
+        public GameObject tornadoPrefab;
+        public GameObject lavaRainPrefab;
         public GameObject projectilePrefab;
 
         [Header("=== Tile / Monster Prefab ===")]
@@ -54,31 +60,14 @@ namespace Underdark
         }
 
         // ── 프리팹 fallback ────────────────────────────────────────────
-        private void EnsurePrefabs()
-        {
-            if (tilePrefab == null)
-            {
-                tilePrefab = MakeGO("_TilePfb", new Color(0.18f,0.18f,0.28f), 1.0f, SLayer.Tile);
-                tilePrefab.AddComponent<BoxCollider2D>();
-                tilePrefab.AddComponent<Tile>();
-                tilePrefab.SetActive(false);
-            }
-            if (rangedTurretPrefab  == null) rangedTurretPrefab  = MakeTurretFallback<RangedTurret>( new Color(0.3f,0.6f,1f));
-            if (meleeTurretPrefab   == null) meleeTurretPrefab   = MakeTurretFallback<MeleeTurret>(  new Color(0.9f,0.7f,0.2f));
-            if (spikeTrapPrefab     == null) spikeTrapPrefab     = MakeTurretFallback<SpikeTrap>(    new Color(0.4f,0.35f,0.3f));
-            if (electricGatePrefab  == null) electricGatePrefab  = MakeTurretFallback<ElectricGate>( new Color(0.9f,0.8f,0.1f));
-            if (wallPrefab    == null) wallPrefab    = MakeTurretFallback<WallTurret>(new Color(0.55f,0.45f,0.35f));
-            if (wall2x1Prefab == null) wall2x1Prefab = MakeTurretFallback<WallTurret>(new Color(0.50f,0.40f,0.30f));
-            if (wall1x2Prefab == null) wall1x2Prefab = MakeTurretFallback<WallTurret>(new Color(0.50f,0.40f,0.30f));
-            if (wall2x2Prefab == null) wall2x2Prefab = MakeTurretFallback<WallTurret>(new Color(0.45f,0.35f,0.25f));
-            if (projectilePrefab    == null)
-            {
-                projectilePrefab = MakeGO("_ProjPfb", new Color(1f,1f,0.2f), 0.18f, SLayer.Projectile);
-                projectilePrefab.AddComponent<Projectile>();
-                projectilePrefab.SetActive(false);
-            }
-            if (monsterPrefab == null) monsterPrefab = BuildMonsterFallback();
-        }
+private void EnsurePrefabs() { var tm = FindObjectOfType<TurretManager>(); if (tilePrefab == null) { tilePrefab = MakeGO("_TilePfb", new Color(0.18f,0.18f,0.28f), 1.0f, SLayer.Tile); tilePrefab.AddComponent<BoxCollider2D>(); tilePrefab.AddComponent<Tile>(); tilePrefab.SetActive(false); } if (rangedTurretPrefab == null) rangedTurretPrefab = tm?.rangedTurretPrefab ?? MakeTurretFallback<RangedTurret>(new Color(0.3f,0.6f,1f)); if (meleeTurretPrefab == null) meleeTurretPrefab = tm?.meleeTurretPrefab ?? MakeTurretFallback<MeleeTurret>(new Color(0.9f,0.7f,0.2f)); if (spikeTrapPrefab == null) spikeTrapPrefab = tm?.spikeTrapPrefab ?? MakeTurretFallback<SpikeTrap>(new Color(0.4f,0.35f,0.3f)); if (electricGatePrefab == null) electricGatePrefab = tm?.electricGatePrefab ?? MakeTurretFallback<ElectricGate>(new Color(0.9f,0.8f,0.1f)); if (wallPrefab == null) wallPrefab = tm?.wallPrefab ?? MakeTurretFallback<WallTurret>(new Color(0.55f,0.45f,0.35f)); if (wall2x1Prefab == null) wall2x1Prefab = tm?.wall2x1Prefab ?? MakeTurretFallback<WallTurret>(new Color(0.50f,0.40f,0.30f)); if (wall1x2Prefab == null) wall1x2Prefab = tm?.wall1x2Prefab ?? MakeTurretFallback<WallTurret>(new Color(0.50f,0.40f,0.30f)); if (wall2x2Prefab == null) wall2x2Prefab = tm?.wall2x2Prefab ?? MakeTurretFallback<WallTurret>(new Color(0.45f,0.35f,0.25f));
+            if (areaDamagePrefab == null) areaDamagePrefab = tm?.areaDamagePrefab ?? MakeTurretFallback<AreaDamageTurret>(new Color(0.7f,0.2f,0.85f));
+            if (explosiveCannonPrefab == null) explosiveCannonPrefab = tm?.explosiveCannonPrefab ?? MakeTurretFallback<ExplosiveCannon>(new Color(1f,0.4f,0.1f));
+            if (slowShooterPrefab == null) slowShooterPrefab = tm?.slowShooterPrefab ?? MakeTurretFallback<SlowShooterTurret>(new Color(0.3f,0.6f,1f));
+            if (rapidFirePrefab == null) rapidFirePrefab = tm?.rapidFirePrefab ?? MakeTurretFallback<RapidFireTurret>(new Color(1f,0.85f,0.2f));
+            if (tornadoPrefab == null) tornadoPrefab = tm?.tornadoPrefab ?? MakeTurretFallback<TornadoTurret>(new Color(0.5f,0.85f,1f));
+            if (lavaRainPrefab == null) lavaRainPrefab = tm?.lavaRainPrefab ?? MakeTurretFallback<LavaRainTurret>(new Color(1f,0.3f,0f));
+            if (wall2x2Prefab == null) wall2x2Prefab = tm?.wall2x2Prefab ?? MakeTurretFallback<WallTurret>(new Color(0.45f,0.35f,0.25f)); if (projectilePrefab == null) { projectilePrefab = MakeGO("_ProjPfb", new Color(1f,1f,0.2f), 0.18f, SLayer.Projectile); projectilePrefab.AddComponent<Projectile>(); projectilePrefab.SetActive(false); } if (monsterPrefab == null) monsterPrefab = BuildMonsterFallback(); }
 
         private GameObject MakeTurretFallback<T>(Color col) where T : TurretBase
         {
@@ -86,26 +75,13 @@ namespace Underdark
             go.AddComponent<T>(); go.SetActive(false); return go;
         }
 
-        private void ConnectPrefabsToManagers()
-        {
-            var map = FindObjectOfType<MapManager>();
-            var tm  = FindObjectOfType<TurretManager>();
-            var mm  = FindObjectOfType<MonsterManager>();
-            if (map != null) map.tilePrefab   = tilePrefab;
-            if (mm  != null) mm.monsterPrefab = monsterPrefab;
-            if (tm  != null)
-            {
-                tm.rangedTurretPrefab = rangedTurretPrefab;
-                tm.meleeTurretPrefab  = meleeTurretPrefab;
-                tm.spikeTrapPrefab    = spikeTrapPrefab;
-                tm.electricGatePrefab = electricGatePrefab;
-                tm.wallPrefab    = wallPrefab;
-                tm.wall2x1Prefab = wall2x1Prefab;
-                tm.wall1x2Prefab = wall1x2Prefab;
-                tm.wall2x2Prefab = wall2x2Prefab;
-                tm.projectilePrefab   = projectilePrefab;
-            }
-        }
+private void ConnectPrefabsToManagers() { var map = FindObjectOfType<MapManager>(); var tm = FindObjectOfType<TurretManager>(); var mm = FindObjectOfType<MonsterManager>(); if (map != null) map.tilePrefab = tilePrefab; if (mm != null && mm.monsterPrefab == null) mm.monsterPrefab = monsterPrefab; if (tm != null) { tm.rangedTurretPrefab = rangedTurretPrefab; tm.meleeTurretPrefab = meleeTurretPrefab; tm.spikeTrapPrefab = spikeTrapPrefab; tm.electricGatePrefab = electricGatePrefab; tm.wallPrefab = wallPrefab; if (tm.wall2x1Prefab == null) tm.wall2x1Prefab = wall2x1Prefab; if (tm.wall1x2Prefab == null) tm.wall1x2Prefab = wall1x2Prefab; if (tm.wall2x2Prefab == null) tm.wall2x2Prefab = wall2x2Prefab;
+                if (tm.areaDamagePrefab == null) tm.areaDamagePrefab = areaDamagePrefab;
+                if (tm.explosiveCannonPrefab == null) tm.explosiveCannonPrefab = explosiveCannonPrefab;
+                if (tm.slowShooterPrefab == null) tm.slowShooterPrefab = slowShooterPrefab;
+                if (tm.rapidFirePrefab == null) tm.rapidFirePrefab = rapidFirePrefab;
+                if (tm.tornadoPrefab == null) tm.tornadoPrefab = tornadoPrefab;
+                if (tm.lavaRainPrefab == null) tm.lavaRainPrefab = lavaRainPrefab; tm.projectilePrefab = projectilePrefab; } }
 
         // ── MAP ───────────────────────────────────────────────────────
         private void BuildMap()
