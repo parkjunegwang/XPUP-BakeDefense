@@ -33,12 +33,12 @@ namespace Underdark
         private List<Vector3> _path    = new List<Vector3>();
         private int           _pathIdx = 0;
 
-private void Awake() { if (bodyRenderer == null) bodyRenderer = GetComponent<SpriteRenderer>() ?? GetComponentInChildren<SpriteRenderer>(); _animator = GetComponent<Animator>() ?? GetComponentInChildren<Animator>(); CacheRenderers(); }
+private void Awake() { if (bodyRenderer == null) bodyRenderer = GetComponent<SpriteRenderer>() ?? GetComponentInChildren<SpriteRenderer>(); _animator = GetComponent<Animator>() ?? GetComponentInChildren<Animator>(); _originalScale = transform.localScale; CacheRenderers(); }
 
-private void CacheRenderers() { _originalScale = transform.localScale; _allRenderers = GetComponentsInChildren<SpriteRenderer>(true); _rendererBaseOrders = new int[_allRenderers.Length]; for (int i = 0; i < _allRenderers.Length; i++) _rendererBaseOrders[i] = _allRenderers[i].sortingOrder; UpdateSortingOrder(); }
+private void CacheRenderers() { _allRenderers = GetComponentsInChildren<SpriteRenderer>(true); _rendererBaseOrders = new int[_allRenderers.Length]; for (int i = 0; i < _allRenderers.Length; i++) _rendererBaseOrders[i] = _allRenderers[i].sortingOrder; }
 
 
-public void Init(List<Vector2Int> gridPath, Color color) { _hp = maxHp; _pathIdx = 0; _path.Clear(); _baseSpeed = speed; _slowTimer = 0f; gameObject.SetActive(true); if (bodyRenderer != null && color != Color.white) bodyRenderer.color = color; else if (bodyRenderer != null) bodyRenderer.color = Color.white; float step = MapManager.Instance.tileSize + MapManager.Instance.tileGap; float maxOffset = step * 0.28f; _navOffset = new Vector3(Random.Range(-maxOffset, maxOffset), Random.Range(-maxOffset, maxOffset), 0f); foreach (var gp in gridPath) _path.Add(MapManager.Instance.GridToWorld(gp.x, gp.y)); if (_path.Count > 0) transform.position = _path[0] + _navOffset; transform.localScale = _originalScale; if (hpBarFill != null) { _hpBarInitScaleX = hpBarFill.transform.localScale.x; _hpBarInitPosX = hpBarFill.transform.localPosition.x; } CacheRenderers(); RefreshHpBar(); UpdateSortingOrder(); }
+public void Init(List<Vector2Int> gridPath, Color color) { _hp = maxHp; _pathIdx = 0; _path.Clear(); _baseSpeed = speed; _slowTimer = 0f; gameObject.SetActive(true); transform.localScale = _originalScale; if (bodyRenderer != null && color != Color.white) bodyRenderer.color = color; else if (bodyRenderer != null) bodyRenderer.color = Color.white; float step = MapManager.Instance.tileSize + MapManager.Instance.tileGap; float maxOffset = step * 0.28f; _navOffset = new Vector3(Random.Range(-maxOffset, maxOffset), Random.Range(-maxOffset, maxOffset), 0f); foreach (var gp in gridPath) _path.Add(MapManager.Instance.GridToWorld(gp.x, gp.y)); if (_path.Count > 0) transform.position = _path[0] + _navOffset; if (hpBarFill != null) { _hpBarInitScaleX = hpBarFill.transform.localScale.x; _hpBarInitPosX = hpBarFill.transform.localPosition.x; } RefreshHpBar(); UpdateSortingOrder(); }
 
         /// <summary>
         /// 경로 재계산 시 호출. 현재 위치에서 가장 가까운 앞쪽 웨이포인트부터 이어감.
@@ -68,7 +68,7 @@ public void TakeDamage(float dmg) { if (!IsAlive) return; _hp -= dmg; RefreshHpB
 
 private void Die() { _hp = 0f; if (_animator != null) { _animator.SetTrigger("Dead"); } GameManager.Instance.OnMonsterKilled(); MonsterManager.Instance.OnMonsterDied(this); StartCoroutine(DieAnim()); }
 
-private System.Collections.IEnumerator DieAnim() { if (_animator != null) { float waitTime = 0.5f; var clips = _animator.runtimeAnimatorController?.animationClips; if (clips != null) foreach (var c in clips) if (c.name.ToLower().Contains("dead") || c.name.ToLower().Contains("die")) { waitTime = c.length; break; } yield return new WaitForSeconds(waitTime); } else { Vector3 orig = transform.localScale; float t = 0f; while (t < 0.2f) { transform.localScale = Vector3.Lerp(orig, Vector3.zero, t / 0.2f); t += Time.deltaTime; yield return null; } } MonsterManager.Instance.ReturnToPool(this, PrefabName); }
+private System.Collections.IEnumerator DieAnim() { if (_animator != null) { float waitTime = 0.5f; var clips = _animator.runtimeAnimatorController?.animationClips; if (clips != null) foreach (var c in clips) if (c.name.ToLower().Contains("dead") || c.name.ToLower().Contains("die")) { waitTime = c.length; break; } yield return new WaitForSeconds(waitTime); } else { Vector3 orig = transform.localScale; float t = 0f; while (t < 0.2f) { transform.localScale = Vector3.Lerp(orig, Vector3.zero, t / 0.2f); t += Time.deltaTime; yield return null; } transform.localScale = _originalScale; } MonsterManager.Instance.ReturnToPool(this, PrefabName); }
 
 private void ReachEnd() { MonsterManager.Instance.ReturnToPool(this, PrefabName); GameManager.Instance.TriggerGameOver(); }
 

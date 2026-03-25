@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76d8f7650b8bd1742a540918ca7f15a2, type: 3}
   m_Name: SlowShooterStats
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.TurretStatData
-  turretType: 10
+  turretType: 11
   autoScale: 1
   useCustomShape: 0
   tileShape:

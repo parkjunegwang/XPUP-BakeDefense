@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.CardData
   cardName: All +Speed
   description: All towers attack 20% faster.
-  cardColor: {r: 0.6, g: 0.2, b: 0.8, a: 1}
-  cardType: 2
+  cardColor: {r: 0.6, g: 0.2, b: 0.85, a: 1}
+  cardType: 3
   turretType: 1
   turretCount: 1
   buffTargetType: 1

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.CardData
   cardName: All +Range
   description: All towers gain 15% more range.
-  cardColor: {r: 0.3, g: 0.8, b: 0.7, a: 1}
-  cardType: 3
+  cardColor: {r: 0.3, g: 0.82, b: 0.72, a: 1}
+  cardType: 4
   turretType: 1
   turretCount: 1
   buffTargetType: 1

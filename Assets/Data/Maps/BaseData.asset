@@ -17,7 +17,11 @@ MonoBehaviour:
   tileSize: 0.5
   tileGap: 0.05
   spawnPositions:
+  - {x: 1, y: 21}
+  - {x: 4, y: 21}
   - {x: 6, y: 21}
+  - {x: 9, y: 21}
+  - {x: 12, y: 21}
   endPositions:
   - {x: 6, y: 0}
   tileOverrides: []
@@ -40,6 +44,21 @@ MonoBehaviour:
   - gridX: 0
     gridY: 3
     wallSize: 0
+  - gridX: 1
+    gridY: 3
+    wallSize: 3
+  - gridX: 5
+    gridY: 3
+    wallSize: 3
+  - gridX: 7
+    gridY: 3
+    wallSize: 3
+  - gridX: 9
+    gridY: 3
+    wallSize: 3
+  - gridX: 11
+    gridY: 3
+    wallSize: 3
   - gridX: 13
     gridY: 3
     wallSize: 0
@@ -52,21 +71,6 @@ MonoBehaviour:
   - gridX: 0
     gridY: 5
     wallSize: 0
-  - gridX: 1
-    gridY: 5
-    wallSize: 3
-  - gridX: 3
-    gridY: 5
-    wallSize: 3
-  - gridX: 5
-    gridY: 5
-    wallSize: 3
-  - gridX: 7
-    gridY: 5
-    wallSize: 3
-  - gridX: 9
-    gridY: 5
-    wallSize: 3
   - gridX: 13
     gridY: 5
     wallSize: 0
@@ -90,146 +94,104 @@ MonoBehaviour:
     wallSize: 0
   - gridX: 0
     gridY: 9
-    wallSize: 0
-  - gridX: 3
-    gridY: 9
-    wallSize: 3
-  - gridX: 5
-    gridY: 9
-    wallSize: 3
-  - gridX: 7
-    gridY: 9
-    wallSize: 3
-  - gridX: 9
-    gridY: 9
-    wallSize: 3
-  - gridX: 11
-    gridY: 9
-    wallSize: 3
-  - gridX: 13
-    gridY: 9
-    wallSize: 0
-  - gridX: 0
-    gridY: 10
-    wallSize: 0
-  - gridX: 13
-    gridY: 10
-    wallSize: 0
-  - gridX: 0
-    gridY: 11
-    wallSize: 0
-  - gridX: 13
-    gridY: 11
-    wallSize: 0
-  - gridX: 0
-    gridY: 12
-    wallSize: 0
-  - gridX: 13
-    gridY: 12
-    wallSize: 0
-  - gridX: 0
-    gridY: 13
-    wallSize: 0
-  - gridX: 1
-    gridY: 13
-    wallSize: 3
-  - gridX: 3
-    gridY: 13
-    wallSize: 3
-  - gridX: 5
-    gridY: 13
-    wallSize: 3
-  - gridX: 7
-    gridY: 13
-    wallSize: 3
-  - gridX: 9
-    gridY: 13
-    wallSize: 3
-  - gridX: 13
-    gridY: 13
-    wallSize: 0
-  - gridX: 0
-    gridY: 14
-    wallSize: 0
-  - gridX: 13
-    gridY: 14
-    wallSize: 0
-  - gridX: 0
-    gridY: 15
-    wallSize: 0
-  - gridX: 13
-    gridY: 15
-    wallSize: 0
-  - gridX: 0
-    gridY: 16
-    wallSize: 0
-  - gridX: 13
-    gridY: 16
-    wallSize: 0
-  - gridX: 0
-    gridY: 17
     wallSize: 0
   - gridX: 2
-    gridY: 17
+    gridY: 9
     wallSize: 3
   - gridX: 4
-    gridY: 17
+    gridY: 9
     wallSize: 3
   - gridX: 6
-    gridY: 17
+    gridY: 9
     wallSize: 3
   - gridX: 8
-    gridY: 17
+    gridY: 9
     wallSize: 3
-  - gridX: 10
-    gridY: 17
+  - gridX: 13
+    gridY: 9
+    wallSize: 0
+  - gridX: 0
+    gridY: 10
+    wallSize: 0
+  - gridX: 13
+    gridY: 10
+    wallSize: 0
+  - gridX: 0
+    gridY: 11
+    wallSize: 0
+  - gridX: 13
+    gridY: 11
+    wallSize: 0
+  - gridX: 0
+    gridY: 12
+    wallSize: 0
+  - gridX: 13
+    gridY: 12
+    wallSize: 0
+  - gridX: 0
+    gridY: 13
+    wallSize: 0
+  - gridX: 13
+    gridY: 13
+    wallSize: 0
+  - gridX: 0
+    gridY: 14
+    wallSize: 0
+  - gridX: 3
+    gridY: 14
     wallSize: 3
-  - gridX: 12
-    gridY: 17
+  - gridX: 5
+    gridY: 14
     wallSize: 3
+  - gridX: 7
+    gridY: 14
+    wallSize: 3
+  - gridX: 9
+    gridY: 14
+    wallSize: 3
+  - gridX: 13
+    gridY: 14
+    wallSize: 0
+  - gridX: 0
+    gridY: 15
+    wallSize: 0
+  - gridX: 13
+    gridY: 15
+    wallSize: 0
+  - gridX: 0
+    gridY: 16
+    wallSize: 0
+  - gridX: 13
+    gridY: 16
+    wallSize: 0
+  - gridX: 0
+    gridY: 17
+    wallSize: 0
   - gridX: 0
     gridY: 18
     wallSize: 0
   - gridX: 0
     gridY: 19
     wallSize: 0
+  - gridX: 1
+    gridY: 19
+    wallSize: 3
+  - gridX: 3
+    gridY: 19
+    wallSize: 3
+  - gridX: 5
+    gridY: 19
+    wallSize: 3
+  - gridX: 7
+    gridY: 19
+    wallSize: 3
+  - gridX: 9
+    gridY: 19
+    wallSize: 3
   - gridX: 13
     gridY: 19
     wallSize: 0
   - gridX: 0
-    gridY: 20
-    wallSize: 0
-  - gridX: 1
-    gridY: 20
-    wallSize: 0
-  - gridX: 2
-    gridY: 20
-    wallSize: 0
-  - gridX: 3
-    gridY: 20
-    wallSize: 0
-  - gridX: 4
-    gridY: 20
-    wallSize: 0
-  - gridX: 5
-    gridY: 20
-    wallSize: 0
-  - gridX: 6
-    gridY: 20
-    wallSize: 0
-  - gridX: 7
-    gridY: 20
-    wallSize: 0
-  - gridX: 8
-    gridY: 20
-    wallSize: 0
-  - gridX: 9
-    gridY: 20
-    wallSize: 0
-  - gridX: 10
-    gridY: 20
-    wallSize: 0
-  - gridX: 11
     gridY: 20
     wallSize: 0
   - gridX: 13
