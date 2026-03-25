@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3455424580391969573
+--- !u!1 &1070692512632793525
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,40 +8,40 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 9147933775124151940}
-  - component: {fileID: 8753498856751782740}
-  - component: {fileID: 7710970471336291248}
+  - component: {fileID: 2192854311093134899}
+  - component: {fileID: 6917897950577912444}
+  - component: {fileID: 208460122330097010}
   m_Layer: 0
-  m_Name: PF_MeleeTurret
+  m_Name: PF_SlowShooter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &9147933775124151940
+--- !u!4 &2192854311093134899
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3455424580391969573}
+  m_GameObject: {fileID: 1070692512632793525}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 999, y: 998, z: 0}
+  m_LocalPosition: {x: 999, y: 999, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2996401768995906738}
+  - {fileID: 5164945573991274964}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &8753498856751782740
+--- !u!212 &6917897950577912444
 SpriteRenderer:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3455424580391969573}
+  m_GameObject: {fileID: 1070692512632793525}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -93,21 +93,21 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
---- !u!114 &7710970471336291248
+--- !u!114 &208460122330097010
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3455424580391969573}
+  m_GameObject: {fileID: 1070692512632793525}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d01562607efe6834e99a9f60d11646d4, type: 3}
+  m_Script: {fileID: 11500000, guid: ff667c5bfa755ff479d662f3e94cbad2, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Underdark.MeleeTurret
-  turretType: 2
+  m_EditorClassIdentifier: Assembly-CSharp::Underdark.SlowShooterTurret
+  turretType: 0
   level: 1
-  statData: {fileID: 11400000, guid: 7170787ddd6caae44ac486b881cc81ac, type: 2}
+  statData: {fileID: 0}
   damage: 0
   range: 0
   fireRate: 0
@@ -117,9 +117,9 @@ MonoBehaviour:
   barrelDefaultFacingLeft: 0
   currentTile: {fileID: 0}
   occupiedTiles: []
-  arrowRenderer: {fileID: 0}
-  slashRenderer: {fileID: 0}
---- !u!1 &6623753724976287274
+  slowFactor: 0.4
+  slowDuration: 2.5
+--- !u!1 &2062549871893228221
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,8 +127,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2996401768995906738}
-  - component: {fileID: 4389017212133241551}
+  - component: {fileID: 5164945573991274964}
+  - component: {fileID: 880080528721478506}
   m_Layer: 0
   m_Name: Barrel
   m_TagString: Untagged
@@ -136,29 +136,29 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2996401768995906738
+--- !u!4 &5164945573991274964
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6623753724976287274}
+  m_GameObject: {fileID: 2062549871893228221}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 9147933775124151940}
+  m_Father: {fileID: 2192854311093134899}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &4389017212133241551
+--- !u!212 &880080528721478506
 SpriteRenderer:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6623753724976287274}
+  m_GameObject: {fileID: 2062549871893228221}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0

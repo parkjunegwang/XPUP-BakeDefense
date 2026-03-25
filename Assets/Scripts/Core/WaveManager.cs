@@ -49,21 +49,7 @@ namespace Underdark
         /// <summary>
         /// MonsterManager가 웨이브 몬스터 전멸 시 호출
         /// </summary>
-        public void OnWaveComplete()
-        {
-            onWaveComplete?.Invoke(CurrentWave);
-            CurrentWave++;
-
-            if (CurrentWave >= totalWaves)
-            {
-                GameManager.Instance.TriggerVictory();
-                return;
-            }
-
-            GameManager.Instance.SetState(GameState.Preparation);
-            GameManager.Instance.OnWaveCleared();
-            UIManager.Instance.ShowPrepUI(CurrentWave + 1);
-        }
+public void OnWaveComplete() { onWaveComplete?.Invoke(CurrentWave); CurrentWave++; CleanupProjectiles(); if (CurrentWave >= totalWaves) { GameManager.Instance.TriggerVictory(); return; } GameManager.Instance.SetState(GameState.Preparation); GameManager.Instance.OnWaveCleared(); UIManager.Instance.ShowPrepUI(CurrentWave + 1); } private void CleanupProjectiles() { var tags = new string[] { "Untagged" }; var toDestroy = new System.Collections.Generic.List<GameObject>(); foreach (var go in FindObjectsOfType<GameObject>()) { if (go == null) continue; var name = go.name; if (name.Contains("Proj") || name.Contains("Shell") || name.Contains("Bolt") || name.Contains("Tornado") || name.Contains("Lava") || name.Contains("Drop") || name.Contains("Explosive") || name.Contains("Slow")) { if (go.GetComponent<UnityEngine.UI.Image>() == null && go.GetComponent<TMPro.TextMeshProUGUI>() == null) toDestroy.Add(go); } } foreach (var go in toDestroy) if (go != null) Destroy(go); }
 
         public void Reset()
         {

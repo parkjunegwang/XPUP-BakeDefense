@@ -84,15 +84,6 @@ namespace Underdark
             base.Awake();
         }
 
-        protected override void OnTick()
-        {
-            var target = FindClosestInRange();
-            if (target == null) return;
-
-            var go = new GameObject("ExplosiveShell");
-            go.transform.position = transform.position;
-            var proj = go.AddComponent<ExplosiveProjectile>();
-            proj.Init(target, damage, blastRadius);
-        }
+protected override void OnTick() { var target = FindClosestInRange(); if (target == null) return; AimBarrel(target.transform.position); var go = new GameObject("ExplosiveShell"); go.transform.position = transform.position; var proj = go.AddComponent<ExplosiveProjectile>(); proj.Init(target, damage, blastRadius); }
     }
 }

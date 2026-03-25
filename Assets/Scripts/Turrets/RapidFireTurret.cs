@@ -26,20 +26,7 @@ namespace Underdark
             _flashSr.sortingOrder = SLayer.Effect;
         }
 
-        protected override void OnTick()
-        {
-            var target = FindClosestInRange();
-            if (target == null) return;
-
-            target.TakeDamage(damage);
-
-            // 즉시 플래시 (코루틴 없이)
-            if (_flashSr != null)
-            {
-                _flashSr.color = new Color(1f, 1f, 0.2f, 0.9f);
-                Invoke(nameof(ClearFlash), 0.04f);
-            }
-        }
+protected override void OnTick() { var target = FindClosestInRange(); if (target == null) return; AimBarrel(target.transform.position); target.TakeDamage(damage); if (_flashSr != null) { _flashSr.color = new Color(1f, 1f, 0.2f, 0.9f); Invoke(nameof(ClearFlash), 0.04f); } }
 
         private void ClearFlash()
         {

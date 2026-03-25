@@ -18,8 +18,14 @@ namespace Underdark
         public float fireRate;
         public float hp;
 
-        [Header("Visual")]
-        public SpriteRenderer bodyRenderer;
+        [Header("Visual - Body (방향 고정)")]
+        public SpriteRenderer bodyRenderer;   // 몸체 - 항상 고정
+
+        [Header("Visual - Barrel (좌우 방향전환)")]
+        [Tooltip("포신 SpriteRenderer. 공격 방향에 따라 flipX 적용.")]
+        public SpriteRenderer barrelRenderer;  // 포신 - 좌우 flip만
+        [Tooltip("포신이 기본으로 오른쪽을 바라보면 false, 왼쪽이면 true")]
+        public bool barrelDefaultFacingLeft = false;
 
         [Header("Runtime")]
         public Tile       currentTile;
@@ -30,7 +36,7 @@ namespace Underdark
         protected float _cooldown;
 
         // ── 스탯 초기화 ────────────────────────────────────────────────
-protected virtual void Awake() { ApplyStatsFromData(level); UpdateSortingOrder(); } public void UpdateSortingOrder() { var allSr = GetComponentsInChildren<SpriteRenderer>(true); int baseOrder = Mathf.RoundToInt(500f - transform.position.y * 10f); foreach (var sr in allSr) sr.sortingOrder = baseOrder; }
+protected virtual void Awake() { ApplyStatsFromData(level); UpdateSortingOrder(); } public void AimBarrel(Vector3 targetPos) { if (barrelRenderer == null) return; bool targetIsLeft = targetPos.x < transform.position.x; barrelRenderer.flipX = barrelDefaultFacingLeft ? !targetIsLeft : targetIsLeft; } public void UpdateSortingOrder() { var allSr = GetComponentsInChildren<SpriteRenderer>(true); int baseOrder = Mathf.RoundToInt(500f - transform.position.y * 10f); foreach (var sr in allSr) sr.sortingOrder = baseOrder; }
 
         /// <summary>statData에서 현재 레벨 스탯을 적용</summary>
         public void ApplyStatsFromData(int lv)

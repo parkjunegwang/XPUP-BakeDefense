@@ -61,15 +61,6 @@ namespace Underdark
             base.Awake();
         }
 
-        protected override void OnTick()
-        {
-            var target = FindClosestInRange();
-            if (target == null) return;
-
-            var go = new GameObject("SlowBolt");
-            go.transform.position = transform.position;
-            var proj = go.AddComponent<SlowProjectile>();
-            proj.Init(target, damage, slowFactor, slowDuration);
-        }
+protected override void OnTick() { var target = FindClosestInRange(); if (target == null) return; AimBarrel(target.transform.position); var go = new GameObject("SlowBolt"); go.transform.position = transform.position; var proj = go.AddComponent<SlowProjectile>(); proj.Init(target, damage, slowFactor, slowDuration); }
     }
 }
