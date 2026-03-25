@@ -30,10 +30,7 @@ namespace Underdark
         protected float _cooldown;
 
         // ── 스탯 초기화 ────────────────────────────────────────────────
-        protected virtual void Awake()
-        {
-            ApplyStatsFromData(level);
-        }
+protected virtual void Awake() { ApplyStatsFromData(level); UpdateSortingOrder(); } public void UpdateSortingOrder() { if (bodyRenderer == null) bodyRenderer = GetComponent<SpriteRenderer>() ?? GetComponentInChildren<SpriteRenderer>(); if (bodyRenderer != null) bodyRenderer.sortingOrder = SLayer.Turret - Mathf.RoundToInt(transform.position.y * 10f); }
 
         /// <summary>statData에서 현재 레벨 스탯을 적용</summary>
         public void ApplyStatsFromData(int lv)

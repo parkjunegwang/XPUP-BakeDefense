@@ -68,11 +68,7 @@ namespace Underdark
             }
         }
 
-        public void ShowWaveUI(int waveNumber)
-        {
-            if (waveText != null) waveText.text = $"Wave {waveNumber}";
-            startWaveBtn?.gameObject.SetActive(false);
-        }
+public void ShowWaveUI(int waveNumber) { bool isBoss = MonsterManager.Instance != null && waveNumber % MonsterManager.Instance.bossWaveInterval == 0; if (waveText != null) waveText.text = isBoss ? $"★ BOSS WAVE {waveNumber} ★" : $"Wave {waveNumber}"; if (waveText != null) waveText.color = isBoss ? new Color(1f,0.3f,0.1f) : Color.white; startWaveBtn?.gameObject.SetActive(false); }
 
         public void ShowPrepUI(int nextWave)
         {

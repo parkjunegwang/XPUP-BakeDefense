@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 619dd177cfcf87e4a97fcbfc9e8bfc7d, type: 3}
+  m_Name: Boss0_Stats
+  m_EditorClassIdentifier: Assembly-CSharp::Underdark.MonsterStatData
+  prefabName: Boss_0
+  baseHp: 200
+  baseSpeed: 1.2
+  baseReward: 50
+  hpPerWave: 100
+  speedPerWave: 0.08
+  rewardPerWave: 10
+  isBoss: 1
+  bossHpMult: 1
+  bossSpeedMult: 1
+  bossSizeScale: 1.8
+  baseCount: 1
+  countPerWave: 0
+  maxCount: 1

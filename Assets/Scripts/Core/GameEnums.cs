@@ -2,15 +2,15 @@ namespace Underdark
 {
     public static class SLayer
     {
-        public const int Tile          = 0;
-        public const int TrapEffect    = 1;  // 함정 가시/전기 이펙트
-        public const int Turret        = 2;
-        public const int Monster       = 4;
+        public const int Tile          = 0;   // 바닥 타일 고정
+        public const int TrapEffect    = 1;
+        public const int Turret        = 10;  // Y소팅 기준 (10 + offset)
+        public const int Monster       = 100; // Y소팅 기준 (100 - y*10)
         public const int MonsterHPBg   = 5;
         public const int MonsterHPFill = 6;
-        public const int Effect        = 8;
-        public const int Projectile    = 9;
-        public const int Ghost         = 15;
+        public const int Effect        = 200;
+        public const int Projectile    = 210;
+        public const int Ghost         = 300;
     }
 
     public enum GameState  { Preparation, WaveInProgress, GameOver, Victory }

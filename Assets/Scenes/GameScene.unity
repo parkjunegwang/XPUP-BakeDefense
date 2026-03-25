@@ -594,7 +594,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 395ff9b536082b54381cf087a087ab2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.MapManager
-  mapData: {fileID: 11400000, guid: 67df5edfb6803a749a408de5dbd93e87, type: 2}
+  mapData: {fileID: 11400000, guid: 6bdb4909b70a52c488ad17d9bcfe16d1, type: 2}
   columns: 15
   rows: 15
   tileSize: 0.5
@@ -800,7 +800,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.MonsterManager
   monsterPrefab: {fileID: 0}
-  spawnInterval: 0.8
+  spawnInterval: 0.1
+  bossSpawnInterval: 1.5
+  bossWaveInterval: 5
+  waveStats:
+  - {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
+  - {fileID: 11400000, guid: 71f32271c9a4be04680fe3957d900085, type: 2}
+  - {fileID: 11400000, guid: fe9bfa6e61a329e42b1ffbd29cd9f160, type: 2}
+  bossStats: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
 --- !u!1 &1590951672
 GameObject:
   m_ObjectHideFlags: 0
