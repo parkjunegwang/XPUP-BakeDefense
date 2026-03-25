@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.CardData
   cardName: 2x Spike Trap
   description: Add 2 Spike Traps to inventory.
-  cardColor: {r: 0.45, g: 0.38, b: 0.32, a: 1}
+  cardColor: {r: 0.4, g: 0.35, b: 0.3, a: 1}
   cardType: 0
   turretType: 3
   turretCount: 2

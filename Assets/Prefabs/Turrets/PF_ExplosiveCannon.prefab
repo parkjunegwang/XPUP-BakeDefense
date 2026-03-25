@@ -196,7 +196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55054e9e8853dd24788575202291e4c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.ExplosiveCannon
-  turretType: 0
+  turretType: 10
   level: 1
   statData: {fileID: 0}
   damage: 0

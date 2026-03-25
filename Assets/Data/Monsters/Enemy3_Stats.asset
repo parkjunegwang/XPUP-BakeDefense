@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 619dd177cfcf87e4a97fcbfc9e8bfc7d, type: 3}
   m_Name: Enemy3_Stats
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.MonsterStatData
-  prefabName: Enemy_3
+  prefabName: Enemy_2
   baseHp: 60
   baseSpeed: 0.5
   baseReward: 12

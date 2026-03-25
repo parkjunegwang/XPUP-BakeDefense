@@ -25,6 +25,7 @@ namespace Underdark
         public Button startWaveBtn;
         public Button restartBtn;
         public Button victoryRestartBtn;
+        public Button debugXPBtn;
 
         private float _messageDuration = 2f;
         private float _messageTimer;
@@ -42,6 +43,8 @@ namespace Underdark
             startWaveBtn?.onClick.AddListener(() => WaveManager.Instance.StartNextWave());
             restartBtn?.onClick.AddListener(() => GameManager.Instance.RestartGame());
             victoryRestartBtn?.onClick.AddListener(() => GameManager.Instance.RestartGame());
+
+            debugXPBtn?.onClick.AddListener(() => GameManager.Instance?.AddXP(50));
         }
 
         private void Update()

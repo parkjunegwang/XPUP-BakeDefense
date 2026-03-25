@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 516b4a39ad37f4c4fbb0399943c4082b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.RapidFireTurret
-  turretType: 0
+  turretType: 12
   level: 1
   statData: {fileID: 11400000, guid: fc1929bb5005e1e4db6ac012bbad700c, type: 2}
   damage: 0

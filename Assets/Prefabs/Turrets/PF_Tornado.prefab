@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fd8b4b895500054c9bec3faaaac08e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.TornadoTurret
-  turretType: 0
+  turretType: 13
   level: 1
   statData: {fileID: 0}
   damage: 0
@@ -112,6 +112,8 @@ MonoBehaviour:
   fireRate: 0
   hp: 0
   bodyRenderer: {fileID: 0}
+  barrelRenderer: {fileID: 0}
+  barrelDefaultFacingLeft: 0
   currentTile: {fileID: 0}
   occupiedTiles: []
   tornadoRadius: 0.8
