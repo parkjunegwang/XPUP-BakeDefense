@@ -21,6 +21,12 @@ namespace Underdark
             [Header("Special")]
             [Tooltip("MeleeTurret: tiles ahead to attack")]
             public int attackTiles = 1;
+
+            [Header("Sprites (optional)")]
+            [Tooltip("이 레벨에서 Body 스프라이트를 바꾼. 비워두면 이전 레벨 유지.")]
+            public Sprite bodySprite;
+            [Tooltip("이 레벨에서 Barrel 스프라이트를 바꾼. 비워두면 이전 레벨 유지.")]
+            public Sprite barrelSprite;
         }
 
         [Header("Turret Type")]
