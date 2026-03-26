@@ -114,12 +114,45 @@ MonoBehaviour:
   fireRate: 0
   hp: 0
   bodyRenderer: {fileID: 2342316196033073323}
+  firePoint: {fileID: 7479775378760227583}
   barrelRenderer: {fileID: 7325989631154378821}
   barrelDefaultFacingLeft: 0
+  isFromMapData: 0
   currentTile: {fileID: 0}
   occupiedTiles: []
   projectilePrefab: {fileID: 8337581961609253473, guid: 81c475cbaddf57c428b049e8f8efd8de, type: 3}
   flashRenderer: {fileID: 0}
+--- !u!1 &2446276364830016230
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7479775378760227583}
+  m_Layer: 0
+  m_Name: FirePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7479775378760227583
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2446276364830016230}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.252, y: -0.139, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1139546880586132221}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3038854690543083792
 GameObject:
   m_ObjectHideFlags: 0
@@ -149,7 +182,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.331, z: 0}
   m_LocalScale: {x: 1.2, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 7479775378760227583}
   m_Father: {fileID: 2192854311093134899}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7325989631154378821

@@ -33,5 +33,7 @@ namespace Underdark
         RapidFire,      // 4. 빠른 공격속도
         Tornado,        // 5. 회오리
         LavaRain,       // 6. 마그마 비
+        ChainLightning, // 7. 체인 라이트닝
+        BlackHole,      // 8. 블랙홀
     }
 }

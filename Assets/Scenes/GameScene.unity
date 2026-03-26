@@ -177,6 +177,8 @@ MonoBehaviour:
   rapidFirePrefab: {fileID: 1070692512632793525, guid: d6d27ee2a710cbd47a0c81cf49ced578, type: 3}
   tornadoPrefab: {fileID: 1070692512632793525, guid: 678a732b7c2e7dd49add40ec8e3e1461, type: 3}
   lavaRainPrefab: {fileID: 1070692512632793525, guid: df6488309bf80974284728cc90eb8fc8, type: 3}
+  chainLightningPrefab: {fileID: 1070692512632793525, guid: 5a8f9517db3e83f438e54b973228b874, type: 3}
+  blackHolePrefab: {fileID: 1070692512632793525, guid: a365a21501a35904cbeaa43ab1eeef29, type: 3}
   projectilePrefab: {fileID: 8337581961609253473, guid: 81c475cbaddf57c428b049e8f8efd8de, type: 3}
   turretDefs: []
 --- !u!1 &39192861
@@ -243,6 +245,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b66c278b38c4ad0419f99da3ee8ebf24, type: 2}
   - {fileID: 11400000, guid: 95d4801627d5c974ea5ce2fc40878da6, type: 2}
   - {fileID: 11400000, guid: 784aad9e4fc958943ada2a679e7cedb4, type: 2}
+  - {fileID: 11400000, guid: 2535daf31f1d0844c8e1c0fa5c431d82, type: 2}
+  - {fileID: 11400000, guid: 459a560545f52ac40b761bd24ca34c2f, type: 2}
 --- !u!1 &53903850
 GameObject:
   m_ObjectHideFlags: 0
@@ -422,6 +426,8 @@ MonoBehaviour:
   rapidFirePrefab: {fileID: 0}
   tornadoPrefab: {fileID: 0}
   lavaRainPrefab: {fileID: 0}
+  chainLightningPrefab: {fileID: 1070692512632793525, guid: 5a8f9517db3e83f438e54b973228b874, type: 3}
+  blackHolePrefab: {fileID: 1070692512632793525, guid: a365a21501a35904cbeaa43ab1eeef29, type: 3}
   projectilePrefab: {fileID: 0}
   tilePrefab: {fileID: 0}
   monsterPrefab: {fileID: 0}

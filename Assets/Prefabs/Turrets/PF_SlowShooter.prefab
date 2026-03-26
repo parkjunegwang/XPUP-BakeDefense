@@ -107,7 +107,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.SlowShooterTurret
   turretType: 11
   level: 1
-  statData: {fileID: 0}
+  statData: {fileID: 11400000, guid: 7259475fd9f2c464c8b611accf3170bd, type: 2}
   damage: 0
   range: 0
   fireRate: 0
@@ -115,6 +115,7 @@ MonoBehaviour:
   bodyRenderer: {fileID: 0}
   barrelRenderer: {fileID: 0}
   barrelDefaultFacingLeft: 0
+  isFromMapData: 0
   currentTile: {fileID: 0}
   occupiedTiles: []
   slowFactor: 0.4

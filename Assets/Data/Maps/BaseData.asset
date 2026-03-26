@@ -34,9 +34,12 @@ MonoBehaviour:
     wallSize: 0
   - gridX: 0
     gridY: 1
-    wallSize: 3
+    wallSize: 0
   - gridX: 13
     gridY: 1
+    wallSize: 0
+  - gridX: 0
+    gridY: 2
     wallSize: 0
   - gridX: 13
     gridY: 2
@@ -167,7 +170,13 @@ MonoBehaviour:
   - gridX: 0
     gridY: 17
     wallSize: 0
+  - gridX: 13
+    gridY: 17
+    wallSize: 0
   - gridX: 0
+    gridY: 18
+    wallSize: 0
+  - gridX: 13
     gridY: 18
     wallSize: 0
   - gridX: 0

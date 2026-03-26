@@ -21,6 +21,10 @@ namespace Underdark
         [Header("Visual - Body (방향 고정)")]
         public SpriteRenderer bodyRenderer;   // 몸체 - 항상 고정
 
+        [Header("Fire Point")]
+        [Tooltip("발사 기준점. Barrel 자식에 FirePoint 오브젝트 두면 자동 탐색. 없으면 터렛 중심 사용.")]
+        public Transform firePoint;
+
         [Header("Visual - Barrel (좌우 방향전환)")]
         [Tooltip("포신 SpriteRenderer. 공격 방향에 따라 flipX 적용.")]
         public SpriteRenderer barrelRenderer;  // 포신 - 좌우 flip만
@@ -28,6 +32,8 @@ namespace Underdark
         public bool barrelDefaultFacingLeft = false;
 
         [Header("Runtime")]
+        [Tooltip("MapData에서 불러온 벽이면 true - 이동/삭제 불가")]
+        public bool isFromMapData = false;
         public Tile       currentTile;
         public List<Tile> occupiedTiles = new List<Tile>();
 
@@ -36,7 +42,7 @@ namespace Underdark
         protected float _cooldown;
 
         // ── 스탯 초기화 ────────────────────────────────────────────────
-protected virtual void Awake() { CacheSrOrders(); if (bodyRenderer == null) { var bodyTf = transform.Find("Body"); bodyRenderer = bodyTf != null ? bodyTf.GetComponent<SpriteRenderer>() : GetComponent<SpriteRenderer>(); } if (barrelRenderer == null) { var barrelTf = transform.Find("Barrel"); if (barrelTf != null) barrelRenderer = barrelTf.GetComponent<SpriteRenderer>(); } ApplyStatsFromData(level); UpdateSortingOrder(); } public void AimBarrel(Vector3 targetPos) { if (barrelRenderer == null) return; bool targetIsLeft = targetPos.x < transform.position.x; barrelRenderer.flipX = barrelDefaultFacingLeft ? !targetIsLeft : targetIsLeft; } public void UpdateSortingOrder() { if (_srBaseOrders == null) CacheSrOrders(); int baseOrder = Mathf.RoundToInt(500f - transform.position.y * 10f); for (int i = 0; i < _cachedSrs.Length; i++) { if (_cachedSrs[i] == null) continue; _cachedSrs[i].sortingOrder = baseOrder + _srBaseOrders[i]; } } private SpriteRenderer[] _cachedSrs; private int[] _srBaseOrders; private void CacheSrOrders() { _cachedSrs = GetComponentsInChildren<SpriteRenderer>(true); _srBaseOrders = new int[_cachedSrs.Length]; for (int i = 0; i < _cachedSrs.Length; i++) _srBaseOrders[i] = _cachedSrs[i].sortingOrder; }
+protected virtual void Awake() { CacheSrOrders(); if (bodyRenderer == null) { var bodyTf = transform.Find("Body"); bodyRenderer = bodyTf != null ? bodyTf.GetComponent<SpriteRenderer>() : GetComponent<SpriteRenderer>(); } if (barrelRenderer == null) { var barrelTf = transform.Find("Barrel"); if (barrelTf != null) barrelRenderer = barrelTf.GetComponent<SpriteRenderer>(); } if (firePoint == null) { var fp = FindDeepChild(transform, "FirePoint"); if (fp != null) firePoint = fp; } ApplyStatsFromData(level); UpdateSortingOrder(); } private Transform FindDeepChild(Transform parent, string name) { foreach (Transform child in parent) { if (string.Equals(child.name, name, System.StringComparison.OrdinalIgnoreCase)) return child; var found = FindDeepChild(child, name); if (found != null) return found; } return null; } public Vector3 GetFirePosition() => firePoint != null ? firePoint.position : transform.position; public void AimBarrel(Vector3 targetPos) { if (barrelRenderer == null) return; bool targetIsLeft = targetPos.x < transform.position.x; barrelRenderer.flipX = barrelDefaultFacingLeft ? !targetIsLeft : targetIsLeft; } public void UpdateSortingOrder() { if (_srBaseOrders == null) CacheSrOrders(); int baseOrder = Mathf.RoundToInt(500f - transform.position.y * 10f); for (int i = 0; i < _cachedSrs.Length; i++) { if (_cachedSrs[i] == null) continue; _cachedSrs[i].sortingOrder = baseOrder + _srBaseOrders[i]; } } private SpriteRenderer[] _cachedSrs; private int[] _srBaseOrders; private void CacheSrOrders() { _cachedSrs = GetComponentsInChildren<SpriteRenderer>(true); _srBaseOrders = new int[_cachedSrs.Length]; for (int i = 0; i < _cachedSrs.Length; i++) _srBaseOrders[i] = _cachedSrs[i].sortingOrder; }
 
         /// <summary>statData에서 현재 레벨 스탯을 적용</summary>
         public void ApplyStatsFromData(int lv)

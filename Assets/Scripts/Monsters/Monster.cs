@@ -9,7 +9,7 @@ namespace Underdark
         public float maxHp  = 10f;
         public float speed  = 2f;
         public int   reward = 5;
-        public bool  IsAlive => _hp > 0f;
+        public bool  IsAlive => _hp > 0f && gameObject.activeInHierarchy;
 
         public SpriteRenderer bodyRenderer;
         public SpriteRenderer hpBarFill;
@@ -30,6 +30,7 @@ namespace Underdark
         private Animator         _animator;
         private int[]            _rendererBaseOrders;
         private Vector3          _originalScale;
+        private float            _lastPopupTime;
         private List<Vector3> _path    = new List<Vector3>();
         private int           _pathIdx = 0;
 
@@ -64,7 +65,7 @@ public void Init(List<Vector2Int> gridPath, Color color) { _hp = maxHp; _pathIdx
 
 private void Update() { if (!IsAlive) return; if (GameManager.Instance.CurrentState != GameState.WaveInProgress) return; if (_slowTimer > 0f) { _slowTimer -= Time.deltaTime; if (_slowTimer <= 0f) { speed = _baseSpeed; if (bodyRenderer != null) UpdateSortingOrder(); } } if (_pathIdx >= _path.Count) return; bool isLast = (_pathIdx == _path.Count - 1); Vector3 currentWP = isLast ? _path[_pathIdx] : _path[_pathIdx] + _navOffset; float distToCurrent = Vector3.Distance(transform.position, currentWP); if (!isLast && distToCurrent < 0.35f) { _pathIdx++; return; } if (isLast && distToCurrent < 0.08f) { ReachEnd(); return; } Vector3 moveTarget = currentWP; if (!isLast && _pathIdx + 1 < _path.Count) { bool nextIsLast = (_pathIdx + 1 == _path.Count - 1); Vector3 nextWP = nextIsLast ? _path[_pathIdx + 1] : _path[_pathIdx + 1] + _navOffset; float blend = Mathf.Clamp01(1f - distToCurrent / 0.6f); moveTarget = Vector3.Lerp(currentWP, nextWP, blend * 0.6f); } Vector3 dir = moveTarget - transform.position; if (Mathf.Abs(dir.x) > 0.01f && bodyRenderer != null) bodyRenderer.flipX = dir.x < 0; transform.position = Vector3.SmoothDamp(transform.position, moveTarget, ref _smoothVel, 0.08f, speed * 3f); UpdateSortingOrder(); }
 
-public void TakeDamage(float dmg) { if (!IsAlive) return; _hp -= dmg; RefreshHpBar(); if (_animator != null) { _animator.SetTrigger("Hit"); } if (_hp <= 0f) Die(); }
+public void TakeDamage(float dmg) { if (!IsAlive) return; _hp -= dmg; RefreshHpBar(); if (_animator != null) _animator.SetTrigger("Hit"); float now = Time.time; if (now - _lastPopupTime > 0.12f) { _lastPopupTime = now; DamagePopup.Create(transform.position, dmg); } if (_hp <= 0f) Die(); }
 
 private void Die() { _hp = 0f; if (_animator != null) { _animator.SetTrigger("Dead"); } GameManager.Instance.OnMonsterKilled(); MonsterManager.Instance.OnMonsterDied(this); StartCoroutine(DieAnim()); }
 

@@ -106,7 +106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.LavaRainTurret
   turretType: 14
   level: 1
-  statData: {fileID: 0}
+  statData: {fileID: 11400000, guid: 8a4b205e6a84503458c80b2a2d4603c6, type: 2}
   damage: 0
   range: 0
   fireRate: 0
@@ -114,6 +114,7 @@ MonoBehaviour:
   bodyRenderer: {fileID: 0}
   barrelRenderer: {fileID: 0}
   barrelDefaultFacingLeft: 0
+  isFromMapData: 0
   currentTile: {fileID: 0}
   occupiedTiles: []
   lavaCount: 3

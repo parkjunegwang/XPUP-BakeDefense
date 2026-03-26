@@ -114,20 +114,7 @@ namespace Underdark
         }
 
         // ── bodyRenderer / hpBarFill 자동 연결 ───────────────────────
-        private void SetupMonsterReferences(GameObject go, Monster m)
-        {
-            if (m.bodyRenderer == null)
-                m.bodyRenderer = go.GetComponent<SpriteRenderer>()
-                               ?? go.GetComponentInChildren<SpriteRenderer>();
-
-            if (m.hpBarFill == null)
-            {
-                var fillTf = FindChildByName(go.transform, "HpFill")
-                          ?? FindChildByName(go.transform, "HPFill")
-                          ?? FindChildByName(go.transform, "hp_fill");
-                if (fillTf != null) m.hpBarFill = fillTf.GetComponent<SpriteRenderer>();
-            }
-        }
+private void SetupMonsterReferences(GameObject go, Monster m) { if (m.bodyRenderer == null) m.bodyRenderer = go.GetComponent<SpriteRenderer>() ?? go.GetComponentInChildren<SpriteRenderer>(); if (m.hpBarFill == null) { var fillTf = FindChildByName(go.transform, "HpFill") ?? FindChildByName(go.transform, "HPFill") ?? FindChildByName(go.transform, "hp_fill"); if (fillTf != null) { m.hpBarFill = fillTf.GetComponent<SpriteRenderer>(); } else { BuildHpBar(go, m); } } } private void BuildHpBar(GameObject root, Monster m) { float w = 0.8f; float h = 0.09f; float yOff = 0.62f; var bg = new GameObject("HpBg"); bg.transform.SetParent(root.transform, false); bg.transform.localPosition = new Vector3(0f, yOff, 0f); bg.transform.localScale = new Vector3(w + 0.04f, h + 0.02f, 1f); var bgSr = bg.AddComponent<SpriteRenderer>(); bgSr.sprite = GameSetup.WhiteSquareStatic(); bgSr.color = new Color(0.1f, 0.1f, 0.1f, 0.85f); bgSr.sortingOrder = SLayer.MonsterHPBg; var fill = new GameObject("HpFill"); fill.transform.SetParent(root.transform, false); fill.transform.localPosition = new Vector3(0f, yOff, 0f); fill.transform.localScale = new Vector3(w, h, 1f); var fillSr = fill.AddComponent<SpriteRenderer>(); fillSr.sprite = GameSetup.WhiteSquareStatic(); fillSr.color = Color.green; fillSr.sortingOrder = SLayer.MonsterHPFill; m.hpBarFill = fillSr; }
 
         // ── 경로 재계산 ───────────────────────────────────────────────
         public void RequestPathRecalc() => RecalcAllPaths();
