@@ -9,6 +9,7 @@ namespace Underdark
         private float   _damage;
         private float   _slowFactor;   // 0.4 = 60% 감속
         private float   _slowDuration;
+        private bool    _isCrit;
         private float   _speed = 8f;
 
         private void Awake()
@@ -21,26 +22,9 @@ namespace Underdark
             transform.localScale = Vector3.one * 0.25f;
         }
 
-        public void Init(Monster target, float damage, float slowFactor, float slowDuration)
-        {
-            _target = target;
-            _damage = damage;
-            _slowFactor = slowFactor;
-            _slowDuration = slowDuration;
-        }
+public void Init(Monster target, float damage, float slowFactor, float slowDuration, bool isCrit = false) { _target = target; _damage = damage; _slowFactor = slowFactor; _slowDuration = slowDuration; _isCrit = isCrit; }
 
-        private void Update()
-        {
-            if (_target == null || !_target.IsAlive) { Destroy(gameObject); return; }
-            Vector3 dir = (_target.transform.position - transform.position).normalized;
-            transform.position += dir * _speed * Time.deltaTime;
-            if (Vector2.Distance(transform.position, _target.transform.position) < 0.15f)
-            {
-                _target.TakeDamage(_damage);
-                _target.ApplySlow(_slowFactor, _slowDuration);
-                Destroy(gameObject);
-            }
-        }
+private void Update() { if (_target == null || !_target.IsAlive) { Destroy(gameObject); return; } Vector3 dir = (_target.transform.position - transform.position).normalized; transform.position += dir * _speed * Time.deltaTime; if (Vector2.Distance(transform.position, _target.transform.position) < 0.15f) { _target.TakeDamage(_damage, _isCrit); _target.ApplySlow(_slowFactor, _slowDuration); Destroy(gameObject); } }
     }
 
     /// <summary>
@@ -61,6 +45,6 @@ namespace Underdark
             base.Awake();
         }
 
-protected override void OnTick() { var target = FindClosestInRange(); if (target == null) return; AimBarrel(target.transform.position); var go = new GameObject("SlowBolt"); go.transform.position = GetFirePosition(); var proj = go.AddComponent<SlowProjectile>(); proj.Init(target, damage, slowFactor, slowDuration); }
+protected override void OnTick() { var target = FindClosestInRange(); if (target == null) return; AimBarrel(target.transform.position); float dmg = RollDamage(out bool isCrit); var go = new GameObject("SlowBolt"); go.transform.position = GetFirePosition(); var proj = go.AddComponent<SlowProjectile>(); proj.Init(target, dmg, slowFactor, slowDuration, isCrit); }
     }
 }

@@ -17,6 +17,12 @@ namespace Underdark
         public float fireRate;
         public float hp;
 
+        [Header("Critical")]
+        [Tooltip("크리티컬 확률 (0~1)")]
+        public float critChance     = 0.1f;
+        [Tooltip("크리티컬 데미지 배율")]
+        public float critMultiplier = 2.0f;
+
         [Header("Visual - Body (방향 고정)")]
         public SpriteRenderer bodyRenderer;
 
@@ -94,15 +100,7 @@ namespace Underdark
         }
 
         // ── 스탯 적용 ─────────────────────────────────────────────────
-        public void ApplyStatsFromData(int lv)
-        {
-            if (statData == null) return;
-            var s    = statData.GetLevel(lv);
-            damage   = s.damage;
-            range    = s.range;
-            fireRate = s.fireRate;
-            hp       = s.hp;
-        }
+public void ApplyStatsFromData(int lv) { if (statData == null) return; var s = statData.GetLevel(lv); damage = s.damage; range = s.range; fireRate = s.fireRate; hp = s.hp; critChance = s.critChance; critMultiplier = s.critMultiplier; }
 
         /// <summary>
         /// statData의 해당 레벨에 Body/Barrel 스프라이트가 지정돼 있으면 교체.
@@ -115,6 +113,13 @@ namespace Underdark
             if (s.bodySprite   != null && bodyRenderer   != null) bodyRenderer.sprite   = s.bodySprite;
             if (s.barrelSprite != null && barrelRenderer != null) barrelRenderer.sprite = s.barrelSprite;
         }
+
+/// <summary>
+        /// 크리티컬 판정 후 데미지 반환.
+        /// isCrit은 out 파라미터로 크리티컬 여부 반환 시 DamagePopup에 전달.
+        /// </summary>
+        public float RollDamage(out bool isCrit) { isCrit = Random.value < critChance; return isCrit ? damage * critMultiplier : damage; }
+
 
         // ── 비주얼 헬퍼 ───────────────────────────────────────────────
         public Vector3 GetFirePosition() => firePoint != null ? firePoint.position : transform.position;

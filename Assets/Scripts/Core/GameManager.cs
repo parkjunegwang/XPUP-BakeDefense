@@ -118,7 +118,7 @@ namespace Underdark
         }
 
         public void OnWaveCleared() => AddXP(xpPerWave);
-        public void OnMonsterKilled() => AddXP(xpPerKill);
+        public void OnMonsterKilled(int reward = -1) => AddXP(reward >= 0 ? reward : xpPerKill);
 
         public void TriggerGameOver()
         {
@@ -128,19 +128,7 @@ namespace Underdark
             UIManager.Instance?.ShowGameOver();
         }
 
-        public void TriggerVictory()
-        {
-            SetState(GameState.Victory);
-            // 클리어 보너스: 카드 선택 후 Victory 패널
-            if (CardManager.Instance != null && CardManager.Instance.cardPool?.Count > 0)
-            {
-                CardManager.Instance.ShowCards(() => UIManager.Instance?.ShowVictory());
-            }
-            else
-            {
-                UIManager.Instance?.ShowVictory();
-            }
-        }
+public void TriggerVictory() { SetState(GameState.Victory); if (CardManager.Instance != null && CardManager.Instance.cardPool?.Count > 0) CardManager.Instance.ShowCards(() => UIManager.Instance?.ShowVictory()); else UIManager.Instance?.ShowVictory(); }
 
         public void RestartGame()
         {

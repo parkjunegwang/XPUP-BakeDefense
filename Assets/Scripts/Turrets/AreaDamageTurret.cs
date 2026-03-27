@@ -34,16 +34,7 @@ namespace Underdark
             _areaRenderer.sortingOrder = SLayer.TrapEffect;
         }
 
-        protected override void OnTick()
-        {
-            var targets = FindAllInRange();
-            foreach (var m in targets)
-                m.TakeDamage(damage);
-
-            // 히트 시 범위 펄스 효과
-            if (targets.Count > 0)
-                StartCoroutine(PulseRoutine());
-        }
+protected override void OnTick() { var targets = FindAllInRange(); float dmg = RollDamage(out bool isCrit); foreach (var m in targets) m.TakeDamage(dmg, isCrit); if (targets.Count > 0) StartCoroutine(PulseRoutine()); }
 
         private System.Collections.IEnumerator PulseRoutine()
         {

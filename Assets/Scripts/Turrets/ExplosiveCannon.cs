@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Underdark
@@ -8,8 +9,9 @@ namespace Underdark
         private Monster _target;
         private float   _damage;
         private float   _blastRadius;
+        private bool    _isCrit;
         private float   _speed = 6f;
-
+        private bool    _exploded;
         private SpriteRenderer _sr;
 
         private void Awake()
@@ -22,45 +24,41 @@ namespace Underdark
             transform.localScale = Vector3.one * 0.35f;
         }
 
-        public void Init(Monster target, float damage, float blastRadius)
+        public void Init(Monster target, float damage, float blastRadius, bool isCrit = false)
         {
             _target = target;
             _damage = damage;
             _blastRadius = blastRadius;
+            _isCrit = isCrit;
+            if (isCrit && _sr != null) _sr.color = new Color(1f, 0.9f, 0.1f);
         }
 
         private void Update()
         {
+            if (_exploded) return;
             if (_target == null || !_target.IsAlive)
             {
-                // 타겟 죽었어도 현재 위치에서 폭발
                 StartCoroutine(Explode(transform.position));
                 return;
             }
-
             Vector3 dir = (_target.transform.position - transform.position).normalized;
             transform.position += dir * _speed * Time.deltaTime;
-
             if (Vector2.Distance(transform.position, _target.transform.position) < 0.2f)
                 StartCoroutine(Explode(transform.position));
         }
 
         private IEnumerator Explode(Vector3 pos)
         {
+            _exploded = true;
             enabled = false;
-
-            // 범위 내 모든 몬스터 데미지
-            var monsters = new System.Collections.Generic.List<Monster>(
-                MonsterManager.Instance.ActiveMonsters);
+            var monsters = new List<Monster>(MonsterManager.Instance.ActiveMonsters);
             foreach (var m in monsters)
             {
                 if (m == null || !m.IsAlive) continue;
                 if (Vector2.Distance(pos, m.transform.position) <= _blastRadius)
-                    m.TakeDamage(_damage);
+                    m.TakeDamage(_damage, _isCrit);
             }
-
-            // 폭발 이펙트
-            _sr.color = new Color(1f, 0.7f, 0.1f);
+            _sr.color = _isCrit ? new Color(1f, 0.95f, 0.1f) : new Color(1f, 0.7f, 0.1f);
             transform.localScale = Vector3.one * _blastRadius * 2f;
             yield return new WaitForSeconds(0.12f);
             _sr.color = new Color(1f, 0.3f, 0f, 0.5f);
@@ -69,9 +67,6 @@ namespace Underdark
         }
     }
 
-    /// <summary>
-    /// 2. 폭발형 터렛 - 발사체가 날아가 터져서 광역 1회 데미지
-    /// </summary>
     public class ExplosiveCannon : TurretBase
     {
         [Header("Explosion")]
@@ -84,6 +79,16 @@ namespace Underdark
             base.Awake();
         }
 
-protected override void OnTick() { var target = FindClosestInRange(); if (target == null) return; AimBarrel(target.transform.position); var go = new GameObject("ExplosiveShell"); go.transform.position = GetFirePosition(); var proj = go.AddComponent<ExplosiveProjectile>(); proj.Init(target, damage, blastRadius); }
+        protected override void OnTick()
+        {
+            var target = FindClosestInRange();
+            if (target == null) return;
+            AimBarrel(target.transform.position);
+            float dmg = RollDamage(out bool isCrit);
+            var go = new GameObject("ExplosiveShell");
+            go.transform.position = GetFirePosition();
+            var proj = go.AddComponent<ExplosiveProjectile>();
+            proj.Init(target, dmg, blastRadius, isCrit);
+        }
     }
 }

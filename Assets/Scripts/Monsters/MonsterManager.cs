@@ -153,22 +153,12 @@ private void SetupMonsterReferences(GameObject go, Monster m) { if (m.bodyRender
         }
 
         // ── 웨이브 시작 ───────────────────────────────────────────────
-        public void StartWave(int waveIndex)
-        {
-            bool isBoss = IsBossWave(waveIndex);
-            var  stat   = isBoss
-                        ? (bossStats != null ? bossStats : GetStatForWave(waveIndex))
-                        : GetStatForWave(waveIndex);
-
-            int count        = isBoss ? 1 : (stat != null ? stat.GetCount(waveIndex) : 8 + waveIndex * 2);
-            _monstersToSpawn = count;
-            _monstersAlive   = count;
-            _waveFinished    = false;
-
-            RecalcAllPaths();
-            if (isBoss) Debug.Log($"[MonsterManager] BOSS WAVE {waveIndex + 1}!");
-            StartCoroutine(SpawnRoutine(waveIndex, stat, isBoss));
-        }
+public void StartWave(int waveIndex) { bool isBoss = IsBossWave(waveIndex); var stat = isBoss ? (bossStats != null ? bossStats : GetStatForWave(waveIndex)) : GetStatForWave(waveIndex); int count = isBoss ? 1 : (stat != null ? stat.GetCount(waveIndex) : 8 + waveIndex * 2); _monstersToSpawn = count; _monstersAlive = count; _waveFinished = false; RecalcAllPaths(); if (isBoss) Debug.Log($"[MonsterManager] BOSS WAVE {waveIndex + 1}!"); StartCoroutine(SpawnRoutine(waveIndex, stat, isBoss)); } /// <summary>StageData 기반 웨이브 스폰</summary>
+        public void StartWaveFromData(WaveData waveData, int waveIndex) { if (waveData == null || waveData.groups == null || waveData.groups.Count == 0) { StartWave(waveIndex); return; } _waveFinished = false; RecalcAllPaths(); int total = 0; foreach (var g in waveData.groups) total += Mathf.Max(1, g.count); _monstersToSpawn = total; _monstersAlive = total; StartCoroutine(SpawnWaveDataRoutine(waveData, waveIndex)); } private IEnumerator SpawnWaveDataRoutine(WaveData waveData, int waveIndex) { var map = MapManager.Instance; int spawnCnt = map.spawnPositions.Count; int spawnIdx = 0; foreach (var group in waveData.groups) { float interval = group.spawnInterval > 0f ? group.spawnInterval : (group.isBoss ? bossSpawnInterval : spawnInterval); for (int i = 0; i < group.count; i++) { var spawnGrid = map.spawnPositions[spawnIdx % spawnCnt]; spawnIdx++; if (_pathCache.TryGetValue(spawnGrid, out var path)) SpawnMonsterFromGroup(spawnGrid, path, group, waveIndex); else Debug.LogWarning($"[MonsterManager] No path for {spawnGrid}"); yield return new WaitForSeconds(interval); } } } private void SpawnMonsterFromGroup(Vector2Int spawnGrid, List<Vector2Int> path, MonsterSpawnGroup group, int waveIndex) { var stat = group.statData; string prefabName = stat != null ? stat.prefabName : (group.isBoss ? "Boss_0" : "Enemy_0"); var m = GetFromPool(prefabName); if (m == null) { _monstersAlive--; return; } SetupMonsterReferences(m.gameObject, m); if (stat != null) { m.maxHp = stat.GetHp(waveIndex); m.speed = stat.GetSpeed(waveIndex); m.reward = stat.GetReward(waveIndex); if (group.isBoss) { m.maxHp *= stat.bossHpMult; m.speed *= stat.bossSpeedMult; } } else { m.maxHp = group.isBoss ? 100f + waveIndex * 80f : 10f + waveIndex * 20f; m.speed = group.isBoss ? 1.2f : 1.8f; m.reward = group.isBoss ? 30 : 5; } m.transform.localScale = Vector3.one; if (group.isBoss && stat != null && stat.bossSizeScale != 1f) m.transform.localScale *= stat.bossSizeScale; else if (group.isBoss && stat == null) m.transform.localScale *= 1.8f; m.SetPrefabName(prefabName);
+            if (group.killXpOverride > 0) m.reward = group.killXpOverride;
+            m.transform.position = MapManager.Instance.GridToWorld(spawnGrid.x, spawnGrid.y);
+            m.Init(path, Color.white);
+            ActiveMonsters.Add(m); }
 
         private bool IsBossWave(int waveIndex)
             => bossWaveInterval > 0 && (waveIndex + 1) % bossWaveInterval == 0;
@@ -243,16 +233,7 @@ private void SetupMonsterReferences(GameObject go, Monster m) { if (m.bodyRender
         }
 
         // ── 몬스터 사망 ───────────────────────────────────────────────
-        public void OnMonsterDied(Monster m)
-        {
-            ActiveMonsters.Remove(m);
-            _monstersAlive--;
-            if (_monstersAlive <= 0 && !_waveFinished)
-            {
-                _waveFinished = true;
-                WaveManager.Instance.OnWaveComplete();
-            }
-        }
+public void OnMonsterDied(Monster m) { ActiveMonsters.Remove(m); _monstersAlive--; if (_monstersAlive <= 0 && !_waveFinished) { _waveFinished = true; if (StageManager.Instance != null) StageManager.Instance.OnWaveComplete(); else WaveManager.Instance?.OnWaveComplete(); } }
 
         public void ClearAll()
         {

@@ -9,7 +9,7 @@ namespace Underdark
     {
         private bool _init;
 
-        [Header("=== Turret Prefabs (assign in Inspector) ===")]
+        [Header("=== Turret Prefabs ===")]
         public GameObject rangedTurretPrefab;
         public GameObject meleeTurretPrefab;
         public GameObject spikeTrapPrefab;
@@ -26,6 +26,8 @@ namespace Underdark
         public GameObject lavaRainPrefab;
         public GameObject chainLightningPrefab;
         public GameObject blackHolePrefab;
+        public GameObject precisionStrikePrefab;
+        public GameObject gambleBatPrefab;
         public GameObject projectilePrefab;
 
         [Header("=== Tile / Monster Prefab ===")]
@@ -46,7 +48,6 @@ namespace Underdark
             Debug.Log("[GameSetup] Done");
         }
 
-        // ── 매니저 자동 생성 ──────────────────────────────────────────
         private void EnsureManagers()
         {
             EnsureManager<InventoryManager>("InventoryManager");
@@ -59,8 +60,42 @@ namespace Underdark
                 new GameObject(n).AddComponent<T>();
         }
 
-        // ── 프리팹 fallback ────────────────────────────────────────────
-private void EnsurePrefabs() { var tm = FindObjectOfType<TurretManager>(); if (tilePrefab == null) { tilePrefab = MakeGO("_TilePfb", new Color(0.18f,0.18f,0.28f), 1.0f, SLayer.Tile); tilePrefab.AddComponent<BoxCollider2D>(); tilePrefab.AddComponent<Tile>(); tilePrefab.SetActive(false); } if (rangedTurretPrefab    == null) rangedTurretPrefab    = tm?.rangedTurretPrefab    ?? MakeTurretFallback<RangedTurret>(new Color(0.3f,0.6f,1f)); if (meleeTurretPrefab     == null) meleeTurretPrefab     = tm?.meleeTurretPrefab     ?? MakeTurretFallback<MeleeTurret>(new Color(0.9f,0.7f,0.2f)); if (spikeTrapPrefab       == null) spikeTrapPrefab       = tm?.spikeTrapPrefab       ?? MakeTurretFallback<SpikeTrap>(new Color(0.4f,0.35f,0.3f)); if (electricGatePrefab    == null) electricGatePrefab    = tm?.electricGatePrefab    ?? MakeTurretFallback<ElectricGate>(new Color(0.9f,0.8f,0.1f)); if (wallPrefab            == null) wallPrefab            = tm?.wallPrefab            ?? MakeTurretFallback<WallTurret>(new Color(0.55f,0.45f,0.35f)); if (wall2x1Prefab         == null) wall2x1Prefab         = tm?.wall2x1Prefab         ?? MakeTurretFallback<WallTurret>(new Color(0.50f,0.40f,0.30f)); if (wall1x2Prefab         == null) wall1x2Prefab         = tm?.wall1x2Prefab         ?? MakeTurretFallback<WallTurret>(new Color(0.50f,0.40f,0.30f)); if (wall2x2Prefab         == null) wall2x2Prefab         = tm?.wall2x2Prefab         ?? MakeTurretFallback<WallTurret>(new Color(0.45f,0.35f,0.25f)); if (areaDamagePrefab      == null) areaDamagePrefab      = tm?.areaDamagePrefab      ?? MakeTurretFallback<AreaDamageTurret>(new Color(0.7f,0.2f,0.85f)); if (explosiveCannonPrefab == null) explosiveCannonPrefab = tm?.explosiveCannonPrefab ?? MakeTurretFallback<ExplosiveCannon>(new Color(1f,0.4f,0.1f)); if (slowShooterPrefab     == null) slowShooterPrefab     = tm?.slowShooterPrefab     ?? MakeTurretFallback<SlowShooterTurret>(new Color(0.3f,0.6f,1f)); if (rapidFirePrefab       == null) rapidFirePrefab       = tm?.rapidFirePrefab       ?? MakeTurretFallback<RapidFireTurret>(new Color(1f,0.85f,0.2f)); if (tornadoPrefab         == null) tornadoPrefab         = tm?.tornadoPrefab         ?? MakeTurretFallback<TornadoTurret>(new Color(0.5f,0.85f,1f)); if (lavaRainPrefab        == null) lavaRainPrefab        = tm?.lavaRainPrefab        ?? MakeTurretFallback<LavaRainTurret>(new Color(1f,0.3f,0f)); if (chainLightningPrefab  == null) chainLightningPrefab  = tm?.chainLightningPrefab  ?? MakeTurretFallback<ChainLightningTurret>(new Color(0.4f,0.8f,1f)); if (blackHolePrefab       == null) blackHolePrefab       = tm?.blackHolePrefab       ?? MakeTurretFallback<BlackHoleTurret>(new Color(0.5f,0f,0.8f)); if (projectilePrefab == null) { projectilePrefab = MakeGO("_ProjPfb", new Color(1f,1f,0.2f), 0.18f, SLayer.Projectile); projectilePrefab.AddComponent<Projectile>(); projectilePrefab.SetActive(false); } if (monsterPrefab == null) monsterPrefab = BuildMonsterFallback(); }
+        private void EnsurePrefabs()
+        {
+            var tm = FindObjectOfType<TurretManager>();
+            if (tilePrefab == null)
+            {
+                tilePrefab = MakeGO("_TilePfb", new Color(0.18f,0.18f,0.28f), 1.0f, SLayer.Tile);
+                tilePrefab.AddComponent<BoxCollider2D>();
+                tilePrefab.AddComponent<Tile>();
+                tilePrefab.SetActive(false);
+            }
+            if (rangedTurretPrefab    == null) rangedTurretPrefab    = tm?.rangedTurretPrefab    ?? MakeTurretFallback<RangedTurret>(new Color(0.3f,0.6f,1f));
+            if (meleeTurretPrefab     == null) meleeTurretPrefab     = tm?.meleeTurretPrefab     ?? MakeTurretFallback<MeleeTurret>(new Color(0.9f,0.7f,0.2f));
+            if (spikeTrapPrefab       == null) spikeTrapPrefab       = tm?.spikeTrapPrefab       ?? MakeTurretFallback<SpikeTrap>(new Color(0.4f,0.35f,0.3f));
+            if (electricGatePrefab    == null) electricGatePrefab    = tm?.electricGatePrefab    ?? MakeTurretFallback<ElectricGate>(new Color(0.9f,0.8f,0.1f));
+            if (wallPrefab            == null) wallPrefab            = tm?.wallPrefab            ?? MakeTurretFallback<WallTurret>(new Color(0.55f,0.45f,0.35f));
+            if (wall2x1Prefab         == null) wall2x1Prefab         = tm?.wall2x1Prefab         ?? MakeTurretFallback<WallTurret>(new Color(0.50f,0.40f,0.30f));
+            if (wall1x2Prefab         == null) wall1x2Prefab         = tm?.wall1x2Prefab         ?? MakeTurretFallback<WallTurret>(new Color(0.50f,0.40f,0.30f));
+            if (wall2x2Prefab         == null) wall2x2Prefab         = tm?.wall2x2Prefab         ?? MakeTurretFallback<WallTurret>(new Color(0.45f,0.35f,0.25f));
+            if (areaDamagePrefab      == null) areaDamagePrefab      = tm?.areaDamagePrefab      ?? MakeTurretFallback<AreaDamageTurret>(new Color(0.7f,0.2f,0.85f));
+            if (explosiveCannonPrefab == null) explosiveCannonPrefab = tm?.explosiveCannonPrefab ?? MakeTurretFallback<ExplosiveCannon>(new Color(1f,0.4f,0.1f));
+            if (slowShooterPrefab     == null) slowShooterPrefab     = tm?.slowShooterPrefab     ?? MakeTurretFallback<SlowShooterTurret>(new Color(0.3f,0.6f,1f));
+            if (rapidFirePrefab       == null) rapidFirePrefab       = tm?.rapidFirePrefab       ?? MakeTurretFallback<RapidFireTurret>(new Color(1f,0.85f,0.2f));
+            if (tornadoPrefab         == null) tornadoPrefab         = tm?.tornadoPrefab         ?? MakeTurretFallback<TornadoTurret>(new Color(0.5f,0.85f,1f));
+            if (lavaRainPrefab        == null) lavaRainPrefab        = tm?.lavaRainPrefab        ?? MakeTurretFallback<LavaRainTurret>(new Color(1f,0.3f,0f));
+            if (chainLightningPrefab  == null) chainLightningPrefab  = tm?.chainLightningPrefab  ?? MakeTurretFallback<ChainLightningTurret>(new Color(0.4f,0.8f,1f));
+            if (blackHolePrefab       == null) blackHolePrefab       = tm?.blackHolePrefab       ?? MakeTurretFallback<BlackHoleTurret>(new Color(0.5f,0f,0.8f));
+            if (precisionStrikePrefab == null) precisionStrikePrefab = tm?.precisionStrikePrefab ?? MakeTurretFallback<PrecisionStrikeTurret>(new Color(1f,0.95f,0.2f));
+            if (gambleBatPrefab       == null) gambleBatPrefab       = tm?.gambleBatPrefab       ?? MakeTurretFallback<GambleBatTurret>(new Color(0.9f,0.3f,0.9f));
+            if (projectilePrefab == null)
+            {
+                projectilePrefab = MakeGO("_ProjPfb", new Color(1f,1f,0.2f), 0.18f, SLayer.Projectile);
+                projectilePrefab.AddComponent<Projectile>();
+                projectilePrefab.SetActive(false);
+            }
+            if (monsterPrefab == null) monsterPrefab = BuildMonsterFallback();
+        }
 
         private GameObject MakeTurretFallback<T>(Color col) where T : TurretBase
         {
@@ -68,10 +103,37 @@ private void EnsurePrefabs() { var tm = FindObjectOfType<TurretManager>(); if (t
             go.AddComponent<T>(); go.SetActive(false); return go;
         }
 
-        // ── 프리팹 → 매니저 연결 ─────────────────────────────────────
-private void ConnectPrefabsToManagers() { var map = FindObjectOfType<MapManager>(); var tm  = FindObjectOfType<TurretManager>(); var mm  = FindObjectOfType<MonsterManager>(); if (map != null) map.tilePrefab = tilePrefab; if (mm  != null && mm.monsterPrefab == null) mm.monsterPrefab = monsterPrefab; if (tm  != null) { if (tm.rangedTurretPrefab    == null) tm.rangedTurretPrefab    = rangedTurretPrefab; if (tm.meleeTurretPrefab     == null) tm.meleeTurretPrefab     = meleeTurretPrefab; if (tm.spikeTrapPrefab       == null) tm.spikeTrapPrefab       = spikeTrapPrefab; if (tm.electricGatePrefab    == null) tm.electricGatePrefab    = electricGatePrefab; if (tm.wallPrefab            == null) tm.wallPrefab            = wallPrefab; if (tm.wall2x1Prefab         == null) tm.wall2x1Prefab         = wall2x1Prefab; if (tm.wall1x2Prefab         == null) tm.wall1x2Prefab         = wall1x2Prefab; if (tm.wall2x2Prefab         == null) tm.wall2x2Prefab         = wall2x2Prefab; if (tm.areaDamagePrefab      == null) tm.areaDamagePrefab      = areaDamagePrefab; if (tm.explosiveCannonPrefab == null) tm.explosiveCannonPrefab = explosiveCannonPrefab; if (tm.slowShooterPrefab     == null) tm.slowShooterPrefab     = slowShooterPrefab; if (tm.rapidFirePrefab       == null) tm.rapidFirePrefab       = rapidFirePrefab; if (tm.tornadoPrefab         == null) tm.tornadoPrefab         = tornadoPrefab; if (tm.lavaRainPrefab        == null) tm.lavaRainPrefab        = lavaRainPrefab; if (tm.chainLightningPrefab  == null) tm.chainLightningPrefab  = chainLightningPrefab; if (tm.blackHolePrefab       == null) tm.blackHolePrefab       = blackHolePrefab; if (tm.projectilePrefab      == null) tm.projectilePrefab      = projectilePrefab; } }
+        private void ConnectPrefabsToManagers()
+        {
+            var map = FindObjectOfType<MapManager>();
+            var tm  = FindObjectOfType<TurretManager>();
+            var mm  = FindObjectOfType<MonsterManager>();
+            if (map != null) map.tilePrefab = tilePrefab;
+            if (mm  != null && mm.monsterPrefab == null) mm.monsterPrefab = monsterPrefab;
+            if (tm  != null)
+            {
+                if (tm.rangedTurretPrefab    == null) tm.rangedTurretPrefab    = rangedTurretPrefab;
+                if (tm.meleeTurretPrefab     == null) tm.meleeTurretPrefab     = meleeTurretPrefab;
+                if (tm.spikeTrapPrefab       == null) tm.spikeTrapPrefab       = spikeTrapPrefab;
+                if (tm.electricGatePrefab    == null) tm.electricGatePrefab    = electricGatePrefab;
+                if (tm.wallPrefab            == null) tm.wallPrefab            = wallPrefab;
+                if (tm.wall2x1Prefab         == null) tm.wall2x1Prefab         = wall2x1Prefab;
+                if (tm.wall1x2Prefab         == null) tm.wall1x2Prefab         = wall1x2Prefab;
+                if (tm.wall2x2Prefab         == null) tm.wall2x2Prefab         = wall2x2Prefab;
+                if (tm.areaDamagePrefab      == null) tm.areaDamagePrefab      = areaDamagePrefab;
+                if (tm.explosiveCannonPrefab == null) tm.explosiveCannonPrefab = explosiveCannonPrefab;
+                if (tm.slowShooterPrefab     == null) tm.slowShooterPrefab     = slowShooterPrefab;
+                if (tm.rapidFirePrefab       == null) tm.rapidFirePrefab       = rapidFirePrefab;
+                if (tm.tornadoPrefab         == null) tm.tornadoPrefab         = tornadoPrefab;
+                if (tm.lavaRainPrefab        == null) tm.lavaRainPrefab        = lavaRainPrefab;
+                if (tm.chainLightningPrefab  == null) tm.chainLightningPrefab  = chainLightningPrefab;
+                if (tm.blackHolePrefab       == null) tm.blackHolePrefab       = blackHolePrefab;
+                if (tm.precisionStrikePrefab == null) tm.precisionStrikePrefab = precisionStrikePrefab;
+                if (tm.gambleBatPrefab       == null) tm.gambleBatPrefab       = gambleBatPrefab;
+                if (tm.projectilePrefab      == null) tm.projectilePrefab      = projectilePrefab;
+            }
+        }
 
-        // ── MAP ───────────────────────────────────────────────────────
         private void BuildMap()
         {
             var map = FindObjectOfType<MapManager>();
@@ -81,11 +143,6 @@ private void ConnectPrefabsToManagers() { var map = FindObjectOfType<MapManager>
             map.GenerateMap(defSpawns, defEnds);
         }
 
-        // ── UI ────────────────────────────────────────────────────────
-        /// <summary>
-        /// 씬에 "GameCanvas"가 이미 있으면 레퍼런스만 연결.
-        /// 없으면 새로 생성. (GameUIBaker로 미리 Bake해두면 런타임 생성 안 함)
-        /// </summary>
         public void BuildUI()
         {
             if (FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
@@ -98,7 +155,6 @@ private void ConnectPrefabsToManagers() { var map = FindObjectOfType<MapManager>
             var ui = FindObjectOfType<UIManager>();
             if (ui == null) return;
 
-            // 이미 Bake된 Canvas가 있으면 레퍼런스만 연결하고 종료
             var existing = GameObject.Find("GameCanvas");
             if (existing != null)
             {
@@ -108,7 +164,6 @@ private void ConnectPrefabsToManagers() { var map = FindObjectOfType<MapManager>
                 return;
             }
 
-            // Canvas 새로 생성
             var cvGo = new GameObject("GameCanvas");
             var cv   = cvGo.AddComponent<Canvas>();
             cv.renderMode  = RenderMode.ScreenSpaceOverlay;
@@ -123,7 +178,6 @@ private void ConnectPrefabsToManagers() { var map = FindObjectOfType<MapManager>
             ui.InitButtons();
         }
 
-        /// <summary>GameCanvas 내부 UI 요소 생성. GameUIBaker에서도 호출.</summary>
         public void BuildUIContents(GameObject cvGo, UIManager ui)
         {
             // 상단 HUD
@@ -178,48 +232,47 @@ private void ConnectPrefabsToManagers() { var map = FindObjectOfType<MapManager>
             invRt.offsetMin = new Vector2(4,4); invRt.offsetMax = new Vector2(-4,-4);
             invContainer.AddComponent<UIInventoryPanel>();
 
-            // 버튼들
-#if UNITY_EDITOR
-            var dbgBtn = Btn(cvGo, "BtnDebugXP", "+50 XP (Debug)",
-                new Vector2(1f,0f), new Color(0.4f,0.1f,0.4f), new Vector2(-60f,128f), new Vector2(130f,44f));
-            dbgBtn.onClick.AddListener(() => GameManager.Instance?.AddXP(50));
-#endif
+            // 웨이브 시작 버튼
             ui.startWaveBtn = Btn(cvGo, "BtnStart", "Start Wave",
                 new Vector2(0.5f,0f), new Color(0.1f,0.65f,0.2f), new Vector2(0f,118f), new Vector2(200f,44f));
 
-            // Game Over 패널
+            // ── Game Over 패널 ────────────────────────────────────────
             ui.gameOverPanel = FullPanel(cvGo, "GOPanel", new Color(0,0,0,0.88f));
             Txt(ui.gameOverPanel, "TxtGO", "GAME OVER",
-                new Vector2(0.5f,0.58f), new Vector2(0.5f,0.5f), Vector2.zero, new Vector2(320f,70f), 42, Color.red);
+                new Vector2(0.5f,0.62f), new Vector2(0.5f,0.5f), Vector2.zero, new Vector2(320f,70f), 42, Color.red);
             ui.restartBtn = Btn(ui.gameOverPanel, "BtnGOR", "Restart",
-                new Vector2(0.5f,0.4f), new Color(0.25f,0.25f,0.7f), Vector2.zero, new Vector2(180f,58f));
+                new Vector2(0.5f,0.45f), new Color(0.25f,0.25f,0.7f), Vector2.zero, new Vector2(200f,54f));
+            ui.lobbyBtn = Btn(ui.gameOverPanel, "BtnGOL", "Lobby",
+                new Vector2(0.5f,0.34f), new Color(0.3f,0.3f,0.3f), Vector2.zero, new Vector2(200f,54f));
             ui.gameOverPanel.SetActive(false);
 
-            // Victory 패널
+            // ── Victory 패널 ──────────────────────────────────────────
             ui.victoryPanel = FullPanel(cvGo, "VicPanel", new Color(0,0,0,0.88f));
-            Txt(ui.victoryPanel, "TxtVic", "VICTORY!",
-                new Vector2(0.5f,0.58f), new Vector2(0.5f,0.5f), Vector2.zero, new Vector2(320f,70f), 42, Color.yellow);
+            Txt(ui.victoryPanel, "TxtVic", "STAGE CLEAR!",
+                new Vector2(0.5f,0.62f), new Vector2(0.5f,0.5f), Vector2.zero, new Vector2(320f,70f), 42, Color.yellow);
             ui.victoryRestartBtn = Btn(ui.victoryPanel, "BtnVicR", "Restart",
-                new Vector2(0.5f,0.4f), new Color(0.25f,0.25f,0.7f), Vector2.zero, new Vector2(180f,58f));
+                new Vector2(0.5f,0.45f), new Color(0.25f,0.25f,0.7f), Vector2.zero, new Vector2(200f,54f));
+            ui.victoryLobbyBtn = Btn(ui.victoryPanel, "BtnVicL", "Lobby",
+                new Vector2(0.5f,0.34f), new Color(0.2f,0.5f,0.2f), Vector2.zero, new Vector2(200f,54f));
             ui.victoryPanel.SetActive(false);
         }
 
-        /// <summary>이미 Bake된 GameCanvas에서 UIManager 레퍼런스 연결.</summary>
         public void ConnectUIRefs(GameObject cvGo, UIManager ui)
         {
-            ui.waveText         = FindChildTMP(cvGo, "WaveText");
-            ui.levelText        = FindChildTMP(cvGo, "LevelText");
-            ui.xpText           = FindChildTMP(cvGo, "XPText");
-            ui.messageText      = FindChildTMP(cvGo, "MsgText");
+            ui.waveText          = FindChildTMP(cvGo, "WaveText");
+            ui.levelText         = FindChildTMP(cvGo, "LevelText");
+            ui.xpText            = FindChildTMP(cvGo, "XPText");
+            ui.messageText       = FindChildTMP(cvGo, "MsgText");
             var xpFillGo = FindChildGO(cvGo, "XPBarFill");
             if (xpFillGo != null) ui.xpBarFill = xpFillGo.GetComponent<Image>();
-            ui.startWaveBtn     = FindChildGO(cvGo, "BtnStart")?.GetComponent<Button>();
-            ui.gameOverPanel    = FindChildGO(cvGo, "GOPanel");
-            ui.restartBtn       = FindChildGO(cvGo, "BtnGOR")?.GetComponent<Button>();
-            ui.victoryPanel     = FindChildGO(cvGo, "VicPanel");
+            ui.startWaveBtn      = FindChildGO(cvGo, "BtnStart")?.GetComponent<Button>();
+            ui.gameOverPanel     = FindChildGO(cvGo, "GOPanel");
+            ui.restartBtn        = FindChildGO(cvGo, "BtnGOR")?.GetComponent<Button>();
+            ui.lobbyBtn          = FindChildGO(cvGo, "BtnGOL")?.GetComponent<Button>();
+            ui.victoryPanel      = FindChildGO(cvGo, "VicPanel");
             ui.victoryRestartBtn = FindChildGO(cvGo, "BtnVicR")?.GetComponent<Button>();
+            ui.victoryLobbyBtn   = FindChildGO(cvGo, "BtnVicL")?.GetComponent<Button>();
 
-            // 인벤토리 패널 초기화
             var invContainer = FindChildGO(cvGo, "InvContainer");
             if (invContainer != null)
             {
@@ -230,16 +283,12 @@ private void ConnectPrefabsToManagers() { var map = FindObjectOfType<MapManager>
             }
         }
 
-        // ── 딥 서치 헬퍼 ─────────────────────────────────────────────
+        // ── 헬퍼들 ───────────────────────────────────────────────────
         private TextMeshProUGUI FindChildTMP(GameObject root, string childName)
-        {
-            return FindDeep(root.transform, childName)?.GetComponent<TextMeshProUGUI>();
-        }
+            => FindDeep(root.transform, childName)?.GetComponent<TextMeshProUGUI>();
 
         private GameObject FindChildGO(GameObject root, string childName)
-        {
-            return FindDeep(root.transform, childName)?.gameObject;
-        }
+            => FindDeep(root.transform, childName)?.gameObject;
 
         private Transform FindDeep(Transform parent, string name)
         {
@@ -252,7 +301,6 @@ private void ConnectPrefabsToManagers() { var map = FindObjectOfType<MapManager>
             return null;
         }
 
-        // ── 헬퍼 ──────────────────────────────────────────────────────
         private GameObject MakeGO(string n, Color col, float scale, int order)
         {
             var go = new GameObject(n);

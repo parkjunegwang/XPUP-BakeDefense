@@ -64,30 +64,6 @@ namespace Underdark
             StartCoroutine(ElectricRoutine());
         }
 
-        private IEnumerator ElectricRoutine()
-        {
-            if (_electricSr != null) _electricSr.color = new Color(0.4f, 0.8f, 1f, 0.85f);
-            foreach (var z in _zapLines) z.color = new Color(0.7f, 0.95f, 1f, 0.7f);
-
-            float dur = 0.3f, t = 0f;
-            while (t < dur)
-            {
-                float flicker = Mathf.Sin(t * 80f) * 0.3f + 0.7f;
-                if (_electricSr != null) _electricSr.color = new Color(0.4f, 0.8f, 1f, flicker);
-                foreach (var z in _zapLines) z.color = new Color(0.7f, 0.95f, 1f, flicker * 0.8f);
-
-                var monsters = new List<Monster>(MonsterManager.Instance.ActiveMonsters);
-                foreach (var m in monsters)
-                {
-                    if (m == null || !m.IsAlive) continue;
-                    if (Vector2.Distance(transform.position, m.transform.position) <= range)
-                        m.TakeDamage(damage * Time.deltaTime);
-                }
-                t += Time.deltaTime; yield return null;
-            }
-
-            if (_electricSr != null) _electricSr.color = new Color(0.4f, 0.8f, 1f, 0f);
-            foreach (var z in _zapLines) z.color = new Color(0.7f, 0.95f, 1f, 0f);
-        }
+private IEnumerator ElectricRoutine() { float dmg = RollDamage(out bool isCrit); if (_electricSr != null) _electricSr.color = isCrit ? new Color(1f, 0.95f, 0.3f, 0.9f) : new Color(0.4f, 0.8f, 1f, 0.85f); foreach (var z in _zapLines) z.color = isCrit ? new Color(1f, 1f, 0.5f, 0.7f) : new Color(0.7f, 0.95f, 1f, 0.7f); float dur = 0.3f, t = 0f; while (t < dur) { float flicker = Mathf.Sin(t * 80f) * 0.3f + 0.7f; if (_electricSr != null) _electricSr.color = isCrit ? new Color(1f, 0.95f, 0.3f, flicker) : new Color(0.4f, 0.8f, 1f, flicker); foreach (var z in _zapLines) z.color = isCrit ? new Color(1f, 1f, 0.5f, flicker * 0.8f) : new Color(0.7f, 0.95f, 1f, flicker * 0.8f); var monsters = new List<Monster>(MonsterManager.Instance.ActiveMonsters); foreach (var m in monsters) { if (m == null || !m.IsAlive) continue; if (Vector2.Distance(transform.position, m.transform.position) <= range) m.TakeDamage(dmg * Time.deltaTime, isCrit); } t += Time.deltaTime; yield return null; } if (_electricSr != null) _electricSr.color = new Color(0.4f, 0.8f, 1f, 0f); foreach (var z in _zapLines) z.color = new Color(0.7f, 0.95f, 1f, 0f); }
     }
 }

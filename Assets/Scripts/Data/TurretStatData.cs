@@ -22,6 +22,12 @@ namespace Underdark
             [Tooltip("MeleeTurret: tiles ahead to attack")]
             public int attackTiles = 1;
 
+            [Header("Critical")]
+            [Tooltip("크리티컬 발생 확률 (0~1, 기본 0.1 = 10%)")]
+            public float critChance = 0.1f;
+            [Tooltip("크리티컬 데미지 배율 (기본 2.0 = 200%)")]
+            public float critMultiplier = 2.0f;
+
             [Header("Sprites (optional)")]
             [Tooltip("이 레벨에서 Body 스프라이트를 바꾼. 비워두면 이전 레벨 유지.")]
             public Sprite bodySprite;

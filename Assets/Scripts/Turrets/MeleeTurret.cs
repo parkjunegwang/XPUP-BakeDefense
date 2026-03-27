@@ -110,13 +110,7 @@ namespace Underdark
             UIManager.Instance?.ShowMessage($"Direction: {names[_dirIndex]}");
         }
 
-        protected override void OnTick()
-        {
-            var targets = GetMonstersInFront();
-            if (targets.Count == 0) return;
-            foreach (var m in targets) m.TakeDamage(damage);
-            StartCoroutine(SlashRoutine());
-        }
+protected override void OnTick() { var targets = GetMonstersInFront(); if (targets.Count == 0) return; float dmg = RollDamage(out bool isCrit); foreach (var m in targets) m.TakeDamage(dmg, isCrit); StartCoroutine(SlashRoutine(isCrit)); }
 
         private List<Monster> GetMonstersInFront()
         {
@@ -137,19 +131,7 @@ namespace Underdark
             return result;
         }
 
-        private IEnumerator SlashRoutine()
-        {
-            if (_slashSr == null) yield break;
-            _slashSr.color = new Color(1f, 0.9f, 0.1f, 0.9f);
-            float t = 0f;
-            while (t < 0.13f)
-            {
-                _slashSr.color = new Color(1f, 0.9f, 0.1f, Mathf.Lerp(0.9f, 0f, t / 0.13f));
-                t += Time.deltaTime;
-                yield return null;
-            }
-            _slashSr.color = new Color(1f, 0.9f, 0.1f, 0f);
-        }
+private System.Collections.IEnumerator SlashRoutine(bool isCrit = false) { if (_slashSr == null) yield break; Color slashCol = isCrit ? new Color(1f, 0.9f, 0.1f, 0.95f) : new Color(1f, 0.9f, 0.1f, 0.9f); float dur = isCrit ? 0.2f : 0.13f; _slashSr.color = slashCol; float t = 0f; while (t < dur) { _slashSr.color = new Color(slashCol.r, slashCol.g, slashCol.b, Mathf.Lerp(slashCol.a, 0f, t / dur)); t += Time.deltaTime; yield return null; } _slashSr.color = new Color(slashCol.r, slashCol.g, slashCol.b, 0f); }
 
         protected override void OnLevelUp()
         {

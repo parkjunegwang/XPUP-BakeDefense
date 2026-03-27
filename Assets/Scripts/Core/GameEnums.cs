@@ -35,5 +35,7 @@ namespace Underdark
         LavaRain,       // 6. 마그마 비
         ChainLightning, // 7. 체인 라이트닝
         BlackHole,      // 8. 블랙홀
+        PrecisionStrike,// 9. 정밀 타격 (항상 크리, 작은 데미지)
+        GambleBat,      // 10. 갬블 배트 (낮은 확률 대박 크리)
     }
 }

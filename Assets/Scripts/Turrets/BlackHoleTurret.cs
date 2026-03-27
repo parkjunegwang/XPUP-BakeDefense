@@ -35,21 +35,7 @@ namespace Underdark
 
 private IEnumerator BlackHoleRoutine() { _isActive = true; var first = FindClosestInRange(); Vector3 center = first != null ? first.transform.position : transform.position; var circleGo = new GameObject("BlackHoleCircle"); circleGo.transform.position = center; var lr = circleGo.AddComponent<LineRenderer>(); SetupCircleLR(lr); var particleGo = BuildSuctionParticles(center); float elapsed = 0f; while (elapsed < suctionDuration) { elapsed += Time.deltaTime; float t = elapsed / suctionDuration; float curRadius = Mathf.Lerp(0.1f, range, Mathf.SmoothStep(0f, 1f, t)); DrawCircle(lr, center, curRadius, t); var monsters = new List<Monster>(MonsterManager.Instance.ActiveMonsters); foreach (var m in monsters) { if (m == null || !m.IsAlive) continue; float dist = Vector2.Distance(center, m.transform.position); if (dist > range) continue; Vector3 dir = (center - m.transform.position).normalized; float force = suctionForce * (1f - dist / range) * Time.deltaTime; m.transform.position += dir * force; } yield return null; } BurstExplosion(center); SpawnBurstEffect(center); Destroy(circleGo); if (particleGo != null) Destroy(particleGo); _isActive = false; }
 
-        private void BurstExplosion(Vector3 center)
-        {
-            float   burstDmg  = damage * burstMult;
-            var monsters = new List<Monster>(MonsterManager.Instance.ActiveMonsters);
-            foreach (var m in monsters)
-            {
-                if (m == null || !m.IsAlive) continue;
-                float dist = Vector2.Distance(center, m.transform.position);
-                if (dist > range * 1.1f) continue; // 약간 넓게 판정
-
-                // 거리 기반 데미지 (중심에 가까울수록 최대)
-                float ratio = 1f - dist / (range * 1.1f);
-                m.TakeDamage(burstDmg * Mathf.Lerp(0.5f, 1f, ratio));
-            }
-        }
+private void BurstExplosion(Vector3 center) { float burstDmg = RollDamage(out bool isCrit); burstDmg *= burstMult; var monsters = new List<Monster>(MonsterManager.Instance.ActiveMonsters); foreach (var m in monsters) { if (m == null || !m.IsAlive) continue; float dist = Vector2.Distance(center, m.transform.position); if (dist > range * 1.1f) continue; float ratio = 1f - dist / (range * 1.1f); m.TakeDamage(burstDmg * Mathf.Lerp(0.5f, 1f, ratio), isCrit); } }
 
         // ── 비주얼 헬퍼 ───────────────────────────────────────────────
         private void SetupCircleLR(LineRenderer lr)

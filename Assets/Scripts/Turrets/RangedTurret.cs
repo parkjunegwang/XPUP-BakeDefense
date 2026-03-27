@@ -28,7 +28,7 @@ namespace Underdark
         }
 
 
-protected override void OnTick() { var target = FindClosestInRange(); if (target == null) return; AimBarrel(target.transform.position); Vector3 spawnPos = GetFirePosition(); if (projectilePrefab != null) { bool was = projectilePrefab.activeSelf; projectilePrefab.SetActive(true); var go = Instantiate(projectilePrefab, spawnPos, Quaternion.identity); projectilePrefab.SetActive(was); go.GetComponent<Projectile>()?.Init(target, damage); } else target.TakeDamage(damage); StartCoroutine(FlashRoutine()); }
+protected override void OnTick() { var target = FindClosestInRange(); if (target == null) return; AimBarrel(target.transform.position); float dmg = RollDamage(out bool isCrit); Vector3 spawnPos = GetFirePosition(); if (projectilePrefab != null) { bool was = projectilePrefab.activeSelf; projectilePrefab.SetActive(true); var go = Instantiate(projectilePrefab, spawnPos, Quaternion.identity); projectilePrefab.SetActive(was); go.GetComponent<Projectile>()?.Init(target, dmg, isCrit); } else target.TakeDamage(dmg, isCrit); StartCoroutine(FlashRoutine()); }
 
         private IEnumerator FlashRoutine()
         {

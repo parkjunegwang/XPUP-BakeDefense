@@ -66,12 +66,13 @@ namespace Underdark
                 t += Time.deltaTime; yield return null;
             }
 
+            float dmg = RollDamage(out bool isCrit);
             var monsters = new List<Monster>(MonsterManager.Instance.ActiveMonsters);
             foreach (var m in monsters)
             {
                 if (m == null || !m.IsAlive) continue;
                 if (Vector2.Distance(transform.position, m.transform.position) <= range)
-                    m.TakeDamage(damage);
+                    m.TakeDamage(dmg, isCrit);
             }
 
             yield return new WaitForSeconds(0.18f);
