@@ -119,6 +119,9 @@ private void SetupMonsterReferences(GameObject go, Monster m) { if (m.bodyRender
         // ── 경로 재계산 ───────────────────────────────────────────────
         public void RequestPathRecalc() => RecalcAllPaths();
 
+public void SlowAllForPlacement(float factor, float duration) { foreach (var m in ActiveMonsters) { if (m == null || !m.IsAlive) continue; m.ApplySlow(factor, duration); } }
+
+
         private void RecalcAllPaths()
         {
             _pathCache.Clear();

@@ -66,4 +66,7 @@ MonoBehaviour:
       killXpOverride: 0
     waveName: Wave 5 - Final
     waveCompleteXp: 0
+  startTurretPool: 0f000000100000000e0000000d00000012000000
+  startTurretCount: 4
+  initialCardPicks: 2
   mapData: {fileID: 0}

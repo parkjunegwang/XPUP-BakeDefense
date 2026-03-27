@@ -128,9 +128,9 @@ namespace Underdark
             infoRect.anchorMax = new Vector2(1f, 0.5f);
             infoRect.offsetMin = infoRect.offsetMax = Vector2.zero;
             var infoTmp = infoGo.AddComponent<TextMeshProUGUI>();
-            string statusStr = cleared ? "✓ CLEAR" : unlocked ? "도전 가능" : "🔒 잠김";
+            string statusStr = cleared ? "✓ CLEAR" : unlocked ? "AVAILABLE" : "🔒 LOCKED";
             int waveCount    = stage != null ? stage.TotalWaves : 0;
-            infoTmp.text     = $"웨이브 {waveCount}  ·  {statusStr}";
+            infoTmp.text = $"Waves {waveCount}  ·  {statusStr}";
             infoTmp.fontSize = 16f;
             infoTmp.color    = cleared ? colorCleared : unlocked ? colorUnlocked : colorLocked;
             infoTmp.alignment = TextAlignmentOptions.MidlineLeft;
@@ -142,7 +142,7 @@ namespace Underdark
                 btn.onClick.AddListener(() =>
                 {
                     SaveData.SelectedStageIndex = capturedIdx;
-                    SceneManager.LoadScene(gameSceneName);
+                    SceneManager.LoadScene("TowerSelectScene");
                 });
             }
         }

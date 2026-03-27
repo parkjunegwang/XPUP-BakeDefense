@@ -46,7 +46,7 @@ namespace Underdark
             var titleGo = MakeRectChild(canvasGo.transform, "Title");
             AnchorStretch(titleGo, 0f, 0.85f, 1f, 0.97f);
             var titleTmp = titleGo.AddComponent<TextMeshProUGUI>();
-            titleTmp.text = "<b>UNDERDARK</b>";
+            titleTmp.text = "<b>UNDERDARK</b>"; // already English
             titleTmp.fontSize = 72f;
             titleTmp.color = new Color(0.9f, 0.75f, 0.3f);
             titleTmp.alignment = TextAlignmentOptions.Center;
@@ -55,7 +55,7 @@ namespace Underdark
             var subGo = MakeRectChild(canvasGo.transform, "Subtitle");
             AnchorStretch(subGo, 0f, 0.78f, 1f, 0.86f);
             var subTmp = subGo.AddComponent<TextMeshProUGUI>();
-            subTmp.text = "스테이지 선택";
+            subTmp.text = "Select Stage";
             subTmp.fontSize = 34f;
             subTmp.color = new Color(0.7f, 0.7f, 0.8f);
             subTmp.alignment = TextAlignmentOptions.Center;

@@ -26,17 +26,17 @@ MonoBehaviour:
     waveCompleteXp: 0
   - groups:
     - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
-      count: 1
+      count: 8
       isBoss: 0
       spawnInterval: 0
-      killXpOverride: 20
+      killXpOverride: 0
     - statData: {fileID: 11400000, guid: 71f32271c9a4be04680fe3957d900085, type: 2}
-      count: 2
+      count: 3
       isBoss: 0
       spawnInterval: 0
-      killXpOverride: 20
+      killXpOverride: 0
     waveName: Wave 2 - Assault
-    waveCompleteXp: 100
+    waveCompleteXp: 0
   - groups:
     - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
       count: 5
@@ -50,4 +50,7 @@ MonoBehaviour:
       killXpOverride: 0
     waveName: Wave 3 - Boss
     waveCompleteXp: 0
+  startTurretPool: 010000000200000003000000050000000b000000
+  startTurretCount: 4
+  initialCardPicks: 2
   mapData: {fileID: 0}

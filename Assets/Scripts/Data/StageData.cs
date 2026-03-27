@@ -51,6 +51,14 @@ namespace Underdark
         [Tooltip("이 스테이지의 웨이브 목록. 순서대로 진행.")]
         public List<WaveData> waves = new List<WaveData>();
 
+        [Header("Start Setup")]
+        [Tooltip("게임 시작 시 선택할 수 있는 터렛 풀 (4~5개 선택)")]
+        public TurretType[] startTurretPool;
+        [Tooltip("시작 시 제공할 터렛 수량 (각 1개씩)")]
+        public int startTurretCount = 4;
+        [Tooltip("게임 시작 시 카드 선택 횟수")]
+        public int initialCardPicks = 2;
+
         [Header("Map")]
         [Tooltip("사용할 MapData (없으면 기본 맵)")]
         public MapData mapData;

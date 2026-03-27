@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 
 namespace Underdark
 {
     /// <summary>
-    /// 하단 인벤토리 패널 (탭-투-플레이스 방식).
-    /// - 슬롯 탭 → 터렛 선택 (선택 중 테두리 표시)
-    /// - 취소 버튼 → 선택 해제
+    /// 하단 인벤토리 패널.
+    /// PointerDown → 드래그 시작 / 취소버튼 → CancelDrag
     /// </summary>
     public class UIInventoryPanel : MonoBehaviour
     {
@@ -16,9 +16,6 @@ namespace Underdark
 
         private GameObject _container;
         private Dictionary<TurretType, GameObject> _buttons = new Dictionary<TurretType, GameObject>();
-        private TurretType _selectedType = TurretType.None;
-
-        // 취소 버튼
         private GameObject _cancelBtn;
 
         private void Awake()
@@ -40,32 +37,28 @@ namespace Underdark
                 InventoryManager.Instance.OnInventoryChanged -= Refresh;
         }
 
-        // ── 취소 버튼 생성 ───────────────────────────────────────────
+        // ── 취소 버튼 ────────────────────────────────────────────────
         private void BuildCancelButton()
         {
             if (_container == null) return;
 
-            // _container의 부모(BotPanel) 안에 만들어야 함
-            var parent = _container.transform.parent;
-            if (parent == null) parent = _container.transform;
+            var parent = _container.transform.parent ?? _container.transform;
 
             _cancelBtn = new GameObject("CancelBtn");
             _cancelBtn.transform.SetParent(parent, false);
 
             var rt = _cancelBtn.AddComponent<RectTransform>();
-            rt.anchorMin = new Vector2(1f, 0.5f);
-            rt.anchorMax = new Vector2(1f, 0.5f);
-            rt.pivot     = new Vector2(1f, 0.5f);
+            rt.anchorMin        = new Vector2(1f, 0.5f);
+            rt.anchorMax        = new Vector2(1f, 0.5f);
+            rt.pivot            = new Vector2(1f, 0.5f);
             rt.anchoredPosition = new Vector2(-6f, 0f);
             rt.sizeDelta        = new Vector2(64f, 64f);
 
-            var img = _cancelBtn.AddComponent<Image>();
-            img.color = new Color(0.7f, 0.15f, 0.15f, 0.9f);
+            _cancelBtn.AddComponent<Image>().color = new Color(0.75f, 0.12f, 0.12f, 0.92f);
 
             var btn = _cancelBtn.AddComponent<Button>();
-            btn.onClick.AddListener(() => InputController.Instance?.CancelSelection());
+            btn.onClick.AddListener(() => InputController.Instance?.CancelDrag());
 
-            // X 텍스트
             var txtGo = new GameObject("Txt");
             txtGo.transform.SetParent(_cancelBtn.transform, false);
             var trt = txtGo.AddComponent<RectTransform>();
@@ -73,44 +66,16 @@ namespace Underdark
             trt.offsetMin = trt.offsetMax = Vector2.zero;
             var tmp = txtGo.AddComponent<TextMeshProUGUI>();
             tmp.text      = "✕";
-            tmp.fontSize  = 28f;
+            tmp.fontSize  = 30f;
             tmp.fontStyle = FontStyles.Bold;
             tmp.color     = Color.white;
             tmp.alignment = TextAlignmentOptions.Center;
 
-            _cancelBtn.SetActive(false); // 선택 중일 때만 표시
+            // 항상 표시 (드래그 중이 아니어도)
+            _cancelBtn.SetActive(true);
         }
 
-        // ── 선택된 슬롯 하이라이트 ──────────────────────────────────
-        public void SetSelectedSlot(TurretType type)
-        {
-            _selectedType = type;
-            bool selecting = type != TurretType.None;
-
-            // 취소 버튼 표시/숨김
-            if (_cancelBtn != null) _cancelBtn.SetActive(selecting);
-
-            // 슬롯 테두리 갱신
-            foreach (var kv in _buttons)
-            {
-                var outline = kv.Value.GetComponent<Outline>();
-                if (outline == null) continue;
-                outline.effectColor    = kv.Key == type ? Color.white : Color.clear;
-                outline.effectDistance = kv.Key == type ? new Vector2(3f, -3f) : Vector2.zero;
-
-                // 선택 중인 슬롯 밝게
-                var img = kv.Value.GetComponent<Image>();
-                if (img != null)
-                {
-                    var def = TurretManager.Instance?.GetDef(kv.Key);
-                    Color baseColor = def != null ? def.color : Color.gray;
-                    img.color = kv.Key == type
-                        ? Color.Lerp(baseColor, Color.white, 0.35f)
-                        : baseColor;
-                }
-            }
-        }
-
+        // ── 슬롯 갱신 ────────────────────────────────────────────────
         public void Refresh()
         {
             if (_container == null) return;
@@ -126,12 +91,13 @@ namespace Underdark
             foreach (var kv in stock)
             {
                 if (kv.Value <= 0) continue;
-                var def = tm != null ? tm.GetDef(kv.Key) : new TurretDef { type = kv.Key, label = kv.Key.ToString(), color = Color.gray };
+                var def = tm != null
+                    ? tm.GetDef(kv.Key)
+                    : new TurretDef { type = kv.Key, label = kv.Key.ToString(), color = Color.gray };
                 CreateSlot(kv.Key, kv.Value, def, slot);
                 slot++;
             }
 
-            // 취소 버튼 위치 재배치
             if (_cancelBtn != null) _cancelBtn.transform.SetAsLastSibling();
         }
 
@@ -147,15 +113,7 @@ namespace Underdark
             rt.anchoredPosition = new Vector2(slotIndex * 80f + 8f, 0f);
             rt.sizeDelta        = new Vector2(72f, -8f);
 
-            var img = go.AddComponent<Image>();
-            img.color = def.color;
-
-            // 선택 테두리
-            var outline = go.AddComponent<Outline>();
-            outline.effectColor    = Color.clear;
-            outline.effectDistance = Vector2.zero;
-
-            var btn = go.AddComponent<Button>();
+            go.AddComponent<Image>().color = def.color;
 
             // 타워 이름
             var lbl = new GameObject("Lbl");
@@ -176,7 +134,7 @@ namespace Underdark
             badge.transform.SetParent(go.transform, false);
             var brt = badge.AddComponent<RectTransform>();
             brt.anchorMin = new Vector2(0.55f, 0.55f);
-            brt.anchorMax = new Vector2(1f, 1f);
+            brt.anchorMax = Vector2.one;
             brt.offsetMin = brt.offsetMax = Vector2.zero;
             badge.AddComponent<Image>().color = new Color(0.9f, 0.15f, 0.15f, 0.95f);
             var bLabel = new GameObject("Num");
@@ -191,15 +149,22 @@ namespace Underdark
             bTmp.fontStyle = FontStyles.Bold;
             bTmp.alignment = TextAlignmentOptions.Center;
 
-            // 탭 이벤트 - PointerDown이 아닌 Button.onClick 사용 (터치 호환)
+            // PointerDown → 드래그 시작 (손가락 대자마자 시작)
+            var trig    = go.AddComponent<EventTrigger>();
+            var entry   = new EventTrigger.Entry();
+            entry.eventID = EventTriggerType.PointerDown;
             var capType = type;
             var capCol  = def.color;
-            btn.onClick.AddListener(() =>
+            entry.callback.AddListener((_) =>
             {
-                InputController.Instance?.SelectTurretFromUI(capType, capCol);
+                InputController.Instance?.StartDragFromUI(capType, capCol);
             });
+            trig.triggers.Add(entry);
 
             _buttons[type] = go;
         }
+
+        // SetSelectedSlot은 더 이상 필요없지만 호환용으로 유지
+        public void SetSelectedSlot(TurretType type) { }
     }
 }

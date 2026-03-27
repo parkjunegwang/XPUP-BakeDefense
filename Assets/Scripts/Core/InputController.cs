@@ -5,27 +5,25 @@ using System.Collections.Generic;
 namespace Underdark
 {
     /// <summary>
-    /// 모바일 탭-투-플레이스 입력 컨트롤러.
+    /// 드래그앤드롭 입력 컨트롤러.
     ///
     /// 흐름:
-    ///   1. 인벤토리 슬롯 탭  → 터렛 선택 (SelectTurretFromUI)
-    ///   2. 선택 중 타일 탭   → 해당 타일에 배치 (또는 취소 버튼 탭)
-    ///   3. 배치된 터렛 탭    → 사정거리 표시 / 이동 선택
-    ///   4. 이동 선택 후 타일 탭 → 이동 or 합치기
+    ///   1. 인벤토리 슬롯에서 PointerDown → 드래그 시작 (StartDragFromUI)
+    ///   2. 드래그 중 타일 위 → 고스트 + 하이라이트
+    ///   3. UI 영역에 드롭 → 취소 (취소버튼 포함)
+    ///   4. 타일에 드롭 → 배치 (같은 타입 있으면 레벨업)
+    ///   5. 설치된 터렛은 클릭으로 사정거리만 표시 (이동 불가)
     /// </summary>
     public class InputController : MonoBehaviour
     {
         public static InputController Instance { get; private set; }
 
-        // ── 선택 상태 ─────────────────────────────────────────────────
-        private enum Mode { Idle, PlacingFromUI, MovingTurret }
-        private Mode _mode = Mode.Idle;
+        private bool       _isDragging;
+        private TurretType _dragType;
+        private Color      _dragColor;
+        private int        _dragSizeX = 1;
+        private int        _dragSizeY = 1;
 
-        private TurretType _selectedType;
-        private Color      _selectedColor;
-        private TurretBase _selectedTurret;  // 이동 대상
-
-        // ── 고스트 프리뷰 ─────────────────────────────────────────────
         private GameObject     _ghost;
         private SpriteRenderer _ghostSr;
 
@@ -39,25 +37,21 @@ namespace Underdark
 
         private void Start()
         {
-            // 고스트 오브젝트
-            _ghost   = new GameObject("PlaceGhost");
+            _ghost   = new GameObject("DragGhost");
             _ghostSr = _ghost.AddComponent<SpriteRenderer>();
             _ghostSr.sprite       = GameSetup.WhiteSquareStatic();
-            _ghostSr.color        = new Color(1f, 1f, 1f, 0.4f);
+            _ghostSr.color        = new Color(1f, 1f, 1f, 0.45f);
             _ghostSr.sortingOrder = SLayer.Ghost;
             _ghost.SetActive(false);
 
-            // 사정거리 표시기
             var riGo = new GameObject("RangeIndicator");
             riGo.AddComponent<RangeIndicator>();
         }
 
         private void Update()
         {
-            // Mouse(에디터/PC) 또는 Touchscreen 공통 처리
-            bool pressed  = false;
-            bool released = false;
             Vector2 screenPos = Vector2.zero;
+            bool released = false;
 
             var mouse = Mouse.current;
             var touch = Touchscreen.current;
@@ -65,168 +59,54 @@ namespace Underdark
             if (mouse != null)
             {
                 screenPos = mouse.position.ReadValue();
-                pressed   = mouse.leftButton.wasPressedThisFrame;
                 released  = mouse.leftButton.wasReleasedThisFrame;
             }
             else if (touch != null && touch.touches.Count > 0)
             {
                 var t0 = touch.touches[0];
                 screenPos = t0.position.ReadValue();
-                pressed   = t0.phase.ReadValue() == UnityEngine.InputSystem.TouchPhase.Began;
-                released  = t0.phase.ReadValue() == UnityEngine.InputSystem.TouchPhase.Ended;
+                released  = t0.phase.ReadValue() == UnityEngine.InputSystem.TouchPhase.Ended
+                         || t0.phase.ReadValue() == UnityEngine.InputSystem.TouchPhase.Canceled;
             }
 
             Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 10f));
             worldPos.z = 0f;
 
-            Tile hoverTile = RaycastTile(worldPos);
-
-            // 고스트 & 하이라이트 갱신 (매 프레임)
-            UpdateGhostAndHighlight(hoverTile);
-
-            // 탭(released) 처리
-            if (released)
-                HandleTap(worldPos, hoverTile);
-        }
-
-        // ── 인벤토리 슬롯에서 호출 ───────────────────────────────────
-        public void SelectTurretFromUI(TurretType type, Color col)
-        {
-            if (GameManager.Instance.CurrentState != GameState.Preparation) return;
-            if (!InventoryManager.Instance.CanPlace(type))
+            if (_isDragging)
             {
-                UIManager.Instance?.ShowMessage("No stock!");
-                return;
+                Tile hover = RaycastTile(worldPos);
+                UpdateGhostAndHighlight(hover, worldPos);
+
+                if (released)
+                    EndDrag(worldPos);
             }
-
-            // 이미 같은 타입 선택 중이면 취소
-            if (_mode == Mode.PlacingFromUI && _selectedType == type)
+            else
             {
-                CancelSelection();
-                return;
-            }
-
-            _mode          = Mode.PlacingFromUI;
-            _selectedType  = type;
-            _selectedColor = col;
-            _selectedTurret = null;
-
-            SetupGhost(type, null, col);
-            UIInventoryPanel.Instance?.SetSelectedSlot(type);
-            UIManager.Instance?.ShowMessage($"{TurretManager.Instance.GetDef(type).label} 배치할 타일을 선택하세요");
-        }
-
-        // 외부에서 취소 버튼 눌렀을 때 호출
-        public void CancelSelection()
-        {
-            _mode = Mode.Idle;
-            _selectedTurret = null;
-            _ghost.SetActive(false);
-            RangeIndicator.Instance?.Hide();
-            ClearHighlight();
-            UIInventoryPanel.Instance?.SetSelectedSlot(TurretType.None);
-        }
-
-        // ── 탭 처리 ──────────────────────────────────────────────────
-        private void HandleTap(Vector3 worldPos, Tile tile)
-        {
-            // UI 위를 탭했으면 무시 (인벤토리 버튼 등)
-            if (IsPointerOverUI(worldPos)) return;
-
-            switch (_mode)
-            {
-                case Mode.Idle:
-                    HandleIdleTap(tile);
-                    break;
-
-                case Mode.PlacingFromUI:
-                    HandlePlaceTap(tile);
-                    break;
-
-                case Mode.MovingTurret:
-                    HandleMoveTap(tile);
-                    break;
-            }
-        }
-
-        private void HandleIdleTap(Tile tile)
-        {
-            if (tile == null) return;
-
-            if (tile.HasTurret())
-            {
-                var turret = tile.placedTurret;
-                if (turret == null) return;
-
-                ShowTurretRange(turret);
-
-                // 준비단계에서만 이동 가능
-                if (GameManager.Instance.CurrentState == GameState.Preparation)
+                // 드래그 중 아닐 때 - 터렛 클릭 시 사정거리 표시
+                if (released && !IsPointerOverUI())
                 {
-                    if (turret.isFromMapData)
-                    {
-                        UIManager.Instance?.ShowMessage("Map walls cannot be moved!");
-                        return;
-                    }
-                    // 터렛 선택 → 이동 모드
-                    _mode           = Mode.MovingTurret;
-                    _selectedTurret = turret;
-                    SetupGhost(turret.turretType, turret, turret.bodyRenderer?.color ?? Color.white);
-                    UIManager.Instance?.ShowMessage("이동할 타일을 선택하세요 (같은 타일: 취소)");
+                    Tile tile = RaycastTile(worldPos);
+                    if (tile != null && tile.HasTurret())
+                        ShowTurretRange(tile.placedTurret);
+                    else
+                        RangeIndicator.Instance?.Hide();
                 }
             }
         }
 
-        private void HandlePlaceTap(Tile tile)
-        {
-            if (tile == null)
-            {
-                // 빈 곳 탭 → 취소
-                CancelSelection();
-                return;
-            }
+        // ── UI 슬롯에서 드래그 시작 (UIInventoryPanel에서 호출) ──────
+public void StartDragFromUI(TurretType type, Color col) { var state = GameManager.Instance.CurrentState; if (state != GameState.Preparation && state != GameState.WaveInProgress) return; if (!InventoryManager.Instance.CanPlace(type)) { UIManager.Instance?.ShowMessage("No stock!"); return; } _isDragging = true; _dragType = type; _dragColor = col; var def = TurretManager.Instance.GetDef(type); var sd = TurretManager.Instance.GetStatData(type); float step = MapManager.Instance.tileSize + MapManager.Instance.tileGap; int bW = def.sizeX, bH = def.sizeY; if (sd != null && sd.HasCustomShape() && sd.tileShape != null && sd.tileShape.Length > 0) { bW = 1; bH = 1; foreach (var o in sd.tileShape) { bW = Mathf.Max(bW, o.x + 1); bH = Mathf.Max(bH, o.y + 1); } } _dragSizeX = bW; _dragSizeY = bH; _ghost.transform.localScale = new Vector3(bW * step * 0.88f, bH * step * 0.88f, 1f); _ghostSr.color = new Color(col.r, col.g, col.b, 0.5f); _ghost.SetActive(true); RangeIndicator.Instance?.Hide(); if (state == GameState.WaveInProgress) Time.timeScale = 0.15f; }
 
-            TurretManager.Instance.PlaceSelectedTurret(tile, _selectedType);
-            // 배치 성공 여부와 무관하게 선택 유지 (연속 배치 가능)
-            // 재고 소진되면 자동 취소
-            if (!InventoryManager.Instance.CanPlace(_selectedType))
-                CancelSelection();
-        }
+        // 취소 버튼에서 호출
+public void CancelDrag() { if (!_isDragging) return; _isDragging = false; _ghost.SetActive(false); RangeIndicator.Instance?.Hide(); ClearHighlight(); Time.timeScale = 1f; }
 
-        private void HandleMoveTap(Tile tile)
-        {
-            if (tile == null || _selectedTurret == null)
-            {
-                CancelSelection();
-                return;
-            }
-
-            // 같은 타일 탭 → 취소
-            if (_selectedTurret.occupiedTiles.Contains(tile))
-            {
-                CancelSelection();
-                return;
-            }
-
-            // 다른 터렛 탭 → 합치기 시도
-            if (tile.HasTurret() && tile.placedTurret != _selectedTurret)
-            {
-                TurretManager.Instance.TryMerge(_selectedTurret.currentTile, tile);
-            }
-            else
-            {
-                TurretManager.Instance.MoveTurret(_selectedTurret.currentTile, tile);
-            }
-
-            CancelSelection();
-        }
-
-        // ── 고스트 & 하이라이트 ──────────────────────────────────────
-        private void UpdateGhostAndHighlight(Tile hover)
+        // ── 드래그 중 고스트/하이라이트 갱신 ────────────────────────
+        private void UpdateGhostAndHighlight(Tile hover, Vector3 worldPos)
         {
             ClearHighlight();
 
-            if (_mode == Mode.Idle)
+            // UI 위에 있으면 고스트 숨김 (취소 상태 표시)
+            if (IsPointerOverUI())
             {
                 _ghost.SetActive(false);
                 return;
@@ -234,23 +114,21 @@ namespace Underdark
 
             _ghost.SetActive(true);
 
-            TurretType   type = _mode == Mode.PlacingFromUI ? _selectedType : _selectedTurret?.turretType ?? TurretType.None;
-            TurretStatData sd = _selectedTurret != null ? _selectedTurret.statData : TurretManager.Instance.GetStatData(type);
-
             if (hover == null)
             {
-                _ghost.SetActive(false);
+                // 타일 없는 곳 - 월드 위치에 고스트만
+                _ghost.transform.position = worldPos;
+                RangeIndicator.Instance?.Hide();
                 return;
             }
 
-            var tiles = TurretManager.Instance.GetShapeTiles(hover, type, sd);
-            bool canPlace = _mode == Mode.PlacingFromUI
-                ? TurretManager.Instance.CanPlaceAt(hover, type)
-                : (_selectedTurret != null && TurretManager.Instance.CanMoveAt(_selectedTurret, hover));
+            var sd = TurretManager.Instance.GetStatData(_dragType);
+            var tiles = TurretManager.Instance.GetShapeTiles(hover, _dragType, sd);
+            bool canPlace = TurretManager.Instance.CanPlaceAt(hover, _dragType);
 
             Color hlCol = canPlace ? Tile.ColorHighlight : Tile.ColorError;
-
             Vector3 center = hover.transform.position;
+
             if (tiles != null)
             {
                 foreach (var t in tiles) { t.SetHighlight(hlCol); _lastHighlighted.Add(t); }
@@ -260,72 +138,26 @@ namespace Underdark
             }
             else
             {
-                hover.SetHighlight(Tile.ColorError); _lastHighlighted.Add(hover);
+                hover.SetHighlight(Tile.ColorError);
+                _lastHighlighted.Add(hover);
             }
 
             _ghost.transform.position = new Vector3(center.x, center.y, 0f);
-            UpdateDragRangeIndicator(center, type, sd, canPlace);
+            UpdateRangeIndicator(center, sd, canPlace);
         }
 
-        private void SetupGhost(TurretType type, TurretBase turret, Color col)
+        // ── 드롭 처리 ────────────────────────────────────────────────
+private void EndDrag(Vector3 worldPos) { _isDragging = false; _ghost.SetActive(false); ClearHighlight(); Time.timeScale = 1f; if (IsPointerOverUI()) { RangeIndicator.Instance?.Hide(); return; } Tile drop = RaycastTile(worldPos); if (drop == null) { RangeIndicator.Instance?.Hide(); return; } if (drop.HasTurret() && drop.placedTurret != null && drop.placedTurret.turretType == _dragType) { if (InventoryManager.Instance.Consume(_dragType)) { drop.placedTurret.LevelUp(); StartCoroutine(MergePulse(drop.placedTurret)); UIManager.Instance?.ShowMessage($"Level Up! Lv.{drop.placedTurret.level}"); MonsterManager.Instance?.RequestPathRecalc(); } return; } TurretManager.Instance.PlaceSelectedTurret(drop, _dragType); RangeIndicator.Instance?.Hide(); }
+
+        private System.Collections.IEnumerator MergePulse(TurretBase t)
         {
-            var def  = TurretManager.Instance.GetDef(type);
-            var sd   = turret != null ? turret.statData : TurretManager.Instance.GetStatData(type);
-            float step = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
-            int bW = def.sizeX, bH = def.sizeY;
-            if (sd != null && sd.HasCustomShape() && sd.tileShape != null && sd.tileShape.Length > 0)
-            {
-                bW = 1; bH = 1;
-                foreach (var o in sd.tileShape) { bW = Mathf.Max(bW, o.x + 1); bH = Mathf.Max(bH, o.y + 1); }
-            }
-            _ghost.transform.localScale = new Vector3(bW * step * 0.88f, bH * step * 0.88f, 1f);
-            _ghostSr.color = new Color(col.r, col.g, col.b, 0.45f);
-            _ghost.SetActive(true);
+            Vector3 orig = t.transform.localScale;
+            t.transform.localScale = orig * 1.45f;
+            yield return new WaitForSeconds(0.15f);
+            t.transform.localScale = orig;
         }
 
-        private void ClearHighlight()
-        {
-            foreach (var t in _lastHighlighted) t.RefreshColor();
-            _lastHighlighted.Clear();
-        }
-
-        // ── 사정거리 표시 ────────────────────────────────────────────
-        private void UpdateDragRangeIndicator(Vector3 center, TurretType type, TurretStatData sd, bool canPlace)
-        {
-            if (RangeIndicator.Instance == null) return;
-            Color rc = canPlace ? new Color(0.4f, 1f, 0.5f, 0.7f) : new Color(1f, 0.3f, 0.3f, 0.7f);
-
-            switch (type)
-            {
-                case TurretType.SpikeTrap:
-                case TurretType.ElectricGate:
-                    if (_lastHighlighted.Count > 0)
-                        RangeIndicator.Instance.ShowTiles(_lastHighlighted, new Color(rc.r, rc.g, rc.b, 0.3f));
-                    else RangeIndicator.Instance.Hide();
-                    return;
-
-                case TurretType.MeleeTurret:
-                    float step2 = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
-                    var dir2 = _selectedTurret != null ? (_selectedTurret as MeleeTurret)?.FacingDir ?? new Vector2Int(0, -1) : new Vector2Int(0, -1);
-                    float len2 = GetDragRange(sd); if (len2 <= 0f) len2 = step2 * 1.2f;
-                    RangeIndicator.Instance.ShowDirection(center, dir2, len2, new Color(rc.r, rc.g, rc.b, 0.75f), step2 * 0.85f);
-                    return;
-
-                case TurretType.Wall:
-                case TurretType.Wall2x1:
-                case TurretType.Wall1x2:
-                case TurretType.Wall2x2:
-                    RangeIndicator.Instance.Hide();
-                    return;
-
-                default:
-                    float range = GetDragRange(sd);
-                    if (range > 0f) RangeIndicator.Instance.ShowCircle(center, range, rc);
-                    else RangeIndicator.Instance.Hide();
-                    return;
-            }
-        }
-
+        // ── 사정거리 표시 (배치된 터렛 클릭) ────────────────────────
         private void ShowTurretRange(TurretBase turret)
         {
             if (turret == null || RangeIndicator.Instance == null) return;
@@ -345,7 +177,8 @@ namespace Underdark
                     if (melee == null) return;
                     float step = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
                     float len = melee.range > 0 ? melee.range : step * 1.2f;
-                    RangeIndicator.Instance.ShowDirection(turret.transform.position, melee.FacingDir, len, new Color(col.r, col.g, col.b, 0.75f), step * 0.85f, 2.5f);
+                    RangeIndicator.Instance.ShowDirection(turret.transform.position, melee.FacingDir, len,
+                        new Color(col.r, col.g, col.b, 0.75f), step * 0.85f, 2.5f);
                     return;
 
                 case TurretType.Wall:
@@ -356,17 +189,54 @@ namespace Underdark
 
                 default:
                     if (turret.range > 0f)
-                        RangeIndicator.Instance.ShowCircle(turret.transform.position, turret.range, new Color(col.r, col.g, col.b, 0.8f), 2.5f);
+                        RangeIndicator.Instance.ShowCircle(turret.transform.position, turret.range,
+                            new Color(col.r, col.g, col.b, 0.8f), 2.5f);
+                    return;
+            }
+        }
+
+        // ── 드래그 중 사정거리 표시 ──────────────────────────────────
+        private void UpdateRangeIndicator(Vector3 center, TurretStatData sd, bool canPlace)
+        {
+            if (RangeIndicator.Instance == null) return;
+            Color rc = canPlace ? new Color(0.4f, 1f, 0.5f, 0.7f) : new Color(1f, 0.3f, 0.3f, 0.7f);
+
+            switch (_dragType)
+            {
+                case TurretType.SpikeTrap:
+                case TurretType.ElectricGate:
+                    if (_lastHighlighted.Count > 0)
+                        RangeIndicator.Instance.ShowTiles(_lastHighlighted, new Color(rc.r, rc.g, rc.b, 0.3f));
+                    else RangeIndicator.Instance.Hide();
+                    return;
+
+                case TurretType.MeleeTurret:
+                    float step = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
+                    float len = sd != null && sd.levels?.Length > 0 ? sd.levels[0].range : step * 1.2f;
+                    RangeIndicator.Instance.ShowDirection(center, new Vector2Int(0, -1), len,
+                        new Color(rc.r, rc.g, rc.b, 0.75f), step * 0.85f);
+                    return;
+
+                case TurretType.Wall:
+                case TurretType.Wall2x1:
+                case TurretType.Wall1x2:
+                case TurretType.Wall2x2:
+                    RangeIndicator.Instance.Hide();
+                    return;
+
+                default:
+                    float range = sd != null && sd.levels?.Length > 0 ? sd.levels[0].range : 0f;
+                    if (range > 0f) RangeIndicator.Instance.ShowCircle(center, range, rc);
+                    else RangeIndicator.Instance.Hide();
                     return;
             }
         }
 
         // ── 헬퍼 ─────────────────────────────────────────────────────
-        private float GetDragRange(TurretStatData sd)
+        private void ClearHighlight()
         {
-            if (sd != null && sd.levels != null && sd.levels.Length > 0) return sd.levels[0].range;
-            if (_selectedTurret != null) return _selectedTurret.range;
-            return 0f;
+            foreach (var t in _lastHighlighted) t.RefreshColor();
+            _lastHighlighted.Clear();
         }
 
         private Tile RaycastTile(Vector3 worldPos)
@@ -375,14 +245,14 @@ namespace Underdark
             return hit.collider != null ? hit.collider.GetComponent<Tile>() : null;
         }
 
-        private bool IsPointerOverUI(Vector3 worldPos)
+        private bool IsPointerOverUI()
         {
-            // EventSystem을 통해 UI 위인지 확인
             return UnityEngine.EventSystems.EventSystem.current != null
                 && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
         }
 
-        // 레거시 호환 (외부에서 호출 가능성)
-        public void StartDragFromUI(TurretType type, Color col) => SelectTurretFromUI(type, col);
+        // 레거시 호환
+        public void SelectTurretFromUI(TurretType type, Color col) => StartDragFromUI(type, col);
+        public void CancelSelection() => CancelDrag();
     }
 }

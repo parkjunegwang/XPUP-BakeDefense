@@ -64,12 +64,7 @@ namespace Underdark
             if (bgRenderer != null) bgRenderer.color = col; 
         }
 
-        public bool IsPlaceable()
-        {
-            return tileType == TileType.Empty 
-                && placedTurret == null
-                && GameManager.Instance.CurrentState == GameState.Preparation;
-        }
+public bool IsPlaceable() { var state = GameManager.Instance.CurrentState; bool validState = state == GameState.Preparation || state == GameState.WaveInProgress; return tileType == TileType.Empty && placedTurret == null && validState; }
 
         public bool HasTurret() => placedTurret != null;
     }

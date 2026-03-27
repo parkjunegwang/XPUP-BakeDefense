@@ -40,15 +40,7 @@ namespace Underdark
             UIManager.Instance?.RefreshXP(XP, xpToLevelUp, Level);
         }
 
-        public void GiveStartTurrets()
-        {
-            if (startTurretPool == null || startTurretPool.Length == 0) return;
-            for (int i = 0; i < startTurretCount; i++)
-            {
-                var t = startTurretPool[Random.Range(0, startTurretPool.Length)];
-                InventoryManager.Instance?.Add(t, 1);
-            }
-        }
+public void GiveStartTurrets() { }
 
         public void SetState(GameState state)
         {

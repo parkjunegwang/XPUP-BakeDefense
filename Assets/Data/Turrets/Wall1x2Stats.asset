@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Wall1x2Stats
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.TurretStatData
   turretType: 7
-  autoScale: 0
+  autoScale: 1
   useCustomShape: 0
   tileShape:
   - {x: 0, y: 0}
+  - {x: 1, y: 0}
   passableTileIndices: 
   levels:
   - level: 1
@@ -25,9 +26,17 @@ MonoBehaviour:
     fireRate: 0
     hp: 200
     attackTiles: 1
+    critChance: 0.1
+    critMultiplier: 2
+    bodySprite: {fileID: 0}
+    barrelSprite: {fileID: 0}
   - level: 2
     damage: 0
     range: 0
     fireRate: 0
     hp: 400
     attackTiles: 1
+    critChance: 0.1
+    critMultiplier: 2
+    bodySprite: {fileID: 0}
+    barrelSprite: {fileID: 0}

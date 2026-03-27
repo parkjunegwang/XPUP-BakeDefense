@@ -36,16 +36,58 @@ namespace Underdark
 
         private void Start()
         {
-            if (_init) return; _init = true;
+            if (_init) return;
+            _init = true;
             EnsureManagers();
             EnsurePrefabs();
             ConnectPrefabsToManagers();
             BuildUI();
             BuildMap();
             FindObjectOfType<MapManager>()?.ApplyWallsFromMapData();
-            GameManager.Instance?.GiveStartTurrets();
             new GameObject("InputController").AddComponent<InputController>();
             Debug.Log("[GameSetup] Done");
+            StartCoroutine(DoInitialSetup());
+        }
+
+        private System.Collections.IEnumerator DoInitialSetup()
+        {
+            yield return null; // 한 프레임 대기 (StageManager.Start 완료 후)
+
+            // CardManager 세션 타워 고정 (인벤에는 추가 안 함 - 카드 선택으로만 받음)
+            var selected = SaveData.SelectedTurrets;
+            if (selected != null && selected.Length > 0)
+            {
+                CardManager.Instance?.SetSessionTurrets(selected);
+                SaveData.SelectedTurrets = null;
+            }
+            else
+            {
+                // 타워선택 없이 직접 진입한 경우 (디버그/에디터)
+                var stage = StageManager.Instance?.CurrentStage;
+                if (stage?.startTurretPool != null && stage.startTurretPool.Length > 0)
+                    CardManager.Instance?.SetSessionTurrets(stage.startTurretPool);
+            }
+
+            // 2. 초기 카드 선택 (기본 2번)
+            if (CardManager.Instance == null ||
+                CardManager.Instance.cardPool == null ||
+                CardManager.Instance.cardPool.Count == 0)
+                yield break;
+
+            var stageData = StageManager.Instance?.CurrentStage;
+            int picks = (stageData != null && stageData.initialCardPicks > 0)
+                ? stageData.initialCardPicks
+                : 2;
+
+            int done = 0;
+            System.Action pickNext = null;
+            pickNext = () =>
+            {
+                done++;
+                if (done < picks)
+                    CardManager.Instance.ShowCards(() => pickNext());
+            };
+            CardManager.Instance.ShowCards(() => pickNext());
         }
 
         private void EnsureManagers()
@@ -160,13 +202,12 @@ namespace Underdark
             {
                 ConnectUIRefs(existing, ui);
                 ui.InitButtons();
-                Debug.Log("[GameSetup] 기존 GameCanvas 발견 - 레퍼런스 연결 완료");
                 return;
             }
 
             var cvGo = new GameObject("GameCanvas");
             var cv   = cvGo.AddComponent<Canvas>();
-            cv.renderMode  = RenderMode.ScreenSpaceOverlay;
+            cv.renderMode   = RenderMode.ScreenSpaceOverlay;
             cv.sortingOrder = 10;
             var cvs = cvGo.AddComponent<CanvasScaler>();
             cvs.uiScaleMode         = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -180,13 +221,11 @@ namespace Underdark
 
         public void BuildUIContents(GameObject cvGo, UIManager ui)
         {
-            // 상단 HUD
             ui.waveText  = Txt(cvGo, "WaveText", "Ready... (Wave 1)",
                 new Vector2(0.5f,1f), new Vector2(0.5f,1f), new Vector2(0f,-14f), new Vector2(260f,40f), 19);
             ui.levelText = Txt(cvGo, "LevelText", "Lv.1",
                 new Vector2(0f,1f), new Vector2(0f,1f), new Vector2(10f,-14f), new Vector2(80f,40f), 20, Color.yellow);
 
-            // XP 바
             var xpBg = new GameObject("XPBarBg");
             xpBg.transform.SetParent(cvGo.transform, false);
             xpBg.AddComponent<Image>().color = new Color(0.15f,0.15f,0.15f,0.9f);
@@ -211,12 +250,10 @@ namespace Underdark
             ui.xpText = Txt(xpBg, "XPText", "0/100",
                 new Vector2(0.5f,0.5f), new Vector2(0.5f,0.5f), Vector2.zero, new Vector2(200f,14f), 9);
 
-            // 메시지
             ui.messageText = Txt(cvGo, "MsgText", "",
                 new Vector2(0.5f,0.65f), new Vector2(0.5f,0.5f), Vector2.zero, new Vector2(340f,54f), 18);
             ui.messageText.gameObject.SetActive(false);
 
-            // 하단 인벤토리 패널
             var bot = new GameObject("BotPanel");
             bot.transform.SetParent(cvGo.transform, false);
             bot.AddComponent<Image>().color = new Color(0.05f,0.05f,0.1f,0.92f);
@@ -232,11 +269,9 @@ namespace Underdark
             invRt.offsetMin = new Vector2(4,4); invRt.offsetMax = new Vector2(-4,-4);
             invContainer.AddComponent<UIInventoryPanel>();
 
-            // 웨이브 시작 버튼
             ui.startWaveBtn = Btn(cvGo, "BtnStart", "Start Wave",
                 new Vector2(0.5f,0f), new Color(0.1f,0.65f,0.2f), new Vector2(0f,118f), new Vector2(200f,44f));
 
-            // ── Game Over 패널 ────────────────────────────────────────
             ui.gameOverPanel = FullPanel(cvGo, "GOPanel", new Color(0,0,0,0.88f));
             Txt(ui.gameOverPanel, "TxtGO", "GAME OVER",
                 new Vector2(0.5f,0.62f), new Vector2(0.5f,0.5f), Vector2.zero, new Vector2(320f,70f), 42, Color.red);
@@ -246,7 +281,6 @@ namespace Underdark
                 new Vector2(0.5f,0.34f), new Color(0.3f,0.3f,0.3f), Vector2.zero, new Vector2(200f,54f));
             ui.gameOverPanel.SetActive(false);
 
-            // ── Victory 패널 ──────────────────────────────────────────
             ui.victoryPanel = FullPanel(cvGo, "VicPanel", new Color(0,0,0,0.88f));
             Txt(ui.victoryPanel, "TxtVic", "STAGE CLEAR!",
                 new Vector2(0.5f,0.62f), new Vector2(0.5f,0.5f), Vector2.zero, new Vector2(320f,70f), 42, Color.yellow);
@@ -283,7 +317,6 @@ namespace Underdark
             }
         }
 
-        // ── 헬퍼들 ───────────────────────────────────────────────────
         private TextMeshProUGUI FindChildTMP(GameObject root, string childName)
             => FindDeep(root.transform, childName)?.GetComponent<TextMeshProUGUI>();
 
@@ -293,11 +326,7 @@ namespace Underdark
         private Transform FindDeep(Transform parent, string name)
         {
             if (parent.name == name) return parent;
-            foreach (Transform c in parent)
-            {
-                var r = FindDeep(c, name);
-                if (r != null) return r;
-            }
+            foreach (Transform c in parent) { var r = FindDeep(c, name); if (r != null) return r; }
             return null;
         }
 
