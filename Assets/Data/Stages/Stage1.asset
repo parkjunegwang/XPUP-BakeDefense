@@ -26,17 +26,17 @@ MonoBehaviour:
     waveCompleteXp: 0
   - groups:
     - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
-      count: 8
+      count: 1
       isBoss: 0
       spawnInterval: 0
-      killXpOverride: 0
+      killXpOverride: 20
     - statData: {fileID: 11400000, guid: 71f32271c9a4be04680fe3957d900085, type: 2}
-      count: 3
+      count: 2
       isBoss: 0
       spawnInterval: 0
-      killXpOverride: 0
+      killXpOverride: 20
     waveName: Wave 2 - Assault
-    waveCompleteXp: 0
+    waveCompleteXp: 100
   - groups:
     - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
       count: 5
