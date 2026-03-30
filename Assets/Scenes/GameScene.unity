@@ -181,6 +181,11 @@ MonoBehaviour:
   blackHolePrefab: {fileID: 1070692512632793525, guid: a365a21501a35904cbeaa43ab1eeef29, type: 3}
   precisionStrikePrefab: {fileID: 1070692512632793525, guid: cbc62bf4886ad854c8bc28677089e7ac, type: 3}
   gambleBatPrefab: {fileID: 1070692512632793525, guid: 39036a6314493994388c5c674bd3edec, type: 3}
+  pulseSlowerPrefab: {fileID: 806616702479643111, guid: bdb5cd1bf8e3a054fb9fabf68c4d2979, type: 3}
+  dragonStatuePrefab: {fileID: 7906140199756075341, guid: ea5d9e0c7d5153745a94e8b6b312236f, type: 3}
+  hasteTowerPrefab: {fileID: 958379739599025587, guid: 24c96b5655a058c45a70517d63107a1f, type: 3}
+  pinballCannonPrefab: {fileID: 349964659190088970, guid: caa807d3624f37c46bdfbd9d2cb7b058, type: 3}
+  boomerangTurretPrefab: {fileID: 3943884608347132747, guid: 6b927bb4579b7dd46a4a290235fe92f9, type: 3}
   projectilePrefab: {fileID: 8337581961609253473, guid: 81c475cbaddf57c428b049e8f8efd8de, type: 3}
   turretDefs: []
 --- !u!1 &39192861
@@ -313,6 +318,11 @@ MonoBehaviour:
   blackHolePrefab: {fileID: 1070692512632793525, guid: a365a21501a35904cbeaa43ab1eeef29, type: 3}
   precisionStrikePrefab: {fileID: 1070692512632793525, guid: cbc62bf4886ad854c8bc28677089e7ac, type: 3}
   gambleBatPrefab: {fileID: 1070692512632793525, guid: 39036a6314493994388c5c674bd3edec, type: 3}
+  pulseSlowerPrefab: {fileID: 806616702479643111, guid: bdb5cd1bf8e3a054fb9fabf68c4d2979, type: 3}
+  dragonStatuePrefab: {fileID: 7906140199756075341, guid: ea5d9e0c7d5153745a94e8b6b312236f, type: 3}
+  hasteTowerPrefab: {fileID: 958379739599025587, guid: 24c96b5655a058c45a70517d63107a1f, type: 3}
+  pinballCannonPrefab: {fileID: 349964659190088970, guid: caa807d3624f37c46bdfbd9d2cb7b058, type: 3}
+  boomerangTurretPrefab: {fileID: 3943884608347132747, guid: 6b927bb4579b7dd46a4a290235fe92f9, type: 3}
   projectilePrefab: {fileID: 0}
   tilePrefab: {fileID: 0}
   monsterPrefab: {fileID: 0}

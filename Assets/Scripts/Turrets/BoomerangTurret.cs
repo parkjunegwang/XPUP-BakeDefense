@@ -23,16 +23,23 @@ namespace Underdark
             Throw(target);
         }
 
-        private void Throw(Monster target)
+private void Throw(Monster target)
         {
             Vector2 dir  = (target.transform.position - transform.position).normalized;
             Vector3 dest = transform.position + (Vector3)(dir * throwRange);
 
             var go = new GameObject("Boomerang");
             go.transform.position = transform.position;
+            go.transform.rotation = Quaternion.Euler(0, 0, 45f); // 마름모 모양
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite       = GetComponent<SpriteRenderer>()?.sprite;
-            sr.color        = new Color(0.5f, 1f, 0.3f);
+
+            // 투사체 스프라이트 - 1x1 이미지 로드
+            var sprite = Resources.Load<Sprite>("Image/1x1");
+            if (sprite == null) sprite = GetComponentInChildren<SpriteRenderer>()?.sprite;
+            if (sprite == null) sprite = GameSetup.WhiteSquareStatic();
+
+            sr.sprite       = sprite;
+            sr.color        = new Color(0.4f, 0.9f, 1f); // 하늘색 부메랑
             sr.sortingOrder = SLayer.Projectile;
             go.transform.localScale = Vector3.one * 0.28f;
 
@@ -72,36 +79,34 @@ namespace Underdark
             Destroy(gameObject, 5f);
         }
 
-        private void Update()
+private void Update()
         {
-            // 회전
             transform.Rotate(0, 0, 600f * Time.deltaTime * (_returning ? -1f : 1f));
 
             Vector3 tgt = _returning ? _origin : _dest;
             transform.position = Vector3.MoveTowards(transform.position, tgt, _speed * Time.deltaTime);
 
-            // 방향 전환
             if (!_returning && Vector3.Distance(transform.position, _dest) < 0.1f)
             {
                 _returning  = true;
-                _damageMult = 1f; // 복귀 시 데미지 초기화
+                _damageMult = 1f;
             }
-
             if (_returning && Vector3.Distance(transform.position, _origin) < 0.15f)
             {
                 Destroy(gameObject);
                 return;
             }
 
-            // 몬스터 히트 (갈 때 / 올 때 각자 독립 hitset)
             var monsters = MonsterManager.Instance?.ActiveMonsters;
             if (monsters == null) return;
 
+            // 스냅샷으로 콜렉션 수정 방지
+            var snap   = new System.Collections.Generic.List<Monster>(monsters);
             var hitSet = _returning ? _hitBack : _hitOut;
-            foreach (var m in monsters)
+            foreach (var m in snap)
             {
                 if (m == null || !m.IsAlive || hitSet.Contains(m)) continue;
-                if (Vector3.Distance(transform.position, m.transform.position) > 0.4f) continue;
+                if (Vector3.Distance(transform.position, m.transform.position) > 0.45f) continue;
 
                 hitSet.Add(m);
                 float dmg = _baseDmg * _damageMult;

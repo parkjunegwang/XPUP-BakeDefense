@@ -31,8 +31,9 @@ namespace Underdark
             ring.transform.localScale  = Vector3.zero;
         }
 
-        protected override void Update()
+protected override void Update()
         {
+            if (GameManager.Instance == null) return;
             if (GameManager.Instance.CurrentState != GameState.WaveInProgress) return;
             _pulseTimer -= Time.deltaTime;
             if (_pulseTimer > 0f) return;
@@ -43,12 +44,14 @@ namespace Underdark
         // OnTick은 cooldown 기반이라 여기선 안 씀 (Update에서 직접 타이머)
         protected override void OnTick() { }
 
-        private void DoPulse()
+private void DoPulse()
         {
             var monsters = MonsterManager.Instance?.ActiveMonsters;
             if (monsters == null) return;
 
-            foreach (var m in monsters)
+            // 스냅샷으로 순회 (컬렉션 변경 방지)
+            var snap = new System.Collections.Generic.List<Monster>(monsters);
+            foreach (var m in snap)
             {
                 if (m == null || !m.IsAlive) continue;
                 if (Vector3.Distance(transform.position, m.transform.position) > range) continue;

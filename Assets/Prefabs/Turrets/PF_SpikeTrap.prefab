@@ -108,12 +108,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.SpikeTrap
   turretType: 3
   level: 1
-  statData: {fileID: 11400000, guid: 3095e1dc804da3b4eaccd7bca5845705, type: 2}
-  damage: 0
-  range: 0
-  fireRate: 0
+  statData: {fileID: 11400000, guid: 7557cd6def45d0746b69442757343752, type: 2}
+  damage: 12
+  range: 1.5
+  fireRate: 2
   hp: 0
-  critChance: 0.1
+  critChance: 0.05
   critMultiplier: 2
   bodyRenderer: {fileID: 0}
   firePoint: {fileID: 0}

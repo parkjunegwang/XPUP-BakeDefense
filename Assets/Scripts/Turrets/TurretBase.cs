@@ -145,6 +145,7 @@ public void ApplyStatsFromData(int lv) { if (statData == null) return; var s = s
         // ── 업데이트 ──────────────────────────────────────────────────
         protected virtual void Update()
         {
+            if (GameManager.Instance == null) return;
             if (GameManager.Instance.CurrentState != GameState.WaveInProgress) return;
             _cooldown -= Time.deltaTime;
             if (_cooldown > 0f) return;

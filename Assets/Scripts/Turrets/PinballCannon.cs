@@ -11,9 +11,9 @@ namespace Underdark
         [Header("Pinball Settings")]
         public int   maxBounces  = 5;
         public float bulletSpeed = 6f;
-        public float bulletSize  = 0.22f;
+        public float bulletSize  = 1f;
 
-        protected override void OnTick()
+protected override void OnTick()
         {
             var target = FindClosestInRange();
             if (target == null) return;
@@ -23,13 +23,20 @@ namespace Underdark
             float dmg = RollDamage(out isCrit);
 
             var go = new GameObject("PinballBullet");
-            go.transform.position = transform.position;
+            // 발사 위치를 터렛 중심에서 약간 앞으로 오프셋 (자신 타일에 즉시 바로 충돌나지 않도록)
+            go.transform.position = (Vector3)((Vector2)transform.position + dir * 0.6f);
+
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite       = GetComponent<SpriteRenderer>()?.sprite;
+            var sprite = Resources.Load<Sprite>("Image/Ball");
+            if (sprite == null) sprite = GetComponentInChildren<SpriteRenderer>()?.sprite;
+            if (sprite == null) sprite = GameSetup.WhiteSquareStatic();
+
+            sr.sprite       = sprite;
             sr.color        = new Color(1f, 0.85f, 0.1f);
             sr.sortingOrder = SLayer.Projectile;
             go.transform.localScale = Vector3.one * bulletSize;
-            go.AddComponent<PinballBullet>().Init(dir, bulletSpeed, dmg, isCrit, maxBounces);
+            // 소유자 터렛 정보 전달 (자기 타일 충돌 제외용)
+            go.AddComponent<PinballBullet>().Init(dir, bulletSpeed, dmg, isCrit, maxBounces, currentTile);
         }
     }
 
@@ -40,15 +47,17 @@ namespace Underdark
         private float             _damage;
         private bool              _isCrit;
         private int               _bouncesLeft;
+        private Tile              _ownerTile;   // 자기 타일 충돌 제외
         private HashSet<Monster>  _hit = new HashSet<Monster>();
 
-        public void Init(Vector2 dir, float speed, float damage, bool isCrit, int bounces)
+public void Init(Vector2 dir, float speed, float damage, bool isCrit, int bounces, Tile ownerTile = null)
         {
             _dir         = dir.normalized;
             _speed       = speed;
             _damage      = damage;
             _isCrit      = isCrit;
             _bouncesLeft = bounces;
+            _ownerTile   = ownerTile;
             Destroy(gameObject, 6f);
         }
 
@@ -60,7 +69,6 @@ private void Update()
             var map = MapManager.Instance;
             if (map != null)
             {
-                // MapManager의 실제 그리드 좌표 역산
                 float step    = map.tileSize + map.tileGap;
                 float offsetX = -(map.columns - 1) * step * 0.5f;
                 float offsetY = -(map.rows    - 1) * step * 0.5f;
@@ -68,38 +76,38 @@ private void Update()
                 int gy = Mathf.RoundToInt((next.y - offsetY) / step);
                 var tile = map.GetTile(gx, gy);
 
-                bool blocked = tile != null && tile.placedTurret != null && !tile.passableOverride;
+                // 자기 터렛이 놓인 타일은 충돌 제외
+                bool blocked = tile != null && tile.placedTurret != null
+                    && !tile.passableOverride
+                    && tile != _ownerTile;
                 if (blocked)
                 {
                     if (_bouncesLeft <= 0) { Destroy(gameObject); return; }
                     _bouncesLeft--;
-
-                    // 충돌 면 추정 (가로/세로 중 어느 쪽 벽인지)
                     Vector3 tileWorld = map.GridToWorld(gx, gy);
                     float dx = Mathf.Abs(next.x - tileWorld.x);
                     float dy = Mathf.Abs(next.y - tileWorld.y);
-                    if (dx < dy)
-                        _dir = new Vector2(-_dir.x,  _dir.y);  // 좌우 벽 반사
-                    else
-                        _dir = new Vector2( _dir.x, -_dir.y);  // 상하 벽 반사
-
+                    if (dx < dy) _dir = new Vector2(-_dir.x,  _dir.y);
+                    else         _dir = new Vector2( _dir.x, -_dir.y);
                     next = pos + _dir * _speed * Time.deltaTime;
                 }
             }
 
             transform.position = next;
 
-            // 몬스터 히트 (스냅샷으로 컬렉션 수정 방지)
+            // 몬스터 히트 체크 - 히트 반경 키움
             var monsters = MonsterManager.Instance?.ActiveMonsters;
             if (monsters == null) return;
             var snap = new System.Collections.Generic.List<Monster>(monsters);
             foreach (var m in snap)
             {
                 if (m == null || !m.IsAlive || _hit.Contains(m)) continue;
-                if (Vector2.Distance(transform.position, m.transform.position) < 0.4f)
+                float dist = Vector2.Distance(transform.position, m.transform.position);
+                if (dist < 0.55f)  // 히트 반경 0.4 → 0.55으로 확대
                 {
                     _hit.Add(m);
                     m.TakeDamage(_damage, _isCrit);
+                    Debug.Log($"[Pinball] HIT {m.name} dist={dist:F2} dmg={_damage}");
                 }
             }
         }

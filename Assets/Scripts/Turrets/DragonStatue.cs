@@ -64,6 +64,7 @@ namespace Underdark
 
         protected override void Update()
         {
+            if (GameManager.Instance == null) return;
             if (GameManager.Instance.CurrentState != GameState.WaveInProgress)
             {
                 if (_state == DragonState.Breathing)

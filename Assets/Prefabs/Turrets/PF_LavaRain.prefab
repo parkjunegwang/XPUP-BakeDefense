@@ -108,10 +108,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.LavaRainTurret
   turretType: 14
   level: 1
-  statData: {fileID: 11400000, guid: 8a4b205e6a84503458c80b2a2d4603c6, type: 2}
-  damage: 0
-  range: 0
-  fireRate: 0
+  statData: {fileID: 11400000, guid: 5a7e623d6326d09418bdb27006f62b35, type: 2}
+  damage: 25
+  range: 2.5
+  fireRate: 0.6
   hp: 0
   critChance: 0.1
   critMultiplier: 2
