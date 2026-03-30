@@ -158,7 +158,7 @@ private void EndDrag(Vector3 worldPos) { _isDragging = false; _ghost.SetActive(f
         }
 
         // ── 사정거리 표시 (배치된 터렛 클릭) ────────────────────────
-        private void ShowTurretRange(TurretBase turret)
+private void ShowTurretRange(TurretBase turret)
         {
             if (turret == null || RangeIndicator.Instance == null) return;
             var def = TurretManager.Instance.GetDef(turret.turretType);
@@ -175,10 +175,18 @@ private void EndDrag(Vector3 worldPos) { _isDragging = false; _ghost.SetActive(f
                 case TurretType.MeleeTurret:
                     var melee = turret as MeleeTurret;
                     if (melee == null) return;
-                    float step = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
-                    float len = melee.range > 0 ? melee.range : step * 1.2f;
-                    RangeIndicator.Instance.ShowDirection(turret.transform.position, melee.FacingDir, len,
-                        new Color(col.r, col.g, col.b, 0.75f), step * 0.85f, 2.5f);
+                    float mstep = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
+                    float mlen  = melee.range > 0 ? melee.range : mstep * 1.2f;
+                    RangeIndicator.Instance.ShowDirection(turret.transform.position, melee.FacingDir, mlen,
+                        new Color(col.r, col.g, col.b, 0.75f), mstep * 0.85f, 2.5f);
+                    return;
+
+                case TurretType.DragonStatue:
+                    var dragon = turret as DragonStatue;
+                    float bRange = dragon != null ? dragon.breathRange : 2.2f;
+                    float bWidth = dragon != null ? dragon.breathWidth : 0.9f;
+                    RangeIndicator.Instance.ShowBreathRect(turret.transform.position,
+                        bRange, bWidth, new Color(1f, 0.45f, 0.1f, 0.6f), 2.5f);
                     return;
 
                 case TurretType.Wall:
@@ -188,15 +196,19 @@ private void EndDrag(Vector3 worldPos) { _isDragging = false; _ghost.SetActive(f
                     return;
 
                 default:
-                    if (turret.range > 0f)
-                        RangeIndicator.Instance.ShowCircle(turret.transform.position, turret.range,
+                    float r = turret.range;
+                    // range 0이면 통계 없음 → StatData 기본값 fallback
+                    if (r <= 0f && turret.statData != null && turret.statData.levels?.Length > 0)
+                        r = turret.statData.levels[0].range;
+                    if (r > 0f)
+                        RangeIndicator.Instance.ShowCircle(turret.transform.position, r,
                             new Color(col.r, col.g, col.b, 0.8f), 2.5f);
                     return;
             }
         }
 
         // ── 드래그 중 사정거리 표시 ──────────────────────────────────
-        private void UpdateRangeIndicator(Vector3 center, TurretStatData sd, bool canPlace)
+private void UpdateRangeIndicator(Vector3 center, TurretStatData sd, bool canPlace)
         {
             if (RangeIndicator.Instance == null) return;
             Color rc = canPlace ? new Color(0.4f, 1f, 0.5f, 0.7f) : new Color(1f, 0.3f, 0.3f, 0.7f);
@@ -211,10 +223,19 @@ private void EndDrag(Vector3 worldPos) { _isDragging = false; _ghost.SetActive(f
                     return;
 
                 case TurretType.MeleeTurret:
-                    float step = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
-                    float len = sd != null && sd.levels?.Length > 0 ? sd.levels[0].range : step * 1.2f;
-                    RangeIndicator.Instance.ShowDirection(center, new Vector2Int(0, -1), len,
-                        new Color(rc.r, rc.g, rc.b, 0.75f), step * 0.85f);
+                    float mstep = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
+                    float mlen  = sd != null && sd.levels?.Length > 0 ? sd.levels[0].range : mstep * 1.2f;
+                    RangeIndicator.Instance.ShowDirection(center, new Vector2Int(0, -1), mlen,
+                        new Color(rc.r, rc.g, rc.b, 0.75f), mstep * 0.85f);
+                    return;
+
+                case TurretType.DragonStatue:
+                    // 드래곤: 좌우 브레스 범위 사각형
+                    float bRange = 2.2f; // 기본값 (StatData가 없으면)
+                    float bWidth = 0.9f;
+                    if (sd != null && sd.levels?.Length > 0) bRange = sd.levels[0].range > 0 ? sd.levels[0].range : bRange;
+                    RangeIndicator.Instance.ShowBreathRect(center, bRange, bWidth,
+                        new Color(1f, 0.5f, 0.1f, 0.55f));
                     return;
 
                 case TurretType.Wall:
@@ -226,8 +247,14 @@ private void EndDrag(Vector3 worldPos) { _isDragging = false; _ghost.SetActive(f
 
                 default:
                     float range = sd != null && sd.levels?.Length > 0 ? sd.levels[0].range : 0f;
-                    if (range > 0f) RangeIndicator.Instance.ShowCircle(center, range, rc);
-                    else RangeIndicator.Instance.Hide();
+                    if (range > 0f)
+                        RangeIndicator.Instance.ShowCircle(center, range, rc);
+                    else
+                    {
+                        // StatData가 없을 때 TurretDef에서 fallback 범위 필드 추정
+                        var def = TurretManager.Instance.GetDef(_dragType);
+                        RangeIndicator.Instance.Hide(); // range 없는 터렛은 숙이기
+                    }
                     return;
             }
         }

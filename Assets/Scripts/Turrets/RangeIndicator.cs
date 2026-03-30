@@ -120,6 +120,42 @@ namespace Underdark
             _lr.SetPosition(3, origin - new Vector3(-d.y, d.x, 0f) * startW * 0.5f + new Vector3(0,0,-0.1f));
         }
 
+/// <summary>좌우 브레스 범위 표시 (DragonStatue용) - 좌우 각각 사각형</summary>
+        public void ShowBreathRect(Vector3 center, float rangeX, float rangeY, Color col, float duration = 0f)
+        {
+            ClearTileHighlights();
+            gameObject.SetActive(true);
+            SetFade(duration);
+
+            // 좌우 두 개의 사각형을 LineRenderer로 그림
+            // 점 순서: 좌사각형 4개 + 연결 + 우사각형 4개
+            // left rect: center→(-rangeX, +rangeY/2) corners
+            // right rect: center→(+rangeX, +rangeY/2) corners
+            float z = -0.1f;
+            float hw = rangeY * 0.5f; // half width (세로)
+
+            _lr.loop          = false;
+            _lr.positionCount = 10;
+            _lr.startColor    = col;
+            _lr.endColor      = col;
+            _lr.startWidth    = 0.055f;
+            _lr.endWidth      = 0.055f;
+
+            // 왼쪽 사각형 (시계방향)
+            _lr.SetPosition(0, new Vector3(center.x,          center.y + hw, z));  // 왼 시작
+            _lr.SetPosition(1, new Vector3(center.x - rangeX, center.y + hw, z));  // 왼 상단
+            _lr.SetPosition(2, new Vector3(center.x - rangeX, center.y - hw, z));  // 왼 하단
+            _lr.SetPosition(3, new Vector3(center.x,          center.y - hw, z));  // 왼 끝
+            _lr.SetPosition(4, new Vector3(center.x,          center.y + hw, z));  // 닫기
+            // 오른쪽 사각형으로 이동
+            _lr.SetPosition(5, new Vector3(center.x,          center.y - hw, z));  // 오 시작
+            _lr.SetPosition(6, new Vector3(center.x + rangeX, center.y - hw, z));  // 오 하단
+            _lr.SetPosition(7, new Vector3(center.x + rangeX, center.y + hw, z));  // 오 상단
+            _lr.SetPosition(8, new Vector3(center.x,          center.y + hw, z));  // 오 끝
+            _lr.SetPosition(9, new Vector3(center.x,          center.y - hw, z));  // 닫기
+        }
+
+
         public void Hide()
         {
             _lr.positionCount = 0;

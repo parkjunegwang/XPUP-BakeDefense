@@ -100,7 +100,7 @@ namespace Underdark
         }
 
         // ── 스탯 적용 ─────────────────────────────────────────────────
-public void ApplyStatsFromData(int lv) { if (statData == null) return; var s = statData.GetLevel(lv); damage = s.damage; range = s.range; fireRate = s.fireRate; hp = s.hp; critChance = s.critChance; critMultiplier = s.critMultiplier; }
+public void ApplyStatsFromData(int lv) { if (statData == null) return; var s = statData.GetLevel(lv); if (s.damage   > 0) damage   = s.damage; if (s.range    > 0) range    = s.range; if (s.fireRate > 0) fireRate = s.fireRate; if (s.hp       > 0) hp       = s.hp; if (s.critChance     > 0) critChance     = s.critChance; if (s.critMultiplier > 0) critMultiplier = s.critMultiplier; }
 
         /// <summary>
         /// statData의 해당 레벨에 Body/Barrel 스프라이트가 지정돼 있으면 교체.

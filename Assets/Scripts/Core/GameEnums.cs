@@ -37,5 +37,11 @@ namespace Underdark
         BlackHole,      // 8. 블랙홀
         PrecisionStrike,// 9. 정밀 타격 (항상 크리, 작은 데미지)
         GambleBat,      // 10. 갬블 배트 (낮은 확률 대박 크리)
+        // ── 신규 터렛 2탄 ──
+        PulseSlower,    // 11. 주기적 펄스 전체 슬로우 + 미약 데미지
+        DragonStatue,   // 12. 좌우 화염 브레스 + 화상 도트뎀
+        HasteTower,     // 13. 주변 터렛 공격속도 버프
+        PinballCannon,  // 14. 튕기는 포탄
+        BoomerangTurret,// 15. 부메랑 (왕복 관통 데미지 감쇄)
     }
 }

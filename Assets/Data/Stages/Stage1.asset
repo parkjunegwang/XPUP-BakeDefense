@@ -50,6 +50,123 @@ MonoBehaviour:
       killXpOverride: 0
     waveName: Wave 3 - Boss
     waveCompleteXp: 0
+  - groups:
+    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
+      count: 5
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 20
+    - statData: {fileID: 11400000, guid: 71f32271c9a4be04680fe3957d900085, type: 2}
+      count: 5
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 20
+    waveName: Wave 3 - Boss
+    waveCompleteXp: 0
+  - groups:
+    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
+      count: 5
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
+      count: 1
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    waveName: Wave 3 - Boss
+    waveCompleteXp: 0
+  - groups:
+    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
+      count: 5
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
+      count: 1
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    waveName: Wave 3 - Boss
+    waveCompleteXp: 0
+  - groups:
+    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
+      count: 5
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
+      count: 1
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    waveName: Wave 3 - Boss
+    waveCompleteXp: 0
+  - groups:
+    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
+      count: 5
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
+      count: 1
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    waveName: Wave 3 - Boss
+    waveCompleteXp: 0
+  - groups:
+    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
+      count: 5
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
+      count: 1
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    waveName: Wave 3 - Boss
+    waveCompleteXp: 0
+  - groups:
+    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
+      count: 5
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
+      count: 1
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    waveName: Wave 3 - Boss
+    waveCompleteXp: 0
+  - groups:
+    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
+      count: 5
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
+      count: 1
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    waveName: Wave 3 - Boss
+    waveCompleteXp: 0
+  - groups:
+    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
+      count: 5
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
+      count: 1
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    waveName: Wave 3 - Boss
+    waveCompleteXp: 0
   startTurretPool: 010000000200000003000000050000000b000000
   startTurretCount: 4
   initialCardPicks: 2

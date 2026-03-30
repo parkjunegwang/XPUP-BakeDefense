@@ -113,9 +113,13 @@ MonoBehaviour:
   range: 0
   fireRate: 0
   hp: 0
+  critChance: 0.1
+  critMultiplier: 2
   bodyRenderer: {fileID: 3709591686598298348}
+  firePoint: {fileID: 0}
   barrelRenderer: {fileID: 8113315108966864157}
   barrelDefaultFacingLeft: 0
+  isFromMapData: 0
   currentTile: {fileID: 0}
   occupiedTiles: []
   projectilePrefab: {fileID: 8337581961609253473, guid: 81c475cbaddf57c428b049e8f8efd8de, type: 3}
@@ -148,7 +152,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.49, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 5461727726525697690}
   m_Father: {fileID: 2192854311093134899}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8113315108966864157
@@ -210,6 +215,37 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &4342327022789590943
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5461727726525697690}
+  m_Layer: 0
+  m_Name: FirePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5461727726525697690
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4342327022789590943}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1704041224462578125}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6824886412880954204
 GameObject:
   m_ObjectHideFlags: 0

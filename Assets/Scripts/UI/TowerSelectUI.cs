@@ -39,7 +39,13 @@ namespace Underdark
             TurretType.BlackHole,
             TurretType.PrecisionStrike,
             TurretType.GambleBat,
+            TurretType.PulseSlower,
+            TurretType.DragonStatue,
+            TurretType.HasteTower,
+            TurretType.PinballCannon,
+            TurretType.BoomerangTurret,
         };
+        // 총 19종 공격 터렛 (Wall 4종 제외)
 
         private static readonly Dictionary<TurretType, (string label, Color color)> _info
             = new Dictionary<TurretType, (string, Color)>

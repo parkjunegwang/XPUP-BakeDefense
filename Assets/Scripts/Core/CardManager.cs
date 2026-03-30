@@ -12,62 +12,46 @@ namespace Underdark
         [Header("Card Pool")]
         public List<CardData> cardPool = new List<CardData>();
 
-        // 이번 게임 세션에서 선택된 타워 타입 (카드 필터 기준)
         private List<TurretType> _sessionTurrets = new List<TurretType>();
-
         private GameObject _panel;
         private System.Action _onDone;
 
-        private void Awake()
+private void Awake() { if (Instance != null && Instance != this) { Destroy(gameObject); return; } Instance = this; AutoLoadCards(); }
+
+        private void AutoLoadCards()
         {
-            if (Instance != null && Instance != this) { Destroy(gameObject); return; }
-            Instance = this;
+#if UNITY_EDITOR
+            // 에디터: Assets/Data/Cards 에서 자동 로드
+            var guids = UnityEditor.AssetDatabase.FindAssets("t:CardData", new[] { "Assets/Data/Cards" });
+            cardPool = new List<CardData>();
+            foreach (var g in guids)
+            {
+                var p    = UnityEditor.AssetDatabase.GUIDToAssetPath(g);
+                var card = UnityEditor.AssetDatabase.LoadAssetAtPath<CardData>(p);
+                if (card != null) cardPool.Add(card);
+            }
+            Debug.Log($"[CardManager] Auto-loaded {cardPool.Count} cards");
+#else
+            // 빌드: Resources/Cards 폴더에서 로드
+            var cards = Resources.LoadAll<CardData>("Cards");
+            if (cards != null) cardPool = new List<CardData>(cards);
+#endif
         }
 
-        // GameSetup에서 게임 시작 시 호출 — 이 세션에서 사용할 타워 타입 고정
+        // 이 세션에서 사용할 타워 타입 고정 (카드 필터 기준)
         public void SetSessionTurrets(IEnumerable<TurretType> types)
         {
             _sessionTurrets.Clear();
             foreach (var t in types)
                 if (!_sessionTurrets.Contains(t))
                     _sessionTurrets.Add(t);
-
             Debug.Log($"[CardManager] Session turrets: {string.Join(", ", _sessionTurrets)}");
         }
 
-        // 현재 세션 타워 목록 반환
         public IReadOnlyList<TurretType> SessionTurrets => _sessionTurrets;
 
-        public void ShowCards(System.Action onDone = null)
-        {
-            _onDone = onDone;
+public void ShowCards(System.Action onDone = null) { _onDone = onDone; if (cardPool == null || cardPool.Count == 0) { Debug.LogWarning("[CardManager] No cards in pool!"); onDone?.Invoke(); return; } var pool = FilteredPool(); Debug.Log($"[CardManager] ShowCards: pool={cardPool.Count}, filtered={pool.Count}, session=[{string.Join(",", _sessionTurrets)}]"); if (pool.Count == 0) { Debug.LogWarning("[CardManager] Filtered pool empty — using full pool"); pool = new List<CardData>(cardPool); } for (int i = pool.Count - 1; i > 0; i--) { int j = Random.Range(0, i + 1); (pool[i], pool[j]) = (pool[j], pool[i]); } BuildUI(pool.GetRange(0, Mathf.Min(3, pool.Count))); }
 
-            if (cardPool == null || cardPool.Count == 0)
-            {
-                Debug.LogWarning("[CardManager] No cards in pool!");
-                onDone?.Invoke();
-                return;
-            }
-
-            // 세션 타워 기준 필터링
-            var pool = FilteredPool();
-            if (pool.Count == 0)
-            {
-                Debug.LogWarning("[CardManager] Filtered pool empty — using full pool");
-                pool = new List<CardData>(cardPool);
-            }
-
-            // 셔플 후 3장 선택
-            for (int i = pool.Count - 1; i > 0; i--)
-            {
-                int j = Random.Range(0, i + 1);
-                (pool[i], pool[j]) = (pool[j], pool[i]);
-            }
-            int count = Mathf.Min(3, pool.Count);
-            BuildUI(pool.GetRange(0, count));
-        }
-
-        // 세션 타워에 해당하는 카드만 추출
         private List<CardData> FilteredPool()
         {
             if (_sessionTurrets == null || _sessionTurrets.Count == 0)
@@ -80,20 +64,15 @@ namespace Underdark
                 switch (card.cardType)
                 {
                     case CardType.GiveTurret:
-                        // 세션 타워에 포함된 타입만
                         if (_sessionTurrets.Contains(card.turretType))
                             filtered.Add(card);
                         break;
-
                     case CardType.GiveRandomWalls:
-                        // 벽은 항상 허용
                         filtered.Add(card);
                         break;
-
                     case CardType.BuffDamage:
                     case CardType.BuffFireRate:
                     case CardType.BuffRange:
-                        // 전체 버프이거나, 세션 타워 대상 버프만
                         if (card.buffAllTypes || _sessionTurrets.Contains(card.buffTargetType))
                             filtered.Add(card);
                         break;
@@ -102,33 +81,7 @@ namespace Underdark
             return filtered;
         }
 
-        private void BuildUI(List<CardData> cards)
-        {
-            if (_panel != null) Destroy(_panel);
-            var canvas = FindObjectOfType<Canvas>();
-            if (canvas == null) return;
-
-            _panel = new GameObject("CardSelectPanel");
-            _panel.transform.SetParent(canvas.transform, false);
-
-            var bg = _panel.AddComponent<Image>();
-            bg.color = new Color(0f, 0f, 0f, 0.85f);
-            var bgRt = _panel.GetComponent<RectTransform>();
-            bgRt.anchorMin = Vector2.zero; bgRt.anchorMax = Vector2.one;
-            bgRt.offsetMin = bgRt.offsetMax = Vector2.zero;
-
-            MakeText(_panel, "Title", "Choose a Card",
-                new Vector2(0.5f, 0.88f), new Vector2(350f, 50f), 28, Color.white);
-
-            float[] xAnchors = { 0.18f, 0.5f, 0.82f };
-            for (int i = 0; i < cards.Count; i++)
-            {
-                int idx = i;
-                MakeCardButton(_panel, cards[i], new Vector2(xAnchors[i], 0.50f),
-                    () => OnCardSelected(cards[idx]));
-            }
-            _panel.transform.SetAsLastSibling();
-        }
+private void BuildUI(List<CardData> cards) { if (_panel != null) Destroy(_panel); var canvas = FindObjectOfType<Canvas>(); if (canvas == null) { Debug.LogError("[CardManager] No Canvas found! Retrying next frame..."); StartCoroutine(BuildUINextFrame(cards)); return; } BuildUIOnCanvas(canvas, cards); } private System.Collections.IEnumerator BuildUINextFrame(List<CardData> cards) { yield return null; var canvas = FindObjectOfType<Canvas>(); if (canvas == null) { Debug.LogError("[CardManager] Still no Canvas! Cards cannot be shown."); _onDone?.Invoke(); yield break; } BuildUIOnCanvas(canvas, cards); } private void BuildUIOnCanvas(Canvas canvas, List<CardData> cards) { if (_panel != null) Destroy(_panel); _panel = new GameObject("CardSelectPanel"); _panel.transform.SetParent(canvas.transform, false); var bg = _panel.AddComponent<Image>(); bg.color = new Color(0f, 0f, 0f, 0.85f); var bgRt = _panel.GetComponent<RectTransform>(); bgRt.anchorMin = Vector2.zero; bgRt.anchorMax = Vector2.one; bgRt.offsetMin = bgRt.offsetMax = Vector2.zero; MakeText(_panel, "Title", "Choose a Card", new Vector2(0.5f, 0.88f), new Vector2(350f, 50f), 28, Color.white); float[] xAnchors = { 0.18f, 0.5f, 0.82f }; for (int i = 0; i < cards.Count; i++) { int idx = i; MakeCardButton(_panel, cards[i], new Vector2(xAnchors[i], 0.50f), () => OnCardSelected(cards[idx])); } _panel.transform.SetAsLastSibling(); Debug.Log($"[CardManager] Card panel built with {cards.Count} cards on canvas '{canvas.name}'"); }
 
         private void MakeCardButton(GameObject parent, CardData card, Vector2 anchor, System.Action onClick)
         {
@@ -140,14 +93,13 @@ namespace Underdark
             rt.anchoredPosition = Vector2.zero;
             rt.sizeDelta = new Vector2(108f, 200f);
 
-            var img = go.AddComponent<Image>();
+            var img   = go.AddComponent<Image>();
             img.color = card.cardColor;
-
-            var btn = go.AddComponent<Button>();
-            var colors = btn.colors;
-            colors.highlightedColor = Color.Lerp(card.cardColor, Color.white, 0.3f);
-            colors.pressedColor     = Color.Lerp(card.cardColor, Color.black, 0.2f);
-            btn.colors = colors;
+            var btn   = go.AddComponent<Button>();
+            var col   = btn.colors;
+            col.highlightedColor = Color.Lerp(card.cardColor, Color.white, 0.3f);
+            col.pressedColor     = Color.Lerp(card.cardColor, Color.black, 0.2f);
+            btn.colors = col;
             btn.onClick.AddListener(() => onClick());
 
             MakeText(go, "Name", card.cardName,
@@ -163,7 +115,7 @@ namespace Underdark
             descTmp.color = Color.white; descTmp.alignment = TextAlignmentOptions.Center;
             descTmp.enableWordWrapping = true;
 
-            var border = new GameObject("Border");
+            var border   = new GameObject("Border");
             border.transform.SetParent(go.transform, false);
             border.transform.SetAsFirstSibling();
             var borderRt = border.AddComponent<RectTransform>();
@@ -203,19 +155,15 @@ namespace Underdark
                     UIInventoryPanel.Instance?.Refresh();
                     UIManager.Instance?.ShowMessage($"+{card.turretCount} {card.cardName}");
                     break;
-
                 case CardType.GiveRandomWalls:
                     GiveRandomWalls();
                     break;
-
                 case CardType.BuffDamage:
                     ApplyBuff(card, t => t.damage *= card.buffMultiplier);
                     break;
-
                 case CardType.BuffFireRate:
                     ApplyBuff(card, t => t.fireRate *= card.buffMultiplier);
                     break;
-
                 case CardType.BuffRange:
                     ApplyBuff(card, t => t.range *= card.buffMultiplier);
                     break;

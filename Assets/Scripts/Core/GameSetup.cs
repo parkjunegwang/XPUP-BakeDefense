@@ -28,6 +28,11 @@ namespace Underdark
         public GameObject blackHolePrefab;
         public GameObject precisionStrikePrefab;
         public GameObject gambleBatPrefab;
+        public GameObject pulseSlowerPrefab;
+        public GameObject dragonStatuePrefab;
+        public GameObject hasteTowerPrefab;
+        public GameObject pinballCannonPrefab;
+        public GameObject boomerangTurretPrefab;
         public GameObject projectilePrefab;
 
         [Header("=== Tile / Monster Prefab ===")]
@@ -63,9 +68,15 @@ namespace Underdark
             else
             {
                 // 타워선택 없이 직접 진입한 경우 (디버그/에디터)
+                // StageData에 startTurretPool이 있으면 그걸 세션으로, 없으면 기본 4종
                 var stage = StageManager.Instance?.CurrentStage;
                 if (stage?.startTurretPool != null && stage.startTurretPool.Length > 0)
                     CardManager.Instance?.SetSessionTurrets(stage.startTurretPool);
+                else
+                    CardManager.Instance?.SetSessionTurrets(new TurretType[] {
+                        TurretType.RangedTurret, TurretType.ExplosiveCannon,
+                        TurretType.PulseSlower, TurretType.BoomerangTurret
+                    });
             }
 
             // 2. 초기 카드 선택 (기본 2번)
@@ -130,6 +141,11 @@ namespace Underdark
             if (blackHolePrefab       == null) blackHolePrefab       = tm?.blackHolePrefab       ?? MakeTurretFallback<BlackHoleTurret>(new Color(0.5f,0f,0.8f));
             if (precisionStrikePrefab == null) precisionStrikePrefab = tm?.precisionStrikePrefab ?? MakeTurretFallback<PrecisionStrikeTurret>(new Color(1f,0.95f,0.2f));
             if (gambleBatPrefab       == null) gambleBatPrefab       = tm?.gambleBatPrefab       ?? MakeTurretFallback<GambleBatTurret>(new Color(0.9f,0.3f,0.9f));
+            if (pulseSlowerPrefab     == null) pulseSlowerPrefab     = tm?.pulseSlowerPrefab     ?? MakeTurretFallback<PulseSlower>(new Color(0.4f,0.8f,1f));
+            if (dragonStatuePrefab    == null) dragonStatuePrefab    = tm?.dragonStatuePrefab    ?? MakeTurretFallback<DragonStatue>(new Color(1f,0.45f,0.1f));
+            if (hasteTowerPrefab      == null) hasteTowerPrefab      = tm?.hasteTowerPrefab      ?? MakeTurretFallback<HasteTower>(new Color(0.9f,1f,0.3f));
+            if (pinballCannonPrefab   == null) pinballCannonPrefab   = tm?.pinballCannonPrefab   ?? MakeTurretFallback<PinballCannon>(new Color(1f,0.85f,0.1f));
+            if (boomerangTurretPrefab == null) boomerangTurretPrefab = tm?.boomerangTurretPrefab ?? MakeTurretFallback<BoomerangTurret>(new Color(0.5f,1f,0.3f));
             if (projectilePrefab == null)
             {
                 projectilePrefab = MakeGO("_ProjPfb", new Color(1f,1f,0.2f), 0.18f, SLayer.Projectile);
@@ -172,6 +188,11 @@ namespace Underdark
                 if (tm.blackHolePrefab       == null) tm.blackHolePrefab       = blackHolePrefab;
                 if (tm.precisionStrikePrefab == null) tm.precisionStrikePrefab = precisionStrikePrefab;
                 if (tm.gambleBatPrefab       == null) tm.gambleBatPrefab       = gambleBatPrefab;
+                if (tm.pulseSlowerPrefab     == null) tm.pulseSlowerPrefab     = pulseSlowerPrefab;
+                if (tm.dragonStatuePrefab    == null) tm.dragonStatuePrefab    = dragonStatuePrefab;
+                if (tm.hasteTowerPrefab      == null) tm.hasteTowerPrefab      = hasteTowerPrefab;
+                if (tm.pinballCannonPrefab   == null) tm.pinballCannonPrefab   = pinballCannonPrefab;
+                if (tm.boomerangTurretPrefab == null) tm.boomerangTurretPrefab = boomerangTurretPrefab;
                 if (tm.projectilePrefab      == null) tm.projectilePrefab      = projectilePrefab;
             }
         }
