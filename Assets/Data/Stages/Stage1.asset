@@ -26,7 +26,7 @@ MonoBehaviour:
     waveCompleteXp: 0
   - groups:
     - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
-      count: 8
+      count: 1
       isBoss: 0
       spawnInterval: 0
       killXpOverride: 0
@@ -43,11 +43,6 @@ MonoBehaviour:
       isBoss: 0
       spawnInterval: 0
       killXpOverride: 0
-    - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
-      count: 1
-      isBoss: 1
-      spawnInterval: 0
-      killXpOverride: 0
     waveName: Wave 3 - Boss
     waveCompleteXp: 0
   - groups:
@@ -69,8 +64,21 @@ MonoBehaviour:
       isBoss: 0
       spawnInterval: 0
       killXpOverride: 15
-    - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
-      count: 1
+    - statData: {fileID: 11400000, guid: fe9bfa6e61a329e42b1ffbd29cd9f160, type: 2}
+      count: 4
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    waveName: Wave 3 - Boss
+    waveCompleteXp: 0
+  - groups:
+    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
+      count: 5
+      isBoss: 0
+      spawnInterval: 0
+      killXpOverride: 15
+    - statData: {fileID: 11400000, guid: 71f32271c9a4be04680fe3957d900085, type: 2}
+      count: 10
       isBoss: 0
       spawnInterval: 0
       killXpOverride: 15
@@ -84,20 +92,7 @@ MonoBehaviour:
       killXpOverride: 15
     - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
       count: 1
-      isBoss: 0
-      spawnInterval: 0
-      killXpOverride: 15
-    waveName: Wave 3 - Boss
-    waveCompleteXp: 0
-  - groups:
-    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
-      count: 5
-      isBoss: 0
-      spawnInterval: 0
-      killXpOverride: 15
-    - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
-      count: 1
-      isBoss: 0
+      isBoss: 1
       spawnInterval: 0
       killXpOverride: 15
     waveName: Wave 3 - Boss

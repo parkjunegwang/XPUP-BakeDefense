@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.TurretStatData
   turretType: 1
   autoScale: 0
-  useCustomShape: 0
+  useCustomShape: 1
   tileShape:
   - {x: 0, y: 0}
   - {x: 1, y: 0}
@@ -26,6 +26,8 @@ MonoBehaviour:
     fireRate: 1
     hp: 60
     attackTiles: 1
+    critChance: 0.1
+    critMultiplier: 2
     bodySprite: {fileID: 0}
     barrelSprite: {fileID: 21300000, guid: 424c86b3a83fdb644b0f818e162646fa, type: 3}
   - level: 2
@@ -34,6 +36,8 @@ MonoBehaviour:
     fireRate: 1.4
     hp: 90
     attackTiles: 1
+    critChance: 0.1
+    critMultiplier: 2
     bodySprite: {fileID: 0}
     barrelSprite: {fileID: 21300000, guid: 6252deafbdd3e0340b63697069a8d866, type: 3}
   - level: 3
@@ -42,5 +46,7 @@ MonoBehaviour:
     fireRate: 1.8
     hp: 130
     attackTiles: 1
+    critChance: 0.1
+    critMultiplier: 2
     bodySprite: {fileID: 0}
     barrelSprite: {fileID: 21300000, guid: 8e97c1d706219b84392733a0e8801fa3, type: 3}

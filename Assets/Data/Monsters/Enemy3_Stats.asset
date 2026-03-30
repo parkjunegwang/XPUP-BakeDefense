@@ -17,7 +17,7 @@ MonoBehaviour:
   baseSpeed: 0.5
   baseReward: 12
   hpPerWave: 35
-  speedPerWave: 0.15
+  speedPerWave: 0.05
   rewardPerWave: 3
   isBoss: 0
   bossHpMult: 1
