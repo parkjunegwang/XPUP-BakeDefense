@@ -90,9 +90,9 @@ MonoBehaviour:
       isBoss: 0
       spawnInterval: 0
       killXpOverride: 15
-    - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
-      count: 1
-      isBoss: 1
+    - statData: {fileID: 11400000, guid: 71f32271c9a4be04680fe3957d900085, type: 2}
+      count: 10
+      isBoss: 0
       spawnInterval: 0
       killXpOverride: 15
     waveName: Wave 3 - Boss
@@ -105,7 +105,7 @@ MonoBehaviour:
       killXpOverride: 15
     - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
       count: 1
-      isBoss: 0
+      isBoss: 1
       spawnInterval: 0
       killXpOverride: 15
     waveName: Wave 3 - Boss
