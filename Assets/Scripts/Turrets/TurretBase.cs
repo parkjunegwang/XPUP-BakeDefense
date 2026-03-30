@@ -211,8 +211,8 @@ public void ApplyStatsFromData(int lv) { if (statData == null) return; var s = s
                     transform.localScale.z);
             }
 
-            if (bodyRenderer != null)
-                bodyRenderer.color = Color.Lerp(bodyRenderer.color, Color.white, 0.2f);
+            //if (bodyRenderer != null)
+            //    bodyRenderer.color = Color.Lerp(bodyRenderer.color, Color.white, 0.2f);
 
             OnLevelUp();
         }
