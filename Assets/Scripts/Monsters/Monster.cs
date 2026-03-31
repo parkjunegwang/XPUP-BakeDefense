@@ -39,7 +39,17 @@ private void Awake() { if (bodyRenderer == null) bodyRenderer = GetComponent<Spr
 private void CacheRenderers() { _allRenderers = GetComponentsInChildren<SpriteRenderer>(true); _rendererBaseOrders = new int[_allRenderers.Length]; for (int i = 0; i < _allRenderers.Length; i++) _rendererBaseOrders[i] = _allRenderers[i].sortingOrder; }
 
 
-public void Init(List<Vector2Int> gridPath, Color color) { _hp = maxHp; _pathIdx = 0; _path.Clear(); _baseSpeed = speed; _slowTimer = 0f; gameObject.SetActive(true); transform.localScale = _originalScale; if (bodyRenderer != null && color != Color.white) bodyRenderer.color = color; else if (bodyRenderer != null) bodyRenderer.color = Color.white; float step = MapManager.Instance.tileSize + MapManager.Instance.tileGap; float maxOffset = step * 0.28f; _navOffset = new Vector3(Random.Range(-maxOffset, maxOffset), Random.Range(-maxOffset, maxOffset), 0f); foreach (var gp in gridPath) _path.Add(MapManager.Instance.GridToWorld(gp.x, gp.y)); if (_path.Count > 0) transform.position = _path[0] + _navOffset; if (hpBarFill != null) { _hpBarInitScaleX = hpBarFill.transform.localScale.x; _hpBarInitPosX = hpBarFill.transform.localPosition.x; } RefreshHpBar(); UpdateSortingOrder(); }
+public void Init(List<Vector2Int> gridPath, Color color) { _hp = maxHp; _pathIdx = 0; _path.Clear(); _baseSpeed = speed; _slowTimer = 0f; gameObject.SetActive(true); transform.localScale = _originalScale; if (bodyRenderer != null && color != Color.white) bodyRenderer.color = color; else if (bodyRenderer != null) bodyRenderer.color = Color.white; float step = MapManager.Instance.tileSize + MapManager.Instance.tileGap; float maxOffset = step * 0.28f; _navOffset = new Vector3(Random.Range(-maxOffset, maxOffset), Random.Range(-maxOffset, maxOffset), 0f); foreach (var gp in gridPath) _path.Add(MapManager.Instance.GridToWorld(gp.x, gp.y)); if (_path.Count > 0) transform.position = _path[0] + _navOffset; // HP바 초기화 - 매번 캐시를 갱신해서 pool 재사용 시도 정상처리
+            if (hpBarFill != null)
+            {
+                // 완전한 스케일로 리셋된 후 초기값 캐시
+                var hpTf = hpBarFill.transform;
+                hpTf.localScale    = new Vector3(1f, hpTf.localScale.y, hpTf.localScale.z);
+                hpTf.localPosition = new Vector3(0f, hpTf.localPosition.y, hpTf.localPosition.z);
+                _hpBarInitScaleX   = hpTf.localScale.x;
+                _hpBarInitPosX     = hpTf.localPosition.x;
+            }
+            RefreshHpBar(); UpdateSortingOrder(); }
 
         /// <summary>
         /// 경로 재계산 시 호출. 현재 위치에서 가장 가까운 앞쪽 웨이포인트부터 이어감.

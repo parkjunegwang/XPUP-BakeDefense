@@ -296,19 +296,17 @@ namespace Underdark
             ui.gameOverPanel = FullPanel(cvGo, "GOPanel", new Color(0,0,0,0.88f));
             Txt(ui.gameOverPanel, "TxtGO", "GAME OVER",
                 new Vector2(0.5f,0.62f), new Vector2(0.5f,0.5f), Vector2.zero, new Vector2(320f,70f), 42, Color.red);
-            ui.restartBtn = Btn(ui.gameOverPanel, "BtnGOR", "Restart",
-                new Vector2(0.5f,0.45f), new Color(0.25f,0.25f,0.7f), Vector2.zero, new Vector2(200f,54f));
+            // 리스타트 버튼 제거 - 로비 버튼만 사용
             ui.lobbyBtn = Btn(ui.gameOverPanel, "BtnGOL", "Lobby",
-                new Vector2(0.5f,0.34f), new Color(0.3f,0.3f,0.3f), Vector2.zero, new Vector2(200f,54f));
+                new Vector2(0.5f, 0.45f), new Color(0.2f, 0.5f, 0.2f), Vector2.zero, new Vector2(200f, 54f));
             ui.gameOverPanel.SetActive(false);
 
             ui.victoryPanel = FullPanel(cvGo, "VicPanel", new Color(0,0,0,0.88f));
             Txt(ui.victoryPanel, "TxtVic", "STAGE CLEAR!",
                 new Vector2(0.5f,0.62f), new Vector2(0.5f,0.5f), Vector2.zero, new Vector2(320f,70f), 42, Color.yellow);
-            ui.victoryRestartBtn = Btn(ui.victoryPanel, "BtnVicR", "Restart",
-                new Vector2(0.5f,0.45f), new Color(0.25f,0.25f,0.7f), Vector2.zero, new Vector2(200f,54f));
+            // 빕토리 리스타트 버튼 제거
             ui.victoryLobbyBtn = Btn(ui.victoryPanel, "BtnVicL", "Lobby",
-                new Vector2(0.5f,0.34f), new Color(0.2f,0.5f,0.2f), Vector2.zero, new Vector2(200f,54f));
+                new Vector2(0.5f, 0.45f), new Color(0.2f, 0.5f, 0.2f), Vector2.zero, new Vector2(200f, 54f));
             ui.victoryPanel.SetActive(false);
         }
 

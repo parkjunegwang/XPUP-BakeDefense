@@ -47,7 +47,8 @@ protected override void OnTick()
         private float             _damage;
         private bool              _isCrit;
         private int               _bouncesLeft;
-        private Tile              _ownerTile;   // 자기 타일 충돌 제외
+        private Tile              _ownerTile;
+        private float             _ignoreTileTimer; // 발사 직후 타일 충돌 일시 무시
         private HashSet<Monster>  _hit = new HashSet<Monster>();
 
 public void Init(Vector2 dir, float speed, float damage, bool isCrit, int bounces, Tile ownerTile = null)
@@ -57,7 +58,8 @@ public void Init(Vector2 dir, float speed, float damage, bool isCrit, int bounce
             _damage      = damage;
             _isCrit      = isCrit;
             _bouncesLeft = bounces;
-            _ownerTile   = ownerTile;
+            _ownerTile    = ownerTile;
+            _ignoreTileTimer = 0.15f; // 발사 직후 인접 타일 충돌 무시
             Destroy(gameObject, 6f);
         }
 
@@ -76,8 +78,10 @@ private void Update()
                 int gy = Mathf.RoundToInt((next.y - offsetY) / step);
                 var tile = map.GetTile(gx, gy);
 
-                // 자기 터렛이 놓인 타일은 충돌 제외
-                bool blocked = tile != null && tile.placedTurret != null
+                // 자기 타일 + 발사 직후 쓰는 타임 동안 모든 충돌 무시
+                if (_ignoreTileTimer > 0f) _ignoreTileTimer -= Time.deltaTime;
+                bool blocked = _ignoreTileTimer <= 0f
+                    && tile != null && tile.placedTurret != null
                     && !tile.passableOverride
                     && tile != _ownerTile;
                 if (blocked)

@@ -18,10 +18,9 @@ namespace Underdark
 
 private void Awake() { if (Instance != null && Instance != this) { Destroy(gameObject); return; } Instance = this; AutoLoadCards(); }
 
-        private void AutoLoadCards()
+private void AutoLoadCards()
         {
 #if UNITY_EDITOR
-            // 에디터: Assets/Data/Cards 에서 자동 로드
             var guids = UnityEditor.AssetDatabase.FindAssets("t:CardData", new[] { "Assets/Data/Cards" });
             cardPool = new List<CardData>();
             foreach (var g in guids)
@@ -34,7 +33,10 @@ private void Awake() { if (Instance != null && Instance != this) { Destroy(gameO
 #else
             // 빌드: Resources/Cards 폴더에서 로드
             var cards = Resources.LoadAll<CardData>("Cards");
+            if (cards == null || cards.Length == 0)
+                cards = Resources.LoadAll<CardData>("");
             if (cards != null) cardPool = new List<CardData>(cards);
+            Debug.Log($"[CardManager] Build loaded {cardPool.Count} cards");
 #endif
         }
 
@@ -81,7 +83,7 @@ public void ShowCards(System.Action onDone = null) { _onDone = onDone; if (cardP
             return filtered;
         }
 
-private void BuildUI(List<CardData> cards) { if (_panel != null) Destroy(_panel); var canvas = FindObjectOfType<Canvas>(); if (canvas == null) { Debug.LogError("[CardManager] No Canvas found! Retrying next frame..."); StartCoroutine(BuildUINextFrame(cards)); return; } BuildUIOnCanvas(canvas, cards); } private System.Collections.IEnumerator BuildUINextFrame(List<CardData> cards) { yield return null; var canvas = FindObjectOfType<Canvas>(); if (canvas == null) { Debug.LogError("[CardManager] Still no Canvas! Cards cannot be shown."); _onDone?.Invoke(); yield break; } BuildUIOnCanvas(canvas, cards); } private void BuildUIOnCanvas(Canvas canvas, List<CardData> cards) { if (_panel != null) Destroy(_panel); _panel = new GameObject("CardSelectPanel"); _panel.transform.SetParent(canvas.transform, false); var bg = _panel.AddComponent<Image>(); bg.color = new Color(0f, 0f, 0f, 0.85f); var bgRt = _panel.GetComponent<RectTransform>(); bgRt.anchorMin = Vector2.zero; bgRt.anchorMax = Vector2.one; bgRt.offsetMin = bgRt.offsetMax = Vector2.zero; MakeText(_panel, "Title", "Choose a Card", new Vector2(0.5f, 0.88f), new Vector2(350f, 50f), 28, Color.white); float[] xAnchors = { 0.18f, 0.5f, 0.82f }; for (int i = 0; i < cards.Count; i++) { int idx = i; MakeCardButton(_panel, cards[i], new Vector2(xAnchors[i], 0.50f), () => OnCardSelected(cards[idx])); } _panel.transform.SetAsLastSibling(); Debug.Log($"[CardManager] Card panel built with {cards.Count} cards on canvas '{canvas.name}'"); }
+private void BuildUI(List<CardData> cards) { if (_panel != null) Destroy(_panel); var canvas = FindObjectOfType<Canvas>(); if (canvas == null) { Debug.LogError("[CardManager] No Canvas found! Retrying next frame..."); StartCoroutine(BuildUINextFrame(cards)); return; } BuildUIOnCanvas(canvas, cards); } private System.Collections.IEnumerator BuildUINextFrame(List<CardData> cards) { yield return null; var canvas = FindObjectOfType<Canvas>(); if (canvas == null) { Debug.LogError("[CardManager] Still no Canvas! Cards cannot be shown."); _onDone?.Invoke(); yield break; } BuildUIOnCanvas(canvas, cards); } private void BuildUIOnCanvas(Canvas canvas, List<CardData> cards) { if (_panel != null) Destroy(_panel); Time.timeScale = 0f; _panel = new GameObject("CardSelectPanel"); _panel.transform.SetParent(canvas.transform, false); var bg = _panel.AddComponent<Image>(); bg.color = new Color(0f, 0f, 0f, 0.85f); var bgRt = _panel.GetComponent<RectTransform>(); bgRt.anchorMin = Vector2.zero; bgRt.anchorMax = Vector2.one; bgRt.offsetMin = bgRt.offsetMax = Vector2.zero; MakeText(_panel, "Title", "Choose a Card", new Vector2(0.5f, 0.88f), new Vector2(350f, 50f), 28, Color.white); float[] xAnchors = { 0.18f, 0.5f, 0.82f }; for (int i = 0; i < cards.Count; i++) { int idx = i; MakeCardButton(_panel, cards[i], new Vector2(xAnchors[i], 0.50f), () => OnCardSelected(cards[idx])); } _panel.transform.SetAsLastSibling(); Debug.Log($"[CardManager] Card panel built with {cards.Count} cards on canvas '{canvas.name}'"); }
 
         private void MakeCardButton(GameObject parent, CardData card, Vector2 anchor, System.Action onClick)
         {
@@ -139,9 +141,7 @@ private void BuildUI(List<CardData> cards) { if (_panel != null) Destroy(_panel)
             return tmp;
         }
 
-        private void OnCardSelected(CardData card)
-        {
-            ApplyCard(card);
+        private void OnCardSelected(CardData card) { Time.timeScale = 1f; ApplyCard(card);
             if (_panel != null) Destroy(_panel);
             _onDone?.Invoke();
         }
