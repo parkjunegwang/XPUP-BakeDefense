@@ -22,6 +22,8 @@ namespace Underdark
         [Header("Visual")]
         public SpriteRenderer bgRenderer;
 
+        // 기본 투명 색상 (평소엔 안 보임)
+        public static readonly Color ColorHidden   = new Color(0f,    0f,    0f,    0f);
         // 색상 정의
         public static readonly Color ColorEmpty     = new Color(0.18f, 0.18f, 0.28f);
         public static readonly Color ColorWall      = new Color(0.35f, 0.22f, 0.12f);
@@ -48,15 +50,33 @@ namespace Underdark
             RefreshColor();
         }
 
+        // 타일 표시 여부 (드래그 중에만 보임)
+        private bool _visible = false;
+
         public void RefreshColor()
         {
             if (bgRenderer == null) return;
+            if (!_visible) { bgRenderer.color = ColorHidden; return; }
             switch (tileType)
             {
                 case TileType.Empty:      bgRenderer.color = ColorEmpty;  break;
                 case TileType.SpawnPoint: bgRenderer.color = ColorSpawn;  break;
                 case TileType.EndPoint:   bgRenderer.color = ColorEnd;    break;
             }
+        }
+
+        /// <summary>드래그 시작 시 모든 타일 보이게</summary>
+        public void ShowForPlacement()
+        {
+            _visible = true;
+            RefreshColor();
+        }
+
+        /// <summary>드래그 끝났을 때 타일 숨기기</summary>
+        public void HideForPlacement()
+        {
+            _visible = false;
+            RefreshColor();
         }
 
         public void SetHighlight(Color col) 

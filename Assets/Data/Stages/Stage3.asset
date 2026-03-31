@@ -62,11 +62,11 @@ MonoBehaviour:
     - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
       count: 1
       isBoss: 1
-      spawnInterval: 0
+      spawnInterval: 0.3
       killXpOverride: 0
     waveName: Wave 5 - Final
     waveCompleteXp: 0
   startTurretPool: 0f000000100000000e0000000d00000012000000
   startTurretCount: 4
   initialCardPicks: 2
-  mapData: {fileID: 0}
+  mapData: {fileID: 11400000, guid: 67df5edfb6803a749a408de5dbd93e87, type: 2}

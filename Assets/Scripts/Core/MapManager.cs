@@ -117,7 +117,21 @@ public void GenerateMap(List<Vector2Int> defaultSpawns = null, List<Vector2Int> 
             return new Vector3(offsetX + x * step, offsetY + y * step, 0f);
         }
 
-public bool IsBlocked(int x, int y) { Tile t = GetTile(x, y); if (t == null) return true; if (t.tileType == TileType.EndPoint)  return false; if (t.tileType == TileType.SpawnPoint) return false; if (t.passableOverride) return false; if (t.placedTurret == null) return false; return !t.placedTurret.IsPassable; }
+/// <summary>드래그 시작 시 호출 - 전체 타일 표시</summary>
+        public void ShowAllTiles()
+        {
+            if (_grid == null) return;
+            foreach (var t in _grid) t?.ShowForPlacement();
+        }
+
+        /// <summary>드래그 끝날 때 호출 - 전체 타일 숨김</summary>
+        public void HideAllTiles()
+        {
+            if (_grid == null) return;
+            foreach (var t in _grid) t?.HideForPlacement();
+        }
+
+        public bool IsBlocked(int x, int y) { Tile t = GetTile(x, y); if (t == null) return true; if (t.tileType == TileType.EndPoint)  return false; if (t.tileType == TileType.SpawnPoint) return false; if (t.passableOverride) return false; if (t.placedTurret == null) return false; return !t.placedTurret.IsPassable; }
     
 
 /// <summary>MapData의 wallPlacements를 모두 1x1 Wall로 설치. GameSetup 완료 후 호출.</summary>

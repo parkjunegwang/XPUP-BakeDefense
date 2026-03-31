@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Boss0_Stats
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.MonsterStatData
   prefabName: Boss_0
-  baseHp: 200
-  baseSpeed: 1.2
+  baseHp: 100
+  baseSpeed: 0.8
   baseReward: 50
   hpPerWave: 100
   speedPerWave: 0.08

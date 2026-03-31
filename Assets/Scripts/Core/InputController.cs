@@ -95,17 +95,16 @@ namespace Underdark
         }
 
         // ── UI 슬롯에서 드래그 시작 (UIInventoryPanel에서 호출) ──────
-public void StartDragFromUI(TurretType type, Color col) { var state = GameManager.Instance.CurrentState; if (state != GameState.Preparation && state != GameState.WaveInProgress) return; if (!InventoryManager.Instance.CanPlace(type)) { UIManager.Instance?.ShowMessage("No stock!"); return; } _isDragging = true; _dragType = type; _dragColor = col; var def = TurretManager.Instance.GetDef(type); var sd = TurretManager.Instance.GetStatData(type); float step = MapManager.Instance.tileSize + MapManager.Instance.tileGap; int bW = def.sizeX, bH = def.sizeY; if (sd != null && sd.HasCustomShape() && sd.tileShape != null && sd.tileShape.Length > 0) { bW = 1; bH = 1; foreach (var o in sd.tileShape) { bW = Mathf.Max(bW, o.x + 1); bH = Mathf.Max(bH, o.y + 1); } } _dragSizeX = bW; _dragSizeY = bH; _ghost.transform.localScale = new Vector3(bW * step * 0.88f, bH * step * 0.88f, 1f); _ghostSr.color = new Color(col.r, col.g, col.b, 0.5f); _ghost.SetActive(true); RangeIndicator.Instance?.Hide(); if (state == GameState.WaveInProgress) Time.timeScale = 0.15f; }
+public void StartDragFromUI(TurretType type, Color col) { var state = GameManager.Instance.CurrentState; if (state != GameState.Preparation && state != GameState.WaveInProgress) return; if (!InventoryManager.Instance.CanPlace(type)) { UIManager.Instance?.ShowMessage("No stock!"); return; } _isDragging = true; _dragType = type; _dragColor = col; var def = TurretManager.Instance.GetDef(type); var sd = TurretManager.Instance.GetStatData(type); float step = MapManager.Instance.tileSize + MapManager.Instance.tileGap; int bW = def.sizeX, bH = def.sizeY; if (sd != null && sd.HasCustomShape() && sd.tileShape != null && sd.tileShape.Length > 0) { bW = 1; bH = 1; foreach (var o in sd.tileShape) { bW = Mathf.Max(bW, o.x + 1); bH = Mathf.Max(bH, o.y + 1); } } _dragSizeX = bW; _dragSizeY = bH; _ghost.transform.localScale = new Vector3(bW * step * 0.88f, bH * step * 0.88f, 1f); _ghostSr.color = new Color(col.r, col.g, col.b, 0.5f); _ghost.SetActive(true); RangeIndicator.Instance?.Hide(); MapManager.Instance?.ShowAllTiles(); if (state == GameState.WaveInProgress) Time.timeScale = 0.15f; }
 
         // 취소 버튼에서 호출
-public void CancelDrag() { if (!_isDragging) return; _isDragging = false; _ghost.SetActive(false); RangeIndicator.Instance?.Hide(); ClearHighlight(); Time.timeScale = 1f; }
+public void CancelDrag() { if (!_isDragging) return; _isDragging = false; _ghost.SetActive(false); RangeIndicator.Instance?.Hide(); ClearHighlight(); MapManager.Instance?.HideAllTiles(); Time.timeScale = 1f; }
 
         // ── 드래그 중 고스트/하이라이트 갱신 ────────────────────────
-        private void UpdateGhostAndHighlight(Tile hover, Vector3 worldPos)
+private void UpdateGhostAndHighlight(Tile hover, Vector3 worldPos)
         {
             ClearHighlight();
 
-            // UI 위에 있으면 고스트 숨김 (취소 상태 표시)
             if (IsPointerOverUI())
             {
                 _ghost.SetActive(false);
@@ -114,9 +113,12 @@ public void CancelDrag() { if (!_isDragging) return; _isDragging = false; _ghost
 
             _ghost.SetActive(true);
 
+            // hover가 null이면(타일 갭) RaycastTile의 스냅으로 다시 시도
+            if (hover == null)
+                hover = RaycastTile(worldPos);
+
             if (hover == null)
             {
-                // 타일 없는 곳 - 월드 위치에 고스트만
                 _ghost.transform.position = worldPos;
                 RangeIndicator.Instance?.Hide();
                 return;
@@ -147,7 +149,38 @@ public void CancelDrag() { if (!_isDragging) return; _isDragging = false; _ghost
         }
 
         // ── 드롭 처리 ────────────────────────────────────────────────
-private void EndDrag(Vector3 worldPos) { _isDragging = false; _ghost.SetActive(false); ClearHighlight(); Time.timeScale = 1f; if (IsPointerOverUI()) { RangeIndicator.Instance?.Hide(); return; } Tile drop = RaycastTile(worldPos); if (drop == null) { RangeIndicator.Instance?.Hide(); return; } if (drop.HasTurret() && drop.placedTurret != null && drop.placedTurret.turretType == _dragType) { if (InventoryManager.Instance.Consume(_dragType)) { drop.placedTurret.LevelUp(); StartCoroutine(MergePulse(drop.placedTurret)); UIManager.Instance?.ShowMessage($"Level Up! Lv.{drop.placedTurret.level}"); MonsterManager.Instance?.RequestPathRecalc(); } return; } TurretManager.Instance.PlaceSelectedTurret(drop, _dragType); RangeIndicator.Instance?.Hide(); }
+private void EndDrag(Vector3 worldPos)
+        {
+            _isDragging = false;
+            _ghost.SetActive(false);
+            ClearHighlight();
+            // timeScale 먼저 복구 - 이후 로직에서 이벤트 씨힐 방지
+            Time.timeScale = 1f;
+            MapManager.Instance?.HideAllTiles();
+            RangeIndicator.Instance?.Hide();
+
+            if (IsPointerOverUI()) return;
+
+            // 타일 갭 포함 - 스냅 방식으로 타일 찾기
+            Tile drop = RaycastTile(worldPos);
+            if (drop == null) return;
+
+            // 레벨업: 같은 타입 터렛이 이미 있으면
+            if (drop.HasTurret() && drop.placedTurret != null
+                && drop.placedTurret.turretType == _dragType)
+            {
+                if (InventoryManager.Instance.Consume(_dragType))
+                {
+                    drop.placedTurret.LevelUp();
+                    StartCoroutine(MergePulse(drop.placedTurret));
+                    UIManager.Instance?.ShowMessage($"Level Up! Lv.{drop.placedTurret.level}");
+                    MonsterManager.Instance?.RequestPathRecalc();
+                }
+                return;
+            }
+
+            TurretManager.Instance.PlaceSelectedTurret(drop, _dragType);
+        }
 
         private System.Collections.IEnumerator MergePulse(TurretBase t)
         {
@@ -266,10 +299,32 @@ private void UpdateRangeIndicator(Vector3 center, TurretStatData sd, bool canPla
             _lastHighlighted.Clear();
         }
 
-        private Tile RaycastTile(Vector3 worldPos)
+private Tile RaycastTile(Vector3 worldPos)
         {
+            // 1차: 정확한 Collider 히트
             var hit = Physics2D.Raycast(worldPos, Vector2.zero);
-            return hit.collider != null ? hit.collider.GetComponent<Tile>() : null;
+            if (hit.collider != null)
+            {
+                var t = hit.collider.GetComponent<Tile>();
+                if (t != null) return t;
+            }
+
+            // 2차: 타일 갭에 떨어진 경우 → MapManager 그리드로 가장 가까운 타일 스냅
+            var map = MapManager.Instance;
+            if (map == null) return null;
+
+            float step    = map.tileSize + map.tileGap;
+            float offsetX = -(map.columns - 1) * step * 0.5f;
+            float offsetY = -(map.rows    - 1) * step * 0.5f;
+
+            int gx = Mathf.RoundToInt((worldPos.x - offsetX) / step);
+            int gy = Mathf.RoundToInt((worldPos.y - offsetY) / step);
+
+            // 그리드 범위 클램프
+            gx = Mathf.Clamp(gx, 0, map.columns - 1);
+            gy = Mathf.Clamp(gy, 0, map.rows    - 1);
+
+            return map.GetTile(gx, gy);
         }
 
         private bool IsPointerOverUI()
