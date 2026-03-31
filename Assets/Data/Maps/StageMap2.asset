@@ -12,11 +12,151 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bff1551f442a25f4e85dca4c58dd71d0, type: 3}
   m_Name: StageMap2
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.MapData
-  columns: 7
+  columns: 11
   rows: 11
-  tileSize: 1
+  tileSize: 0.5
   tileGap: 0.05
-  spawnPositions: []
-  endPositions: []
+  spawnPositions:
+  - {x: 1, y: 9}
+  endPositions:
+  - {x: 9, y: 1}
   tileOverrides: []
-  wallPlacements: []
+  wallPlacements:
+  - gridX: 0
+    gridY: 0
+    wallSize: 0
+  - gridX: 1
+    gridY: 0
+    wallSize: 0
+  - gridX: 2
+    gridY: 0
+    wallSize: 0
+  - gridX: 3
+    gridY: 0
+    wallSize: 0
+  - gridX: 4
+    gridY: 0
+    wallSize: 0
+  - gridX: 5
+    gridY: 0
+    wallSize: 0
+  - gridX: 6
+    gridY: 0
+    wallSize: 0
+  - gridX: 7
+    gridY: 0
+    wallSize: 0
+  - gridX: 8
+    gridY: 0
+    wallSize: 0
+  - gridX: 9
+    gridY: 0
+    wallSize: 0
+  - gridX: 10
+    gridY: 0
+    wallSize: 0
+  - gridX: 0
+    gridY: 1
+    wallSize: 0
+  - gridX: 10
+    gridY: 1
+    wallSize: 0
+  - gridX: 0
+    gridY: 2
+    wallSize: 0
+  - gridX: 10
+    gridY: 2
+    wallSize: 0
+  - gridX: 0
+    gridY: 3
+    wallSize: 0
+  - gridX: 4
+    gridY: 3
+    wallSize: 0
+  - gridX: 5
+    gridY: 3
+    wallSize: 0
+  - gridX: 6
+    gridY: 3
+    wallSize: 0
+  - gridX: 10
+    gridY: 3
+    wallSize: 0
+  - gridX: 0
+    gridY: 4
+    wallSize: 0
+  - gridX: 10
+    gridY: 4
+    wallSize: 0
+  - gridX: 0
+    gridY: 5
+    wallSize: 0
+  - gridX: 10
+    gridY: 5
+    wallSize: 0
+  - gridX: 0
+    gridY: 6
+    wallSize: 0
+  - gridX: 10
+    gridY: 6
+    wallSize: 0
+  - gridX: 0
+    gridY: 7
+    wallSize: 0
+  - gridX: 4
+    gridY: 7
+    wallSize: 0
+  - gridX: 5
+    gridY: 7
+    wallSize: 0
+  - gridX: 6
+    gridY: 7
+    wallSize: 0
+  - gridX: 10
+    gridY: 7
+    wallSize: 0
+  - gridX: 0
+    gridY: 8
+    wallSize: 0
+  - gridX: 10
+    gridY: 8
+    wallSize: 0
+  - gridX: 0
+    gridY: 9
+    wallSize: 0
+  - gridX: 10
+    gridY: 9
+    wallSize: 0
+  - gridX: 0
+    gridY: 10
+    wallSize: 0
+  - gridX: 1
+    gridY: 10
+    wallSize: 0
+  - gridX: 2
+    gridY: 10
+    wallSize: 0
+  - gridX: 3
+    gridY: 10
+    wallSize: 0
+  - gridX: 4
+    gridY: 10
+    wallSize: 0
+  - gridX: 5
+    gridY: 10
+    wallSize: 0
+  - gridX: 6
+    gridY: 10
+    wallSize: 0
+  - gridX: 7
+    gridY: 10
+    wallSize: 0
+  - gridX: 8
+    gridY: 10
+    wallSize: 0
+  - gridX: 9
+    gridY: 10
+    wallSize: 0
+  - gridX: 10
+    gridY: 10
+    wallSize: 0
