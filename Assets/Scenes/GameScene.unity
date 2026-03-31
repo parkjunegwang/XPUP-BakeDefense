@@ -890,9 +890,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da8c3a871a2a9a94f8d9431625d21c6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.CameraFitMap
-  padding: 0.3
+  padding: 0.15
   cameraZ: -10
-  bottomUIRatio: 0.13
+  bottomUIRatio: 0.15
 --- !u!114 &330585549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -905,8 +905,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ca8763134ed80a4388106660262a96b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.MapBackground
-  backgroundSpriteName: 
-  fallbackColor: {r: 0.34020114, g: 0.5188679, b: 0.35843244, a: 1}
+  backgroundSpriteName: testBackground
+  fallbackColor: {r: 1, g: 1, b: 1, a: 1}
   extraPadding: 0
   sortingOrder: -10
 --- !u!1 &370262159

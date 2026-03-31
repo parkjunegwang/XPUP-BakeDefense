@@ -94,7 +94,7 @@ private System.Collections.IEnumerator DieAnim() { if (_animator != null) { floa
 
 private void ReachEnd() { MonsterManager.Instance.ReturnToPool(this, PrefabName); GameManager.Instance.TriggerGameOver(); }
 
-private void RefreshHpBar() { if (hpBarFill == null) return; float ratio = Mathf.Clamp01(_hp / maxHp); var tf = hpBarFill.transform; float newScaleX = _hpBarInitScaleX * ratio; var ls = tf.localScale; ls.x = newScaleX; tf.localScale = ls; float offset = _hpBarInitScaleX * (1f - ratio) * 0.5f; var lp = tf.localPosition; lp.x = _hpBarInitPosX - offset; tf.localPosition = lp; hpBarFill.color = Color.Lerp(Color.red, Color.green, ratio); }
+private void RefreshHpBar() { if (hpBarFill == null) return; float ratio = Mathf.Clamp01(_hp / maxHp); var tf = hpBarFill.transform; var ls = tf.localScale; ls.x = ratio; tf.localScale = ls; var lp = tf.localPosition; lp.x = (ratio - 1f) * 0.5f; lp.z = -0.01f; tf.localPosition = lp; hpBarFill.color = Color.Lerp(Color.red, Color.green, ratio); }
     
 
 private void UpdateSortingOrder() { if (bodyRenderer == null || _allRenderers == null) return; int baseOrder = Mathf.RoundToInt(500f - transform.position.y * 10f); for (int i = 0; i < _allRenderers.Length; i++) { if (_allRenderers[i] == null) continue; _allRenderers[i].sortingOrder = baseOrder + _rendererBaseOrders[i]; } }

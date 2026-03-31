@@ -29,9 +29,12 @@ namespace Underdark
 
         private GameObject _bgObject;
 
-        private void Start()
+private void Start()
         {
-            StartCoroutine(CreateNextFrame());
+            // CameraFitMap.FitToMap()이 완료 후 CreateBackground()를 호출함
+            // (CameraFitMap이 없는 경우에만 자체 실행)
+            if (GetComponent<CameraFitMap>() == null)
+                StartCoroutine(CreateNextFrame());
         }
 
         private System.Collections.IEnumerator CreateNextFrame()
@@ -42,33 +45,27 @@ namespace Underdark
             CreateBackground();
         }
 
-        public void CreateBackground()
+public void CreateBackground()
         {
-            var map = MapManager.Instance;
-            if (map == null) return;
+            var cam = GetComponent<Camera>() ?? Camera.main;
+            if (cam == null) return;
 
-            // 기존 배경 제거
             if (_bgObject != null) Destroy(_bgObject);
 
-            // 맵 월드 크기 계산
-            float step = map.tileSize + map.tileGap;
-            float mapW = map.columns * step + extraPadding * 2f;
-            float mapH = map.rows    * step + extraPadding * 2f;
+            // 카메라 뷰 크기 계산 (orthographic)
+            float orthoH = cam.orthographicSize * 2f;
+            float orthoW = orthoH * cam.aspect;
 
-            // 맵 중앙 좌표
-            Vector3 topRight = map.GridToWorld(map.columns - 1, map.rows - 1);
-            Vector3 botLeft  = map.GridToWorld(0, 0);
-            Vector3 center   = (topRight + botLeft) * 0.5f;
-            center.z = 1f; // 타일보다 뒤
+            // 카메라 중앙, 타일/터렛보다 뒤에
+            Vector3 center = cam.transform.position;
+            center.z = 2f;
 
-            // 배경 오브젝트 생성
             _bgObject = new GameObject("MapBackground");
             _bgObject.transform.position = center;
 
             var sr = _bgObject.AddComponent<SpriteRenderer>();
             sr.sortingOrder = sortingOrder;
 
-            // 스프라이트 로드
             Sprite sprite = null;
             if (!string.IsNullOrEmpty(backgroundSpriteName))
                 sprite = Resources.Load<Sprite>($"Image/{backgroundSpriteName}");
@@ -76,21 +73,19 @@ namespace Underdark
             if (sprite != null)
             {
                 sr.sprite = sprite;
-                // 스프라이트를 맵 크기에 딱 맞게 스케일 조정
-                float spriteW = sr.sprite.bounds.size.x;
-                float spriteH = sr.sprite.bounds.size.y;
-                float scaleX  = mapW / spriteW;
-                float scaleY  = mapH / spriteH;
+                float spriteW = sprite.bounds.size.x;
+                float spriteH = sprite.bounds.size.y;
+                float scaleX  = orthoW / spriteW;
+                float scaleY  = orthoH / spriteH;
                 _bgObject.transform.localScale = new Vector3(scaleX, scaleY, 1f);
-                Debug.Log($"[MapBackground] Sprite '{backgroundSpriteName}' fitted: {mapW:F2}x{mapH:F2}");
+                Debug.Log($"[MapBackground] Sprite '{backgroundSpriteName}' fitted to camera: {orthoW:F2}x{orthoH:F2}");
             }
             else
             {
-                // 스프라이트 없으면 단색 사각형
                 sr.sprite = GameSetup.WhiteSquareStatic();
                 sr.color  = fallbackColor;
-                _bgObject.transform.localScale = new Vector3(mapW, mapH, 1f);
-                Debug.Log($"[MapBackground] No sprite → fallback color {fallbackColor}");
+                _bgObject.transform.localScale = new Vector3(orthoW, orthoH, 1f);
+                Debug.Log($"[MapBackground] Fallback color, camera size: {orthoW:F2}x{orthoH:F2}");
             }
         }
 

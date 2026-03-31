@@ -47,7 +47,7 @@ namespace Underdark
             FitToMap();
         }
 
-        public void FitToMap()
+public void FitToMap()
         {
             var map = MapManager.Instance;
             if (map == null) return;
@@ -56,36 +56,27 @@ namespace Underdark
             float mapW    = map.columns * step;
             float mapH    = map.rows    * step;
 
-            // 맵 월드 중심 계산
-            // GenerateMap에서 offsetX = -(columns-1)*step*0.5f 이므로
-            float centerX = 0f; // 대칭이라 항상 0
-            float centerY = -(map.rows - 1) * step * 0.5f + (map.rows - 1) * step * 0.5f;
-            // = 0, 역시 대칭
-            // 실제로는 GridToWorld로 첫/마지막 타일 평균
             Vector3 topRight  = map.GridToWorld(map.columns - 1, map.rows - 1);
             Vector3 botLeft   = map.GridToWorld(0, 0);
             Vector3 mapCenter = (topRight + botLeft) * 0.5f;
 
-            // 카메라 위치: 맵 중앙, UI 공간만큼 위로 올려서 맵이 UI에 가리지 않게
-            // bottomUIRatio만큼 화면 하단이 UI에 가려지므로 맵을 위로 약간 이동
             float screenAspect = (float)Screen.width / Screen.height;
 
-            // 필요한 orthographicSize 계산 (맵 전체가 들어오는 최소 크기)
             float sizeForHeight = (mapH * 0.5f + padding);
             float sizeForWidth  = (mapW * 0.5f + padding) / screenAspect;
+            float orthoSize     = Mathf.Max(sizeForHeight, sizeForWidth);
 
-            // 둘 중 더 큰 값 선택 (맵 전체가 보이도록)
-            float orthoSize = Mathf.Max(sizeForHeight, sizeForWidth);
-
-            // 하단 UI 보정: UI가 차지하는 화면 비율만큼 카메라를 위로 올림
-            // UI 높이 = orthoSize * 2 * bottomUIRatio
             float uiWorldHeight = orthoSize * 2f * bottomUIRatio;
-            Vector3 camPos = new Vector3(mapCenter.x, mapCenter.y + uiWorldHeight * 0.5f, cameraZ);
+            Vector3 camPos = new Vector3(mapCenter.x, mapCenter.y - uiWorldHeight * 0.5f, cameraZ);
 
             _cam.orthographicSize = orthoSize;
             transform.position    = camPos;
 
-            Debug.Log($"[CameraFitMap] Map={mapW:F1}x{mapH:F1} OrthoSize={orthoSize:F2} Aspect={screenAspect:F2} Pos={camPos}");
+            Debug.Log($"[CameraFitMap] OrthoSize={orthoSize:F2} Aspect={screenAspect:F2}");
+
+            // 카메라 크기 확정 후 배경 생성
+            var bg = GetComponent<MapBackground>();
+            if (bg != null) bg.CreateBackground();
         }
 
 #if UNITY_EDITOR
