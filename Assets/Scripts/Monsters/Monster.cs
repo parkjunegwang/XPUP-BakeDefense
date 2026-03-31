@@ -31,12 +31,23 @@ namespace Underdark
         private int[]            _rendererBaseOrders;
         private Vector3          _originalScale;
         private float            _lastPopupTime;
-        private List<Vector3> _path    = new List<Vector3>();
-        private int           _pathIdx = 0;
+        private List<Vector3> _path = new List<Vector3>();
+        private int _pathIdx = 0;
 
-private void Awake() { if (bodyRenderer == null) bodyRenderer = GetComponent<SpriteRenderer>() ?? GetComponentInChildren<SpriteRenderer>(); _animator = GetComponent<Animator>() ?? GetComponentInChildren<Animator>(); _originalScale = transform.localScale; CacheRenderers(); }
+        private void Awake()
+        {
+            
 
-private void CacheRenderers() { _allRenderers = GetComponentsInChildren<SpriteRenderer>(true); _rendererBaseOrders = new int[_allRenderers.Length]; for (int i = 0; i < _allRenderers.Length; i++) _rendererBaseOrders[i] = _allRenderers[i].sortingOrder; }
+            _animator = GetComponent<Animator>() ?? GetComponentInChildren<Animator>();
+            _originalScale = transform.localScale; CacheRenderers();
+        }
+        private void Start()
+        {
+            if (bodyRenderer == null)
+                bodyRenderer = transform.Find("Mon").GetComponent<SpriteRenderer>();
+        }
+
+        private void CacheRenderers() { _allRenderers = GetComponentsInChildren<SpriteRenderer>(true); _rendererBaseOrders = new int[_allRenderers.Length]; for (int i = 0; i < _allRenderers.Length; i++) _rendererBaseOrders[i] = _allRenderers[i].sortingOrder; }
 
 
 public void Init(List<Vector2Int> gridPath, Color color) { _hp = maxHp; _pathIdx = 0; _path.Clear(); _baseSpeed = speed; _slowTimer = 0f; gameObject.SetActive(true); transform.localScale = _originalScale; if (bodyRenderer != null && color != Color.white) bodyRenderer.color = color; else if (bodyRenderer != null) bodyRenderer.color = Color.white; float step = MapManager.Instance.tileSize + MapManager.Instance.tileGap; float maxOffset = step * 0.28f; _navOffset = new Vector3(Random.Range(-maxOffset, maxOffset), Random.Range(-maxOffset, maxOffset), 0f); foreach (var gp in gridPath) _path.Add(MapManager.Instance.GridToWorld(gp.x, gp.y)); if (_path.Count > 0) transform.position = _path[0] + _navOffset; // HP바 초기화 - 매번 캐시를 갱신해서 pool 재사용 시도 정상처리

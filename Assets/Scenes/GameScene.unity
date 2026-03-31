@@ -2247,7 +2247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4d6ab82acf7b884cb66d8e71c389b32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.MonsterManager
-  monsterPrefab: {fileID: 0}
+  monsterPrefab: {fileID: 7259284832256802369, guid: f8aa8507f0ce5b14abbcd738c1484fef, type: 3}
   spawnInterval: 0.3
   bossSpawnInterval: 1.5
   bossWaveInterval: 5
