@@ -271,6 +271,7 @@ namespace Underdark
             ui.xpText = Txt(xpBg, "XPText", "0/100",
                 new Vector2(0.5f,0.5f), new Vector2(0.5f,0.5f), Vector2.zero, new Vector2(200f,14f), 9);
 
+            // messageText - raycastTarget false로 생성 (클릭 씹힘 방지)
             ui.messageText = Txt(cvGo, "MsgText", "",
                 new Vector2(0.5f,0.65f), new Vector2(0.5f,0.5f), Vector2.zero, new Vector2(340f,54f), 18);
             ui.messageText.gameObject.SetActive(false);
@@ -391,7 +392,7 @@ namespace Underdark
             return Sprite.Create(tex, new Rect(0,0,px,px), new Vector2(0.5f,0.5f), px);
         }
 
-        private TextMeshProUGUI Txt(GameObject p, string name, string text,
+private TextMeshProUGUI Txt(GameObject p, string name, string text,
             Vector2 anchor, Vector2 pivot, Vector2 pos, Vector2 size, int fs, Color? col = null)
         {
             var go = new GameObject(name); go.transform.SetParent(p.transform, false);
@@ -401,6 +402,7 @@ namespace Underdark
             var tmp = go.AddComponent<TextMeshProUGUI>();
             tmp.text = text; tmp.fontSize = fs; tmp.color = col ?? Color.white;
             tmp.alignment = TextAlignmentOptions.Center;
+            tmp.raycastTarget = false; // 클릭 이벤트 통과 (설치 씩힐 방지)
             return tmp;
         }
 

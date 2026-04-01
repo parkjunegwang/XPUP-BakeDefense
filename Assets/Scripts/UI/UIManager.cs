@@ -74,10 +74,11 @@ public void ShowWaveUI(int waveNumber) { bool isBoss = MonsterManager.Instance !
             startWaveBtn?.gameObject.SetActive(true);
         }
 
-        public void ShowMessage(string msg)
+public void ShowMessage(string msg)
         {
             if (messageText == null) return;
             messageText.text = msg;
+            messageText.raycastTarget = false; // 클릭 이벤트 통과
             messageText.gameObject.SetActive(true);
             _messageTimer = _messageDuration;
         }

@@ -214,6 +214,14 @@ private void ShowTurretRange(TurretBase turret)
                         new Color(col.r, col.g, col.b, 0.75f), mstep * 0.85f, 2.5f);
                     return;
 
+                case TurretType.BlackHole:
+                    var bh = turret as BlackHoleTurret;
+                    // 타워 탐지 범위 (range) - 연한 원
+                    if (turret.range > 0f)
+                        RangeIndicator.Instance.ShowCircle(turret.transform.position, turret.range,
+                            new Color(0.5f, 0f, 1f, 0.35f), 2.5f);
+                    return;
+
                 case TurretType.DragonStatue:
                     var dragon = turret as DragonStatue;
                     float bRange = dragon != null ? dragon.breathRange : 2.2f;

@@ -20,9 +20,9 @@ MonoBehaviour:
   passableTileIndices: 
   levels:
   - level: 1
-    damage: 10
-    range: 3
-    fireRate: 0.5
+    damage: 3
+    range: 4
+    fireRate: 0.18
     hp: 0
     attackTiles: 1
     critChance: 0.1
