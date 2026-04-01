@@ -90,8 +90,19 @@ public void OnWaveComplete() { CleanupProjectiles(); int waveJustDone = CurrentW
         }
 
         // ── 재시작 ──────────────────────────────────────────────────
-        public void RestartStage()
+public void RestartStage()
         {
+            // 재시작 전에 현재 세션 터릿 정보를 다시 SaveData에 저장
+            // (DoInitialSetup에서 SelectedTurrets를 null로 지웠기 때문에 복원해야 함)
+            var sessionTurrets = CardManager.Instance?.SessionTurrets;
+            if (sessionTurrets != null && sessionTurrets.Count > 0)
+            {
+                var arr = new TurretType[sessionTurrets.Count];
+                for (int i = 0; i < sessionTurrets.Count; i++)
+                    arr[i] = sessionTurrets[i];
+                SaveData.SelectedTurrets = arr;
+            }
+
             CurrentWave = 0;
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
