@@ -184,6 +184,55 @@ public bool CanPlaceAt(Tile tile, TurretType type) { var sd = GetStatData(type);
         }
 
         // ── 설치 ──────────────────────────────────────────────────────
+        /// <summary>MapData 전용 - 인벤토리 거치지 않고 직접 설치 (실패 시 두지 않음)</summary>
+        public void PlaceFromMapData(Tile tile, TurretType type)
+        {
+            var def    = GetDef(type);
+            var prefab = GetPrefab(type);
+            var sd     = prefab != null ? prefab.GetComponent<TurretBase>()?.statData : null;
+            var tiles  = GetShapeTiles(tile, type, sd);
+
+            if (tiles == null) return;
+            foreach (var t in tiles)
+                if (!t.IsPlaceable()) return;
+            // MapData 벽은 경로 차단 체크 스킵 (이미 디자이너가 설계한 맵이뭐로)
+
+            if (prefab == null) return;
+
+            bool was = prefab.activeSelf;
+            prefab.SetActive(true);
+            Vector3 center = GetTilesCenter(tiles);
+            GameObject go  = Instantiate(prefab, center, Quaternion.identity);
+            prefab.SetActive(was);
+
+            bool shouldAutoScale = sd != null ? sd.autoScale : IsWallType(type);
+            if (shouldAutoScale)
+            {
+                float step = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
+                int bW = def.sizeX, bH = def.sizeY;
+                float scaleX = bW * step - MapManager.Instance.tileGap;
+                float scaleY = bH * step - MapManager.Instance.tileGap;
+                var sr = go.GetComponent<SpriteRenderer>();
+                if (sr != null && sr.sprite != null)
+                {
+                    float ppu  = sr.sprite.pixelsPerUnit;
+                    float sprW = sr.sprite.rect.width  / ppu;
+                    float sprH = sr.sprite.rect.height / ppu;
+                    go.transform.localScale = new Vector3(scaleX / sprW * 0.92f, scaleY / sprH * 0.92f, 1f);
+                }
+                else go.transform.localScale = new Vector3(scaleX * 0.92f, scaleY * 0.92f, 1f);
+            }
+
+            TurretBase turret = go.GetComponent<TurretBase>();
+            turret.turretType  = type;
+            turret.currentTile = tile;
+            turret.occupiedTiles.Clear();
+            turret.occupiedTiles.AddRange(tiles);
+            AssignTiles(turret, tiles, type, sd);
+            _all.Add(turret);
+            turret.UpdateSortingOrder();
+        }
+
         public void PlaceSelectedTurret(Tile tile, TurretType type)
         {
             var def    = GetDef(type);

@@ -10,14 +10,18 @@ namespace Underdark
     [CreateAssetMenu(fileName = "NewMapData", menuName = "Underdark/Map Data")]
     public class MapData : ScriptableObject
     {
-        [Header("Map Size")]
+        [HideInInspector]
         public int columns = 7;
+        [HideInInspector]
         public int rows    = 11;
-        public float tileSize = 1.0f;
+        [HideInInspector]
+        public float tileSize = 0.5f;
+        [HideInInspector]
         public float tileGap  = 0.05f;
 
-        [Header("Spawn / End Points")]
+        [HideInInspector]
         public List<Vector2Int> spawnPositions = new List<Vector2Int>();
+        [HideInInspector]
         public List<Vector2Int> endPositions   = new List<Vector2Int>();
 
         [Header("Tile Overrides")]
