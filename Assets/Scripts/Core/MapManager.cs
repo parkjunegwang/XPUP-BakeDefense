@@ -20,6 +20,9 @@ namespace Underdark
         [Header("Prefab")]
         public GameObject tilePrefab;
 
+        [Tooltip("EndPos에 표시할 프리팹 (없으면 빨간 타일 표시)")]
+        public GameObject endMarkerPrefab;
+
         [Header("Spawn / End  ← 인스펙터에서 직접 설정하세요")]
         public List<Vector2Int> spawnPositions = new List<Vector2Int>();
         public List<Vector2Int> endPositions   = new List<Vector2Int>();
@@ -52,7 +55,7 @@ namespace Underdark
         /// </summary>
 public void GenerateMap(List<Vector2Int> defaultSpawns = null, List<Vector2Int> defaultEnds = null) { if (mapData != null) { columns = mapData.columns; rows = mapData.rows; tileSize = mapData.tileSize; tileGap = mapData.tileGap; spawnPositions = new List<Vector2Int>(mapData.spawnPositions); endPositions = new List<Vector2Int>(mapData.endPositions); Debug.Log($"[MapManager] MapData '{mapData.name}' {columns}x{rows} Spawns:{spawnPositions.Count} Ends:{endPositions.Count}"); } else if (_hasSavedPositions) { spawnPositions = new List<Vector2Int>(_savedSpawns); endPositions = new List<Vector2Int>(_savedEnds); Debug.Log("[MapManager] Inspector spawn/end used"); } else if (defaultSpawns != null) { spawnPositions = defaultSpawns; endPositions = defaultEnds ?? new List<Vector2Int>(); Debug.Log("[MapManager] Default spawn/end used"); } ValidateAndClampPositions(); BuildGrid(); string ss = "Spawns: "; foreach (var s in spawnPositions) ss += $"({s.x},{s.y}) "; string es = "Ends: "; foreach (var e in endPositions) es += $"({e.x},{e.y}) "; Debug.Log($"[MapManager] {ss}| {es}"); }
 
-        private void BuildGrid()
+private void BuildGrid()
         {
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
@@ -61,6 +64,13 @@ public void GenerateMap(List<Vector2Int> defaultSpawns = null, List<Vector2Int> 
             float step    = tileSize + tileGap;
             float offsetX = -(columns - 1) * step * 0.5f;
             float offsetY = -(rows    - 1) * step * 0.5f;
+
+            // EndPos 3x3 범위 미리 계산
+            var endBuffer = new System.Collections.Generic.HashSet<Vector2Int>();
+            foreach (var e in endPositions)
+                for (int dy = -1; dy <= 1; dy++)
+                    for (int dx = -1; dx <= 1; dx++)
+                        endBuffer.Add(new Vector2Int(e.x + dx, e.y + dy));
 
             for (int y = 0; y < rows; y++)
             {
@@ -73,9 +83,9 @@ public void GenerateMap(List<Vector2Int> defaultSpawns = null, List<Vector2Int> 
                     GameObject go = Instantiate(tilePrefab, pos, Quaternion.identity, transform);
                     tilePrefab.SetActive(was);
 
-                    // tileSize에 맞게 타일 크기 설정
                     go.transform.localScale = Vector3.one * tileSize;
                     go.name = $"Tile_{x}_{y}";
+
                     TileType type = TileType.Empty;
                     if (IsSpawn(x, y)) type = TileType.SpawnPoint;
                     else if (IsEnd(x, y)) type = TileType.EndPoint;
@@ -83,6 +93,29 @@ public void GenerateMap(List<Vector2Int> defaultSpawns = null, List<Vector2Int> 
                     Tile tile = go.GetComponent<Tile>();
                     tile.Init(x, y, type);
                     _grid[x, y] = tile;
+
+                    // EndPos 중심 3x3 범위: 숙기고 설치 불가
+                    bool inEndBuffer = endBuffer.Contains(new Vector2Int(x, y));
+                    if (inEndBuffer && !IsEnd(x, y))
+                    {
+                        // SpriteRenderer 숨김 (Tile 자체는 유지, 콜라이더는 유지)
+                        var sr = go.GetComponent<SpriteRenderer>();
+                        if (sr != null) sr.color = new Color(0, 0, 0, 0);
+                        tile.isEndBuffer = true; // 설치 불가 플래그
+                    }
+                    else if (IsEnd(x, y))
+                    {
+                        // EndPoint 타일 숨김
+                        var sr = go.GetComponent<SpriteRenderer>();
+                        if (sr != null) sr.color = new Color(0, 0, 0, 0);
+
+                        // EndMarker 프리팩 배치
+                        if (endMarkerPrefab != null)
+                        {
+                            var marker = Instantiate(endMarkerPrefab, pos, Quaternion.identity, transform);
+                            marker.name = $"EndMarker_{x}_{y}";
+                        }
+                    }
                 }
             }
         }

@@ -19,6 +19,9 @@ namespace Underdark
         /// <summary>포탑과 무관하게 이 타일을 강제 통과 가능으로 설정 (전기기둥 가운데)</summary>
         public bool passableOverride = false;
 
+        /// <summary>EndPos 3x3 버퍼 - 설치 불가, 비표시</summary>
+        public bool isEndBuffer = false;
+
         [Header("Visual")]
         public SpriteRenderer bgRenderer;
 
@@ -53,21 +56,25 @@ namespace Underdark
         // 타일 표시 여부 (드래그 중에만 보임)
         private bool _visible = false;
 
-        public void RefreshColor()
+public void RefreshColor()
         {
             if (bgRenderer == null) return;
-            if (!_visible) { bgRenderer.color = ColorHidden; return; }
+            if (!_visible || isEndBuffer) { bgRenderer.color = ColorHidden; return; }
             switch (tileType)
             {
                 case TileType.Empty:      bgRenderer.color = ColorEmpty;  break;
-                case TileType.SpawnPoint: bgRenderer.color = ColorSpawn;  break;
-                case TileType.EndPoint:   bgRenderer.color = ColorEnd;    break;
+                // SpawnPoint, EndPoint 드래그 중에도 Empty와 같은 색상으로 표시
+                case TileType.SpawnPoint: bgRenderer.color = ColorEmpty;  break;
+                case TileType.EndPoint:   bgRenderer.color = ColorEmpty;  break;
             }
         }
 
         /// <summary>드래그 시작 시 모든 타일 보이게</summary>
-        public void ShowForPlacement()
+public void ShowForPlacement()
         {
+            // EndBuffer, SpawnPoint, EndPoint 는 항상 투명
+            if (isEndBuffer) return;
+            if (tileType == TileType.SpawnPoint || tileType == TileType.EndPoint) return;
             _visible = true;
             RefreshColor();
         }
@@ -84,7 +91,7 @@ namespace Underdark
             if (bgRenderer != null) bgRenderer.color = col; 
         }
 
-public bool IsPlaceable() { var state = GameManager.Instance.CurrentState; bool validState = state == GameState.Preparation || state == GameState.WaveInProgress; return tileType == TileType.Empty && placedTurret == null && validState; }
+public bool IsPlaceable() { if (isEndBuffer) return false; var state = GameManager.Instance.CurrentState; bool validState = state == GameState.Preparation || state == GameState.WaveInProgress; return tileType == TileType.Empty && placedTurret == null && validState; }
 
         public bool HasTurret() => placedTurret != null;
     }

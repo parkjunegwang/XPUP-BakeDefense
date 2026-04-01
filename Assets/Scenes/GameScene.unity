@@ -1332,6 +1332,7 @@ MonoBehaviour:
   tileSize: 0.5
   tileGap: 0.01
   tilePrefab: {fileID: 0}
+  endMarkerPrefab: {fileID: 6796654469124441348, guid: 04d133f43a49b4145831af3d8902bbc9, type: 3}
   spawnPositions:
   - {x: 1, y: 14}
   - {x: 3, y: 14}
