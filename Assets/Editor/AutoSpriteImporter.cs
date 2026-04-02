@@ -5,7 +5,7 @@ public class AutoSpriteImporter : AssetPostprocessor
 {
     // 옵션: 특정 폴더만 적용하고 싶으면 아래 경로를 수정
     // 예: "Assets/Sprites/"
-    private static readonly string[] TargetFolders = { "Assets/__Resources" };
+    private static readonly string[] TargetFolders = { "Assets/Resources" };
 
     private static bool IsInTargetFolder(string assetPath)
     {
