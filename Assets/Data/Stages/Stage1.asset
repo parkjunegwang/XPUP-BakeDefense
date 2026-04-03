@@ -158,7 +158,7 @@ MonoBehaviour:
       count: 10
       spawnInterval: 1.1
       hp: 400
-      speed: 0.5
+      speed: 0.6
       reward: 15
       isBoss: 0
       bossHpMult: 1
