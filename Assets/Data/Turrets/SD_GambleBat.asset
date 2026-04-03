@@ -22,10 +22,10 @@ MonoBehaviour:
   - level: 1
     damage: 25
     range: 2.5
-    fireRate: 1
+    fireRate: 10
     hp: 0
     attackTiles: 1
-    critChance: 0.3
-    critMultiplier: 3
+    critChance: 0.1
+    critMultiplier: 10
     bodySprite: {fileID: 0}
     barrelSprite: {fileID: 0}

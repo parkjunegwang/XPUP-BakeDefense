@@ -122,6 +122,8 @@ MonoBehaviour:
   isFromMapData: 0
   currentTile: {fileID: 0}
   occupiedTiles: []
+  projectilePrefab_Normal: {fileID: 8337581961609253473, guid: 795474454463a8e448e7444aaf56c0f7, type: 3}
+  projectilePrefab_Cri: {fileID: 8337581961609253473, guid: b35b8d4f3cd239940b6f89afd2ed5b57, type: 3}
   jackpotDamage: 200
 --- !u!1 &2446276364830016230
 GameObject:

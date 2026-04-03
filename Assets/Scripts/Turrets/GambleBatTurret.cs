@@ -11,6 +11,10 @@ namespace Underdark
     /// </summary>
     public class GambleBatTurret : TurretBase
     {
+
+        public GameObject projectilePrefab_Normal;
+        public GameObject projectilePrefab_Cri;
+
         [Header("Gamble Settings")]
         [Tooltip("크리티컬 시 입히는 고정 대박 데미지 (StatData 없을 때)")]
         public float jackpotDamage = 200f;
@@ -45,11 +49,47 @@ namespace Underdark
                 float dmg = (statData != null && statData.GetLevel(level).critMultiplier > 1f)
                     ? statData.GetLevel(level).damage * statData.GetLevel(level).critMultiplier
                     : jackpotDamage;
-                target.TakeDamage(dmg, true);
-                StartCoroutine(JackpotEffect(target.transform.position));
+
+                Vector3 spawnPos = GetFirePosition();
+
+                if (projectilePrefab_Cri != null)
+                {
+                    bool was = projectilePrefab_Cri.activeSelf;
+                    projectilePrefab_Cri.SetActive(true);
+                    var go =
+                        Instantiate(projectilePrefab_Cri, spawnPos, Quaternion.identity);
+                    projectilePrefab_Cri.SetActive(was);
+                    go.GetComponent<Projectile>()?.Init(target, dmg, isCrit);
+                }
+                else
+                {
+                    target.TakeDamage(dmg, true);
+
+                }
+
+                //    StartCoroutine(JackpotEffect(target.transform.position));
+            }
+            else
+            {
+                Vector3 spawnPos = GetFirePosition();
+
+                if (projectilePrefab_Normal != null)
+                {
+                    bool was = projectilePrefab_Normal.activeSelf;
+                    projectilePrefab_Normal.SetActive(true);
+                    var go =
+                        Instantiate(projectilePrefab_Normal, spawnPos, Quaternion.identity);
+                    projectilePrefab_Normal.SetActive(was);
+                    go.GetComponent<Projectile>()?.Init(target, 0, isCrit);
+                }
+                else
+                {
+                    target.TakeDamage(0, true);
+
+                }
             }
             // 미스든 크리든 배트 휘두르는 이펙트
-            StartCoroutine(SwingEffect(isCrit));
+           // StartCoroutine(SwingEffect(isCrit));
         }
 
         private IEnumerator SwingEffect(bool isJackpot)

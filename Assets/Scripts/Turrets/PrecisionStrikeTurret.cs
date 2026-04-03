@@ -11,6 +11,8 @@ namespace Underdark
     /// </summary>
     public class PrecisionStrikeTurret : TurretBase
     {
+        public GameObject projectilePrefab;
+
         [Header("Precision Settings")]
         [Tooltip("항상 크리티컬로 입히는 고정 데미지")]
         public float fixedCritDamage = 5f;
