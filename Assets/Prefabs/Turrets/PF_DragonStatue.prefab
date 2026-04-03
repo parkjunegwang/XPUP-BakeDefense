@@ -233,7 +233,7 @@ MonoBehaviour:
   level: 1
   statData: {fileID: 11400000, guid: 2e0444216fe4de3439445d63a78639a2, type: 2}
   damage: 4
-  range: 2.2
+  range: 2.5
   fireRate: 1
   hp: 0
   critChance: 0.05

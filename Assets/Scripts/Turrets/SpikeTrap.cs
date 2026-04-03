@@ -52,7 +52,7 @@ namespace Underdark
             StartCoroutine(SpikeRoutine());
         }
 
-        private IEnumerator SpikeRoutine()
+private IEnumerator SpikeRoutine()
         {
             float dur = 0.12f, t = 0f;
             while (t < dur)
@@ -67,12 +67,28 @@ namespace Underdark
             }
 
             float dmg = RollDamage(out bool isCrit);
+            float step = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
+            float halfTile = step * 0.5f;
+
             var monsters = new List<Monster>(MonsterManager.Instance.ActiveMonsters);
             foreach (var m in monsters)
             {
                 if (m == null || !m.IsAlive) continue;
-                if (Vector2.Distance(transform.position, m.transform.position) <= range)
-                    m.TakeDamage(dmg, isCrit);
+                // 점유 타일 위에 있는 몸스터만 공격 (AABB 판정)
+                bool onTile = false;
+                foreach (var tile in occupiedTiles)
+                {
+                    if (tile == null) continue;
+                    Vector2 tilePos = tile.transform.position;
+                    Vector2 monPos  = m.transform.position;
+                    if (Mathf.Abs(monPos.x - tilePos.x) <= halfTile &&
+                        Mathf.Abs(monPos.y - tilePos.y) <= halfTile)
+                    {
+                        onTile = true;
+                        break;
+                    }
+                }
+                if (onTile) m.TakeDamage(dmg, isCrit);
             }
 
             yield return new WaitForSeconds(0.18f);

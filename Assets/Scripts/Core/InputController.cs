@@ -195,31 +195,24 @@ private void ShowTurretRange(TurretBase turret)
         {
             if (turret == null || RangeIndicator.Instance == null) return;
             var def = TurretManager.Instance.GetDef(turret.turretType);
-            Color col = def.color; col.a = 0.55f;
+            Color col = def.color;
+            col.a = 0.85f;
 
             switch (turret.turretType)
             {
                 case TurretType.SpikeTrap:
                 case TurretType.ElectricGate:
                     var tiles = TurretManager.Instance.GetShapeTiles(turret.currentTile, turret.turretType, turret.statData);
-                    if (tiles != null) RangeIndicator.Instance.ShowTiles(tiles, new Color(col.r, col.g, col.b, 0.35f), 2.5f);
+                    if (tiles != null)
+                        RangeIndicator.Instance.ShowTiles(tiles, new Color(col.r, col.g, col.b, 0.5f), 2.5f);
                     return;
 
                 case TurretType.MeleeTurret:
                     var melee = turret as MeleeTurret;
                     if (melee == null) return;
-                    float mstep = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
-                    float mlen  = melee.range > 0 ? melee.range : mstep * 1.2f;
-                    RangeIndicator.Instance.ShowDirection(turret.transform.position, melee.FacingDir, mlen,
-                        new Color(col.r, col.g, col.b, 0.75f), mstep * 0.85f, 2.5f);
-                    return;
-
-                case TurretType.BlackHole:
-                    var bh = turret as BlackHoleTurret;
-                    // 타워 탐지 범위 (range) - 연한 원
-                    if (turret.range > 0f)
-                        RangeIndicator.Instance.ShowCircle(turret.transform.position, turret.range,
-                            new Color(0.5f, 0f, 1f, 0.35f), 2.5f);
+                    var meleeTiles = GetMeleeTiles(melee);
+                    if (meleeTiles != null && meleeTiles.Count > 0)
+                        RangeIndicator.Instance.ShowTiles(meleeTiles, new Color(col.r, col.g, col.b, 0.55f), 2.5f);
                     return;
 
                 case TurretType.DragonStatue:
@@ -227,7 +220,14 @@ private void ShowTurretRange(TurretBase turret)
                     float bRange = dragon != null ? dragon.breathRange : 2.2f;
                     float bWidth = dragon != null ? dragon.breathWidth : 0.9f;
                     RangeIndicator.Instance.ShowBreathRect(turret.transform.position,
-                        bRange, bWidth, new Color(1f, 0.45f, 0.1f, 0.6f), 2.5f);
+                        bRange, bWidth, col, 2.5f);
+                    return;
+
+                case TurretType.BlackHole:
+                    // 타워 탐지 범위 (연한)
+                    if (turret.range > 0f)
+                        RangeIndicator.Instance.ShowCircle(turret.transform.position, turret.range,
+                            new Color(0.5f, 0f, 1f, 0.5f), 2.5f);
                     return;
 
                 case TurretType.Wall:
@@ -238,12 +238,10 @@ private void ShowTurretRange(TurretBase turret)
 
                 default:
                     float r = turret.range;
-                    // range 0이면 통계 없음 → StatData 기본값 fallback
                     if (r <= 0f && turret.statData != null && turret.statData.levels?.Length > 0)
                         r = turret.statData.levels[0].range;
                     if (r > 0f)
-                        RangeIndicator.Instance.ShowCircle(turret.transform.position, r,
-                            new Color(col.r, col.g, col.b, 0.8f), 2.5f);
+                        RangeIndicator.Instance.ShowCircle(turret.transform.position, r, col, 2.5f);
                     return;
             }
         }
@@ -252,31 +250,36 @@ private void ShowTurretRange(TurretBase turret)
 private void UpdateRangeIndicator(Vector3 center, TurretStatData sd, bool canPlace)
         {
             if (RangeIndicator.Instance == null) return;
-            Color rc = canPlace ? new Color(0.4f, 1f, 0.5f, 0.7f) : new Color(1f, 0.3f, 0.3f, 0.7f);
+            var def = TurretManager.Instance.GetDef(_dragType);
+            // 설치 가능 여부에 따라 색상 결정
+            Color baseCol = canPlace ? def.color : new Color(1f, 0.25f, 0.25f);
+            baseCol.a = 0.85f;
 
             switch (_dragType)
             {
                 case TurretType.SpikeTrap:
                 case TurretType.ElectricGate:
                     if (_lastHighlighted.Count > 0)
-                        RangeIndicator.Instance.ShowTiles(_lastHighlighted, new Color(rc.r, rc.g, rc.b, 0.3f));
+                        RangeIndicator.Instance.ShowTiles(_lastHighlighted,
+                            new Color(baseCol.r, baseCol.g, baseCol.b, 0.4f));
                     else RangeIndicator.Instance.Hide();
                     return;
 
                 case TurretType.MeleeTurret:
-                    float mstep = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
-                    float mlen  = sd != null && sd.levels?.Length > 0 ? sd.levels[0].range : mstep * 1.2f;
-                    RangeIndicator.Instance.ShowDirection(center, new Vector2Int(0, -1), mlen,
-                        new Color(rc.r, rc.g, rc.b, 0.75f), mstep * 0.85f);
+                    // 드래그 중에는 아래 방향 1칸 미리보기
+                    var dragMeleeDir = new Vector2Int(0, -1);
+                    var dragMeleeTiles = GetDragMeleeTiles(center, dragMeleeDir, 1);
+                    if (dragMeleeTiles != null && dragMeleeTiles.Count > 0)
+                        RangeIndicator.Instance.ShowTiles(dragMeleeTiles, new Color(baseCol.r, baseCol.g, baseCol.b, 0.45f));
+                    else RangeIndicator.Instance.Hide();
                     return;
 
                 case TurretType.DragonStatue:
-                    // 드래곤: 좌우 브레스 범위 사각형
-                    float bRange = 2.2f; // 기본값 (StatData가 없으면)
+                    float bRange = 2.2f;
                     float bWidth = 0.9f;
-                    if (sd != null && sd.levels?.Length > 0) bRange = sd.levels[0].range > 0 ? sd.levels[0].range : bRange;
-                    RangeIndicator.Instance.ShowBreathRect(center, bRange, bWidth,
-                        new Color(1f, 0.5f, 0.1f, 0.55f));
+                    if (sd != null && sd.levels?.Length > 0 && sd.levels[0].range > 0)
+                        bRange = sd.levels[0].range;
+                    RangeIndicator.Instance.ShowBreathRect(center, bRange, bWidth, baseCol);
                     return;
 
                 case TurretType.Wall:
@@ -289,13 +292,9 @@ private void UpdateRangeIndicator(Vector3 center, TurretStatData sd, bool canPla
                 default:
                     float range = sd != null && sd.levels?.Length > 0 ? sd.levels[0].range : 0f;
                     if (range > 0f)
-                        RangeIndicator.Instance.ShowCircle(center, range, rc);
+                        RangeIndicator.Instance.ShowCircle(center, range, baseCol);
                     else
-                    {
-                        // StatData가 없을 때 TurretDef에서 fallback 범위 필드 추정
-                        var def = TurretManager.Instance.GetDef(_dragType);
-                        RangeIndicator.Instance.Hide(); // range 없는 터렛은 숙이기
-                    }
+                        RangeIndicator.Instance.Hide();
                     return;
             }
         }
@@ -333,6 +332,49 @@ private Tile RaycastTile(Vector3 worldPos)
             gy = Mathf.Clamp(gy, 0, map.rows    - 1);
 
             return map.GetTile(gx, gy);
+        }
+
+        /// <summary>설치된 MeleeTurret의 실제 FacingDir 기준 공격 타일 목록</summary>
+        private List<Tile> GetMeleeTiles(MeleeTurret melee)
+        {
+            var result = new List<Tile>();
+            if (melee.currentTile == null) return result;
+            var map = MapManager.Instance;
+            var dir = melee.FacingDir;
+            int ox = melee.currentTile.gridX;
+            int oy = melee.currentTile.gridY;
+            // statData의 attackTiles를 가져오려 하지만, 없으면 1칸
+            int tiles = 1;
+            if (melee.statData != null)
+            {
+                var lv = melee.statData.GetLevel(melee.level);
+                tiles = Mathf.Max(1, lv.attackTiles);
+            }
+            for (int i = 1; i <= tiles; i++)
+            {
+                var t = map.GetTile(ox + dir.x * i, oy + dir.y * i);
+                if (t != null) result.Add(t);
+            }
+            return result;
+        }
+
+        /// <summary>드래그 중 임시위치 기준 방향 타일 목록</summary>
+        private List<Tile> GetDragMeleeTiles(Vector3 worldCenter, Vector2Int dir, int count)
+        {
+            var result = new List<Tile>();
+            var map = MapManager.Instance;
+            if (map == null) return result;
+            float step    = map.tileSize + map.tileGap;
+            float offsetX = -(map.columns - 1) * step * 0.5f;
+            float offsetY = -(map.rows    - 1) * step * 0.5f;
+            int gx = Mathf.RoundToInt((worldCenter.x - offsetX) / step);
+            int gy = Mathf.RoundToInt((worldCenter.y - offsetY) / step);
+            for (int i = 1; i <= count; i++)
+            {
+                var t = map.GetTile(gx + dir.x * i, gy + dir.y * i);
+                if (t != null) result.Add(t);
+            }
+            return result;
         }
 
         private bool IsPointerOverUI()
