@@ -89,7 +89,19 @@ private IEnumerator BlackHoleRoutine(Vector3 center)
                 coreSr.color  = new Color(0.05f, 0f, 0.1f, 0.92f);
             }
             coreSr.sortingOrder = SLayer.Effect - 1;
-            coreGo.transform.localScale = Vector3.one * curRadius * 2f * 0.82f;
+            if (coreSprite != null)
+            {
+                // 스프라이트 PPU 기준으로 정확하게 크기 맞춤
+                float ppu  = coreSprite.pixelsPerUnit;
+                float sprW = coreSprite.rect.width  / ppu;
+                float sprH = coreSprite.rect.height / ppu;
+                float d    = curRadius * 2f;
+                coreGo.transform.localScale = new Vector3(d / sprW, d / sprH, 1f);
+            }
+            else
+            {
+                coreGo.transform.localScale = Vector3.one * curRadius * 2f * 0.82f;
+            }
 
             float elapsed   = 0f;
             float tickTimer = 0f;

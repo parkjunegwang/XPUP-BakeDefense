@@ -122,9 +122,12 @@ MonoBehaviour:
   isFromMapData: 0
   currentTile: {fileID: 0}
   occupiedTiles: []
-  suctionDuration: 2.5
+  coreSprite: {fileID: 21300000, guid: baf8ad15befcad24da531898f2308999, type: 3}
+  holeDuration: 4
+  holeRadius: 1.5
   suctionForce: 3.5
-  burstMult: 3
+  tickInterval: 0.3
+  maxHoles: 1
 --- !u!1 &3038854690543083792
 GameObject:
   m_ObjectHideFlags: 0
