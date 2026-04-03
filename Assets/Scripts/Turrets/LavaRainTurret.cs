@@ -22,38 +22,81 @@ namespace Underdark
             _sr.sortingOrder = SLayer.TrapEffect;
         }
 
-        public void Init(float damage, float duration, float size)
+public void Init(float damage, float duration, float size)
         {
-            _damage = damage;
+            _damage   = damage;
             _duration = duration;
             transform.localScale = Vector3.one * size;
+
+            // LavaRain_area_01 ~ 03 랜덤 선택
+            int idx = Random.Range(1, 4); // 1, 2, 3
+            var sprite = Resources.Load<Sprite>($"Image/LavaRain_area_0{idx}");
+            if (sprite != null)
+            {
+                _sr.sprite = sprite;
+                _sr.color  = Color.white; // 스프라이트 색상 그대로
+            }
+            else
+            {
+                // 로드 실패 시 fallback
+                _sr.sprite = GameSetup.WhiteSquareStatic();
+                _sr.color  = new Color(1f, 0.3f, 0f, 0.75f);
+            }
         }
 
-        private void Update()
+private void Update()
         {
             if (GameManager.Instance.CurrentState != GameState.WaveInProgress) return;
 
-            _elapsed += Time.deltaTime;
+            _elapsed   += Time.deltaTime;
             _tickTimer += Time.deltaTime;
 
             // 페이드 아웃
-            float alpha = Mathf.Lerp(0.75f, 0f, _elapsed / _duration);
-            _sr.color = new Color(1f, 0.3f, 0f, alpha);
+            float alpha = Mathf.Lerp(0.85f, 0f, _elapsed / _duration);
+            var c = _sr.color;
+            _sr.color = new Color(c.r, c.g, c.b, alpha);
 
-            // 틱 데미지
             if (_tickTimer >= _tickInterval)
             {
                 _tickTimer = 0f;
+
+                // 타일 크기의 절반을 판정 반경으로 사용
+                float half = transform.localScale.x * 0.5f;
+
                 var monsters = new List<Monster>(MonsterManager.Instance.ActiveMonsters);
                 foreach (var m in monsters)
                 {
                     if (m == null || !m.IsAlive) continue;
-                    if (Vector2.Distance(transform.position, m.transform.position) <= 0.5f)
+
+                    // 스윗 판정: 이전프레임→현재 선분이 용암 AABB를 통과해도 적중
+                    if (SweepCheck(m.LastPosition, m.transform.position,
+                                   transform.position, half))
                         m.TakeDamage(_damage);
                 }
             }
 
             if (_elapsed >= _duration) Destroy(gameObject);
+        }
+
+        private bool SweepCheck(Vector2 prev, Vector2 cur, Vector2 center, float half)
+        {
+            if (Mathf.Abs(cur.x  - center.x) <= half && Mathf.Abs(cur.y  - center.y) <= half) return true;
+            if (Mathf.Abs(prev.x - center.x) <= half && Mathf.Abs(prev.y - center.y) <= half) return true;
+
+            float dx = cur.x - prev.x, dy = cur.y - prev.y;
+            if (Mathf.Abs(dx) < 0.0001f && Mathf.Abs(dy) < 0.0001f) return false;
+
+            float txMin = Mathf.Abs(dx) < 0.0001f ? float.NegativeInfinity : (center.x - half - prev.x) / dx;
+            float txMax = Mathf.Abs(dx) < 0.0001f ? float.PositiveInfinity : (center.x + half - prev.x) / dx;
+            float tyMin = Mathf.Abs(dy) < 0.0001f ? float.NegativeInfinity : (center.y - half - prev.y) / dy;
+            float tyMax = Mathf.Abs(dy) < 0.0001f ? float.PositiveInfinity : (center.y + half - prev.y) / dy;
+
+            if (txMin > txMax) { float tmp = txMin; txMin = txMax; txMax = tmp; }
+            if (tyMin > tyMax) { float tmp = tyMin; tyMin = tyMax; tyMax = tmp; }
+
+            float tEnter = Mathf.Max(txMin, tyMin);
+            float tExit  = Mathf.Min(txMax, tyMax);
+            return tEnter <= tExit && tExit >= 0f && tEnter <= 1f;
         }
     }
 

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SD_GambleBat
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.TurretStatData
   turretType: 0
-  autoScale: 1
+  autoScale: 0
   useCustomShape: 0
   tileShape:
   - {x: 0, y: 0}
@@ -29,6 +29,6 @@ MonoBehaviour:
     hp: 0
     attackTiles: 1
     critChance: 0.1
-    critMultiplier: 10
+    critMultiplier: 5
     bodySprite: {fileID: 0}
     barrelSprite: {fileID: 0}
