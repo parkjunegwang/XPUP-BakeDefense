@@ -2391,7 +2391,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.StageManager
   stages:
   - {fileID: 11400000, guid: 34723250f63b6124a9857a1882fd0e74, type: 2}
-  - {fileID: 11400000, guid: e5633501bbd5cfd4c9814f5123d5de24, type: 2}
+  - {fileID: 11400000, guid: 0ed6156e2ad76404eb56aba62952dfed, type: 2}
   - {fileID: 11400000, guid: 037359c9133fe39438648ffb7744ce0d, type: 2}
   lobbySceneName: LobbyScene
 --- !u!4 &1195316302

@@ -122,6 +122,9 @@ MonoBehaviour:
   isFromMapData: 0
   currentTile: {fileID: 0}
   occupiedTiles: []
+  projectilePrefab: {fileID: 8230984889775588879, guid: 4bf6c5bdd893da241b106f15d99a2427, type: 3}
+  projectileSprite: {fileID: 21300000, guid: e11e801052ee8c54f97c3268c6eb9fc3, type: 3}
+  projectileSize: 0.25
   slowFactor: 0.4
   slowDuration: 2.5
 --- !u!1 &2062549871893228221

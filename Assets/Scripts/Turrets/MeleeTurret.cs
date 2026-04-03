@@ -132,7 +132,8 @@ private List<Monster> GetMonstersInFront()
 
             var map      = MapManager.Instance;
             float step     = map.tileSize + map.tileGap;
-            float halfTile = step * 0.5f;
+            // halfTile을 조금 크게 주어서 판정 너널하게
+            float halfTile = step * 0.6f;
             Vector2Int dir = FacingDir;
 
             var attackTileList = new List<Tile>();
@@ -149,11 +150,13 @@ private List<Monster> GetMonstersInFront()
             foreach (var m in monsters)
             {
                 if (m == null || !m.IsAlive) continue;
+                Vector2 mp = m.transform.position;
                 foreach (var tile in attackTileList)
                 {
-                    // 스윗 판정: 이전프레임→현재 선분이 타일 통과해도 적중
-                    if (SweepCheck(m.LastPosition, m.transform.position,
-                                   tile.transform.position, halfTile))
+                    Vector2 tp = tile.transform.position;
+                    // 현재 위치 AABB만 체크 (스윗 제거 - 문제의 원인)
+                    if (Mathf.Abs(mp.x - tp.x) <= halfTile &&
+                        Mathf.Abs(mp.y - tp.y) <= halfTile)
                     {
                         result.Add(m);
                         break;

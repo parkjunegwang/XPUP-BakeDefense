@@ -40,12 +40,26 @@ namespace Underdark
                 LoadStagesFromResources();
         }
 
-        private void Start()
+private void Start()
         {
-            // 선택된 스테이지 로드
-            StageIndex    = SaveData.SelectedStageIndex;
-            CurrentStage  = StageIndex < stages.Count ? stages[StageIndex] : null;
-            CurrentWave   = 0;
+            StageIndex  = SaveData.SelectedStageIndex;
+            CurrentWave = 0;
+
+            // stages가 비어있으면 Inspector 연결 안된 것 → 에러 보여주고 안전하게 fallback
+            if (stages == null || stages.Count == 0)
+            {
+                Debug.LogError("[StageManager] stages 리스트가 비어있어요! Inspector에서 StageManager의 Stages 리스트에 StageData를 연결해주세요.");
+                return;
+            }
+
+            // StageIndex 범위 초과 시 0으로 fallback
+            if (StageIndex < 0 || StageIndex >= stages.Count)
+            {
+                Debug.LogWarning($"[StageManager] StageIndex({StageIndex})가 범위 초과 (stages.Count={stages.Count}). 0으로 fallback.");
+                StageIndex = 0;
+            }
+
+            CurrentStage = stages[StageIndex];
 
             // MapData 적용
             if (CurrentStage?.mapData != null)

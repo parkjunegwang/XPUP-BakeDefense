@@ -74,15 +74,17 @@ protected override void Update()
 private bool HasMonsterOnTiles()
         {
             float step     = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
-            float halfTile = step * 0.5f;
+            float halfTile = step * 0.6f; // 조금 넓게서 판정 너널하게
             foreach (var m in MonsterManager.Instance.ActiveMonsters)
             {
                 if (m == null || !m.IsAlive) continue;
+                Vector2 mp = m.transform.position;
                 foreach (var tile in occupiedTiles)
                 {
                     if (tile == null) continue;
-                    if (SweepCheck(m.LastPosition, m.transform.position,
-                                   tile.transform.position, halfTile))
+                    Vector2 tp = tile.transform.position;
+                    if (Mathf.Abs(mp.x - tp.x) <= halfTile &&
+                        Mathf.Abs(mp.y - tp.y) <= halfTile)
                         return true;
                 }
             }
@@ -141,7 +143,7 @@ private IEnumerator SpikeRoutine()
 
             float dmg      = RollDamage(out bool isCrit);
             float step     = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
-            float halfTile = step * 0.5f;
+            float halfTile = step * 0.6f;
 
             var monsters = new List<Monster>(MonsterManager.Instance.ActiveMonsters);
             foreach (var m in monsters)
@@ -151,9 +153,11 @@ private IEnumerator SpikeRoutine()
                 foreach (var tile in occupiedTiles)
                 {
                     if (tile == null) continue;
-                    // 스윗 판정: 이전프레임→현재 선분이 타일 AABB 통과시도 적중
-                    if (SweepCheck(m.LastPosition, m.transform.position,
-                                   tile.transform.position, halfTile))
+                    // AABB 판정 (halfTile 넓게 주어 통과 시도 안정적으로 적중)
+                    Vector2 tp2 = tile.transform.position;
+                    Vector2 mp2 = m.transform.position;
+                    if (Mathf.Abs(mp2.x - tp2.x) <= halfTile &&
+                        Mathf.Abs(mp2.y - tp2.y) <= halfTile)
                     { hit = true; break; }
                 }
                 if (hit) m.TakeDamage(dmg, isCrit);
