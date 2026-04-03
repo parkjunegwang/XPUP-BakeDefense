@@ -13,16 +13,36 @@ MonoBehaviour:
   m_Name: SD_SpikeTrap
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.TurretStatData
   turretType: 0
-  autoScale: 1
+  autoScale: 0
   useCustomShape: 0
   tileShape:
   - {x: 0, y: 0}
   passableTileIndices: 
   levels:
   - level: 1
-    damage: 12
+    damage: 25
     range: 1.5
-    fireRate: 2
+    fireRate: 3
+    hp: 0
+    attackTiles: 1
+    critChance: 0.05
+    critMultiplier: 2
+    bodySprite: {fileID: 0}
+    barrelSprite: {fileID: 0}
+  - level: 2
+    damage: 35
+    range: 1.5
+    fireRate: 4
+    hp: 0
+    attackTiles: 1
+    critChance: 0.05
+    critMultiplier: 2
+    bodySprite: {fileID: 0}
+    barrelSprite: {fileID: 0}
+  - level: 3
+    damage: 45
+    range: 1.5
+    fireRate: 5
     hp: 0
     attackTiles: 1
     critChance: 0.05

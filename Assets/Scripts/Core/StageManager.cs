@@ -81,7 +81,8 @@ namespace Underdark
         }
 
         // ── 웨이브 완료 (MonsterManager에서 호출) ───────────────────
-public void OnWaveComplete() { CleanupProjectiles(); int waveJustDone = CurrentWave; CurrentWave++; if (CurrentWave >= TotalWaves) { SaveData.SetCleared(StageIndex, true); GameManager.Instance.TriggerVictory(); return; } GameManager.Instance.SetState(GameState.Preparation); WaveData wd = (CurrentStage != null && waveJustDone < CurrentStage.TotalWaves) ? CurrentStage.waves[waveJustDone] : null; int xp = (wd != null && wd.waveCompleteXp > 0) ? wd.waveCompleteXp : GameManager.Instance.xpPerWave; Debug.Log($"[StageManager] Wave {waveJustDone + 1} clear XP: {xp} (override={wd?.waveCompleteXp})"); GameManager.Instance.AddXP(xp); UIManager.Instance?.ShowPrepUI(CurrentWave + 1); }
+public void OnWaveComplete() { CleanupProjectiles(); int waveJustDone = CurrentWave; CurrentWave++; if (CurrentWave >= TotalWaves) { SaveData.SetCleared(StageIndex, true); GameManager.Instance.TriggerVictory(); return; } GameManager.Instance.SetState(GameState.Preparation); WaveData wd = (CurrentStage != null && waveJustDone < CurrentStage.TotalWaves) ? CurrentStage.waves[waveJustDone] : null; // waveCompleteXp: -1 = xpPerWave 사용, 0 = XP 없음, 1이상 = 직접 입력값
+            int xp = (wd != null && wd.waveCompleteXp >= 0) ? wd.waveCompleteXp : GameManager.Instance.xpPerWave; Debug.Log($"[StageManager] Wave {waveJustDone + 1} clear XP: {xp} (override={wd?.waveCompleteXp})"); GameManager.Instance.AddXP(xp); UIManager.Instance?.ShowPrepUI(CurrentWave + 1); }
 
         // ── 로비로 돌아가기 ─────────────────────────────────────────
         public void GoToLobby()

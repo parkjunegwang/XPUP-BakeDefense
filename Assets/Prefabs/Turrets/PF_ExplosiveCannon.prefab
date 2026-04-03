@@ -214,7 +214,10 @@ MonoBehaviour:
   isFromMapData: 0
   currentTile: {fileID: 0}
   occupiedTiles: []
-  blastRadius: 1.5
+  blastRadius: 0.5
+  shellPrefab: {fileID: 8230984889775588879, guid: 3b81634b2f9f0dd48ba08822b28c5f10, type: 3}
+  explosionPrefab: {fileID: 2779108073007526270, guid: af7f913ad1ca6874ab732cee7f7bee14, type: 3}
+  _ani: {fileID: 6861786882375628398}
 --- !u!1 &1233847876005129706
 GameObject:
   m_ObjectHideFlags: 0
@@ -240,7 +243,7 @@ Transform:
   m_GameObject: {fileID: 1233847876005129706}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.31, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

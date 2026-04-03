@@ -2,46 +2,19 @@ using UnityEngine;
 
 namespace Underdark
 {
+    /// <summary>
+    /// 몬스터 프리팹 정보만 관리.
+    /// HP/Speed/Reward 등 스탯은 StageData의 MonsterSpawnGroup에서 웨이브별로 직접 설정.
+    /// </summary>
     [CreateAssetMenu(fileName = "MonsterStatData", menuName = "Underdark/Monster Stat Data")]
     public class MonsterStatData : ScriptableObject
     {
-        [Header("Prefab Name (Resources/prefabs/)")]
+        [Header("프리팹")]
+        [Tooltip("Resources/prefabs/ 폴더 안의 프리팹 이름")]
         public string prefabName = "Enemy_0";
 
-        [Header("Base Stats")]
-        public float baseHp     = 10f;
-        public float baseSpeed  = 1.8f;
-        public int   baseReward = 5;
-
-        [Header("Per Wave Scaling")]
-        [Tooltip("HP += hpPerWave * waveIndex")]
-        public float hpPerWave     = 20f;
-        [Tooltip("Speed += speedPerWave * waveIndex")]
-        public float speedPerWave  = 0.12f;
-        [Tooltip("Reward += rewardPerWave * waveIndex")]
-        public int   rewardPerWave = 1;
-
-        [Header("Boss Override")]
-        public bool  isBoss          = false;
-        public float bossHpMult      = 1f;
-        public float bossSpeedMult   = 1f;
-        public float bossSizeScale   = 1f;
-
-        [Header("Spawn Count")]
-        [Tooltip("웨이브당 기본 스폰 수")]
-        public int   baseCount       = 8;
-        [Tooltip("waveIndex당 추가 스폰 수")]
-        public int   countPerWave    = 2;
-        [Tooltip("최대 스폰 수 제한 (0 = 무제한)")]
-        public int   maxCount        = 30;
-
-        public float GetHp(int waveIndex)    => baseHp    + hpPerWave    * waveIndex;
-        public float GetSpeed(int waveIndex) => baseSpeed + speedPerWave * waveIndex;
-        public int   GetReward(int waveIndex)=> baseReward + rewardPerWave * waveIndex;
-        public int   GetCount(int waveIndex)
-        {
-            int c = baseCount + countPerWave * waveIndex;
-            return maxCount > 0 ? Mathf.Min(c, maxCount) : c;
-        }
+        [Header("보스 크기 배율 (isBoss일 때 적용)")]
+        [Tooltip("보스로 사용될 때 크기 배율. 1이면 기본 크기.")]
+        public float bossSizeScale = 1.8f;
     }
 }

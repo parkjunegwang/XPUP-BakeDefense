@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SD_AreaDamage
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.TurretStatData
   turretType: 0
-  autoScale: 1
+  autoScale: 0
   useCustomShape: 0
   tileShape:
   - {x: 0, y: 0}

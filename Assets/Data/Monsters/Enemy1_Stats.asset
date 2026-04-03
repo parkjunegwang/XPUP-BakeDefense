@@ -13,16 +13,4 @@ MonoBehaviour:
   m_Name: Enemy1_Stats
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.MonsterStatData
   prefabName: Enemy_0
-  baseHp: 15
-  baseSpeed: 0.5
-  baseReward: 5
-  hpPerWave: 18
-  speedPerWave: 0.05
-  rewardPerWave: 1
-  isBoss: 0
-  bossHpMult: 1
-  bossSpeedMult: 1
   bossSizeScale: 1
-  baseCount: 8
-  countPerWave: 2
-  maxCount: 25

@@ -32,19 +32,19 @@ namespace Underdark
 
         private void BuildSpikes()
         {
-            float[] xPos = { -0.35f, -0.12f, 0.12f, 0.35f };
-            foreach (var xOff in xPos)
-            {
-                var spike = new GameObject("Spike");
-                spike.transform.SetParent(transform);
-                spike.transform.localPosition = SpikeHide + new Vector3(xOff, 0f, 0f);
-                spike.transform.localScale    = new Vector3(0.045f, 0.3f, 1f);
-                var sr = spike.AddComponent<SpriteRenderer>();
-                sr.sprite       = GameSetup.WhiteSquareStatic();
-                sr.color        = new Color(0.75f, 0.75f, 0.8f);
-                sr.sortingOrder = SLayer.TrapEffect;
-                _spikes.Add(spike.transform);
-            }
+            //float[] xPos = { -0.35f, -0.12f, 0.12f, 0.35f };
+            //foreach (var xOff in xPos)
+            //{
+            //    var spike = new GameObject("Spike");
+            //    spike.transform.SetParent(transform);
+            //    spike.transform.localPosition = SpikeHide + new Vector3(xOff, 0f, 0f);
+            //    spike.transform.localScale    = new Vector3(0.045f, 0.3f, 1f);
+            //    var sr = spike.AddComponent<SpriteRenderer>();
+            //    sr.sprite       = GameSetup.WhiteSquareStatic();
+            //    sr.color        = new Color(0.75f, 0.75f, 0.8f);
+            //    sr.sortingOrder = SLayer.TrapEffect;
+            //    _spikes.Add(spike.transform);
+            //}
         }
 
         protected override void OnTick()

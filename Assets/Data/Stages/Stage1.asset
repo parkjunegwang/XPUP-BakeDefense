@@ -16,112 +16,160 @@ MonoBehaviour:
   description: Zombie Wave!!
   thumbnail: {fileID: 0}
   waves:
-  - groups:
+  - waveName: Wave 1 - Scouts
+    groups:
     - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
       count: 1
-      isBoss: 0
       spawnInterval: 0
-      killXpOverride: 100
-    waveName: Wave 1 - Scouts
+      hp: 30
+      speed: 0.8
+      reward: 100
+      isBoss: 0
+      bossHpMult: 1
     waveCompleteXp: 0
-  - groups:
+  - waveName: Wave 2 - Assault
+    groups:
     - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
       count: 1
-      isBoss: 0
       spawnInterval: 0
-      killXpOverride: 0
+      hp: 30
+      speed: 0.8
+      reward: 20
+      isBoss: 0
+      bossHpMult: 1
     - statData: {fileID: 11400000, guid: 71f32271c9a4be04680fe3957d900085, type: 2}
       count: 3
-      isBoss: 0
       spawnInterval: 0
-      killXpOverride: 0
-    waveName: Wave 2 - Assault
+      hp: 30
+      speed: 0.8
+      reward: 20
+      isBoss: 0
+      bossHpMult: 1
     waveCompleteXp: 0
-  - groups:
+  - waveName: 'Wave 4 '
+    groups:
     - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
       count: 5
-      isBoss: 0
       spawnInterval: 0
-      killXpOverride: 0
-    waveName: Wave 3 - Boss
+      hp: 35
+      speed: 0.9
+      reward: 20
+      isBoss: 0
+      bossHpMult: 1
     waveCompleteXp: 0
-  - groups:
+  - waveName: Wave 5
+    groups:
     - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
       count: 5
-      isBoss: 0
       spawnInterval: 0
-      killXpOverride: 20
+      hp: 45
+      speed: 0.8
+      reward: 20
+      isBoss: 0
+      bossHpMult: 1
     - statData: {fileID: 11400000, guid: 71f32271c9a4be04680fe3957d900085, type: 2}
       count: 5
-      isBoss: 0
       spawnInterval: 0
-      killXpOverride: 20
-    waveName: Wave 3 - Boss
+      hp: 55
+      speed: 0.9
+      reward: 15
+      isBoss: 0
+      bossHpMult: 1
     waveCompleteXp: 0
-  - groups:
+  - waveName: Wave 6
+    groups:
     - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
       count: 5
-      isBoss: 0
       spawnInterval: 0
-      killXpOverride: 15
+      hp: 65
+      speed: 0.8
+      reward: 25
+      isBoss: 0
+      bossHpMult: 1
     - statData: {fileID: 11400000, guid: fe9bfa6e61a329e42b1ffbd29cd9f160, type: 2}
       count: 4
-      isBoss: 0
       spawnInterval: 0
-      killXpOverride: 15
-    waveName: Wave 3 - Boss
+      hp: 65
+      speed: 0.9
+      reward: 5
+      isBoss: 0
+      bossHpMult: 1
     waveCompleteXp: 0
-  - groups:
+  - waveName: Wave 7 - speed
+    groups:
     - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
-      count: 5
+      count: 10
+      spawnInterval: 0.2
+      hp: 40
+      speed: 1.8
+      reward: 15
       isBoss: 0
+      bossHpMult: 1
+    - statData: {fileID: 11400000, guid: 71f32271c9a4be04680fe3957d900085, type: 2}
+      count: 5
       spawnInterval: 0
-      killXpOverride: 15
+      hp: 45
+      speed: 1.8
+      reward: 10
+      isBoss: 0
+      bossHpMult: 1
+    waveCompleteXp: 0
+  - waveName: Wave 8 - Bonus
+    groups:
+    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
+      count: 10
+      spawnInterval: 0.3
+      hp: 30
+      speed: 1.8
+      reward: 10
+      isBoss: 0
+      bossHpMult: 1
     - statData: {fileID: 11400000, guid: 71f32271c9a4be04680fe3957d900085, type: 2}
       count: 10
+      spawnInterval: 0.2
+      hp: 30
+      speed: 1.8
+      reward: 10
       isBoss: 0
-      spawnInterval: 0
-      killXpOverride: 15
-    waveName: Wave 3 - Boss
+      bossHpMult: 1
     waveCompleteXp: 0
-  - groups:
+  - waveName: Wave 9 -Boss
+    groups:
     - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
       count: 5
-      isBoss: 0
       spawnInterval: 0
-      killXpOverride: 15
-    - statData: {fileID: 11400000, guid: 71f32271c9a4be04680fe3957d900085, type: 2}
+      hp: 30
+      speed: 1.8
+      reward: 5
+      isBoss: 0
+      bossHpMult: 1
+    - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
+      count: 1
+      spawnInterval: 0
+      hp: 250
+      speed: 1.2
+      reward: 5
+      isBoss: 1
+      bossHpMult: 1
+    waveCompleteXp: 0
+  - waveName: Wave 10- Boss
+    groups:
+    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
       count: 10
+      spawnInterval: 1.1
+      hp: 400
+      speed: 0.5
+      reward: 15
       isBoss: 0
-      spawnInterval: 0
-      killXpOverride: 15
-    waveName: Wave 3 - Boss
-    waveCompleteXp: 0
-  - groups:
-    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
-      count: 5
-      isBoss: 0
-      spawnInterval: 0
-      killXpOverride: 15
+      bossHpMult: 1
     - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
-      count: 1
+      count: 2
+      spawnInterval: 1
+      hp: 500
+      speed: 1.2
+      reward: 5
       isBoss: 1
-      spawnInterval: 0
-      killXpOverride: 15
-    waveName: Wave 3 - Boss
-    waveCompleteXp: 0
-  - groups:
-    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
-      count: 5
-      isBoss: 0
-      spawnInterval: 0
-      killXpOverride: 15
-    - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
-      count: 1
-      isBoss: 1
-      spawnInterval: 0
-      killXpOverride: 15
-    waveName: Wave 3 - Boss
+      bossHpMult: 1
     waveCompleteXp: 0
   startTurretPool: 010000000200000003000000050000000b000000
   startTurretCount: 4

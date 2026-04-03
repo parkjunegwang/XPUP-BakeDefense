@@ -66,7 +66,13 @@ public void InitButtons() { if (startWaveBtn != null) startWaveBtn.onClick.AddLi
             }
         }
 
-public void ShowWaveUI(int waveNumber) { bool isBoss = MonsterManager.Instance != null && waveNumber % MonsterManager.Instance.bossWaveInterval == 0; if (waveText != null) waveText.text = isBoss ? $"★ BOSS WAVE {waveNumber} ★" : $"Wave {waveNumber}"; if (waveText != null) waveText.color = isBoss ? new Color(1f,0.3f,0.1f) : Color.white; startWaveBtn?.gameObject.SetActive(false); }
+public void ShowWaveUI(int waveNumber)
+        {
+            // 보스 여부는 WaveData의 group.isBoss로 관리되므로 여기선 일반 표시
+            if (waveText != null) waveText.text = $"Wave {waveNumber}";
+            if (waveText != null) waveText.color = Color.white;
+            startWaveBtn?.gameObject.SetActive(false);
+        }
 
         public void ShowPrepUI(int nextWave)
         {

@@ -32,7 +32,7 @@ namespace Underdark
 
             GameManager.Instance.SetState(GameState.WaveInProgress);
             onWaveStart?.Invoke(CurrentWave);
-            MonsterManager.Instance.StartWave(CurrentWave);
+            // StartWave removed - StageManager.StartNextWave() handles WaveData-based spawning
             UIManager.Instance.ShowWaveUI(CurrentWave + 1);
         }
 
