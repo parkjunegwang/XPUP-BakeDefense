@@ -119,7 +119,7 @@ private void Start() { if (confirmButton != null) confirmButton.onClick.AddListe
             nrt.anchorMin = Vector2.zero; nrt.anchorMax = Vector2.one;
             nrt.offsetMin = nrt.offsetMax = Vector2.zero;
             var namTmp = nameGo.AddComponent<TextMeshProUGUI>();
-            namTmp.text = label; namTmp.fontSize = 18f;
+            namTmp.text = label; namTmp.fontSize = 40f;
             namTmp.fontStyle = FontStyles.Bold;
             namTmp.color = Color.white;
             namTmp.alignment = TextAlignmentOptions.Center;
@@ -144,7 +144,7 @@ private void Start() { if (confirmButton != null) confirmButton.onClick.AddListe
             drt.anchorMin = Vector2.zero; drt.anchorMax = new Vector2(1f, 0.62f);
             drt.offsetMin = new Vector2(6f, 2f); drt.offsetMax = new Vector2(-6f, -2f);
             var descTmp = descGo.AddComponent<TextMeshProUGUI>();
-            descTmp.text = GetDesc(type); descTmp.fontSize = 11f;
+            descTmp.text = GetDesc(type); descTmp.fontSize = 30f;
             descTmp.color = new Color(0.85f, 0.85f, 0.92f);
             descTmp.alignment = TextAlignmentOptions.MidlineLeft;
 

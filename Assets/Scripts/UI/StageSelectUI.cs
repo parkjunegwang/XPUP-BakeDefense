@@ -92,7 +92,7 @@ namespace Underdark
             numTmpRect.anchorMin = Vector2.zero; numTmpRect.anchorMax = Vector2.one;
             numTmpRect.offsetMin = numTmpRect.offsetMax = Vector2.zero;
             numTmp.text      = (idx + 1).ToString();
-            numTmp.fontSize  = 28f;
+            numTmp.fontSize  = 38f;
             numTmp.fontStyle = FontStyles.Bold;
             numTmp.color     = Color.white;
             numTmp.alignment = TextAlignmentOptions.Center;
@@ -115,7 +115,7 @@ namespace Underdark
             titleRect.offsetMin = titleRect.offsetMax = Vector2.zero;
             var titleTmp = titleGo.AddComponent<TextMeshProUGUI>();
             titleTmp.text      = stage != null ? stage.stageName : "Stage";
-            titleTmp.fontSize  = 22f;
+            titleTmp.fontSize  = 38f;
             titleTmp.fontStyle = FontStyles.Bold;
             titleTmp.color     = unlocked ? Color.white : colorLocked;
             titleTmp.alignment = TextAlignmentOptions.MidlineLeft;
@@ -131,7 +131,7 @@ namespace Underdark
             string statusStr = cleared ? "✓ CLEAR" : unlocked ? "AVAILABLE" : "🔒 LOCKED";
             int waveCount    = stage != null ? stage.TotalWaves : 0;
             infoTmp.text = $"Waves {waveCount}  ·  {statusStr}";
-            infoTmp.fontSize = 16f;
+            infoTmp.fontSize = 38f;
             infoTmp.color    = cleared ? colorCleared : unlocked ? colorUnlocked : colorLocked;
             infoTmp.alignment = TextAlignmentOptions.MidlineLeft;
 

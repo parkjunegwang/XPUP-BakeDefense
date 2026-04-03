@@ -12,6 +12,10 @@ namespace Underdark
     /// </summary>
     public class BlackHoleTurret : TurretBase
     {
+        [Header("Sprite")]
+        [Tooltip("블랙홀 코어 스프라이트 (없으면 기본 어두운 사각형)")]
+        public Sprite coreSprite;
+
         [Header("Black Hole Settings")]
         [Tooltip("블랙홀 지속 시간")]
         public float holeDuration   = 4.0f;
@@ -74,8 +78,16 @@ private IEnumerator BlackHoleRoutine(Vector3 center)
             var coreGo = new GameObject("Core");
             coreGo.transform.SetParent(holeGo.transform, false);
             var coreSr = coreGo.AddComponent<SpriteRenderer>();
-            coreSr.sprite       = GameSetup.WhiteSquareStatic();
-            coreSr.color        = new Color(0.05f, 0f, 0.1f, 0.92f);
+            if (coreSprite != null)
+            {
+                coreSr.sprite = coreSprite;
+                coreSr.color  = Color.white;
+            }
+            else
+            {
+                coreSr.sprite = GameSetup.WhiteSquareStatic();
+                coreSr.color  = new Color(0.05f, 0f, 0.1f, 0.92f);
+            }
             coreSr.sortingOrder = SLayer.Effect - 1;
             coreGo.transform.localScale = Vector3.one * curRadius * 2f * 0.82f;
 
