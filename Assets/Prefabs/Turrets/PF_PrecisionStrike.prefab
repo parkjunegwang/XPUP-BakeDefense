@@ -122,6 +122,7 @@ MonoBehaviour:
   isFromMapData: 0
   currentTile: {fileID: 0}
   occupiedTiles: []
+  projectilePrefab: {fileID: 0}
   fixedCritDamage: 5
 --- !u!1 &2446276364830016230
 GameObject:
@@ -327,7 +328,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: a4e4d97062d00e44b86db206e467385c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d2d8e3f6d7f799e42a1be42922053d09, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
