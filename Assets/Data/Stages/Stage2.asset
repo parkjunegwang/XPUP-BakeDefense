@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c081db3e03f3d144683fcf1283e7ece0, type: 3}
   m_Name: Stage2
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.StageData
-  stageName: Stage 1 - Entrance
+  stageName: Stage2
   description: Zombie Wave!!
   thumbnail: {fileID: 0}
   waves:

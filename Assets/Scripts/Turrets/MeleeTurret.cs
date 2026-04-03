@@ -7,6 +7,8 @@ namespace Underdark
 {
     public class MeleeTurret : TurretBase
     {
+
+
         private static readonly Vector2Int[] Dirs = {
             new Vector2Int( 0, -1), // Down
             new Vector2Int(-1,  0), // Left
@@ -25,6 +27,7 @@ namespace Underdark
 
         private SpriteRenderer _arrowSr;
         private SpriteRenderer _slashSr;
+        public Animator _ani;
 
         protected override void Awake()
         {
@@ -110,25 +113,75 @@ namespace Underdark
             UIManager.Instance?.ShowMessage($"Direction: {names[_dirIndex]}");
         }
 
-protected override void OnTick() { var targets = GetMonstersInFront(); if (targets.Count == 0) return; float dmg = RollDamage(out bool isCrit); foreach (var m in targets) m.TakeDamage(dmg, isCrit); StartCoroutine(SlashRoutine(isCrit)); }
+protected override void OnTick()
+        {
+            var targets = GetMonstersInFront(); 
+            if (targets.Count == 0) return; 
+            float dmg = RollDamage(out bool isCrit);
+            foreach (var m in targets) m.TakeDamage(dmg, isCrit);
 
-        private List<Monster> GetMonstersInFront()
+            _ani.Rebind();
+            StartCoroutine(SlashRoutine(isCrit)); 
+        
+        }
+
+private List<Monster> GetMonstersInFront()
         {
             var result = new List<Monster>();
             if (currentTile == null) return result;
-            Vector2Int dir  = FacingDir;
-            float step      = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
-            float maxDist   = _attackTiles * step + 0.3f;
-            var monsters    = new List<Monster>(MonsterManager.Instance.ActiveMonsters);
+
+            var map      = MapManager.Instance;
+            float step     = map.tileSize + map.tileGap;
+            float halfTile = step * 0.5f;
+            Vector2Int dir = FacingDir;
+
+            var attackTileList = new List<Tile>();
+            for (int i = 1; i <= _attackTiles; i++)
+            {
+                var t = map.GetTile(
+                    currentTile.gridX + dir.x * i,
+                    currentTile.gridY + dir.y * i);
+                if (t != null) attackTileList.Add(t);
+            }
+            if (attackTileList.Count == 0) return result;
+
+            var monsters = new List<Monster>(MonsterManager.Instance.ActiveMonsters);
             foreach (var m in monsters)
             {
                 if (m == null || !m.IsAlive) continue;
-                Vector2 toM  = (Vector2)m.transform.position - (Vector2)transform.position;
-                Vector2 dir2 = new Vector2(dir.x, dir.y);
-                if (Vector2.Dot(toM.normalized, dir2) > 0.6f && toM.magnitude <= maxDist)
-                    result.Add(m);
+                foreach (var tile in attackTileList)
+                {
+                    // 스윗 판정: 이전프레임→현재 선분이 타일 통과해도 적중
+                    if (SweepCheck(m.LastPosition, m.transform.position,
+                                   tile.transform.position, halfTile))
+                    {
+                        result.Add(m);
+                        break;
+                    }
+                }
             }
             return result;
+        }
+
+        private bool SweepCheck(Vector2 prev, Vector2 cur, Vector2 tileCenter, float half)
+        {
+            if (Mathf.Abs(cur.x  - tileCenter.x) <= half && Mathf.Abs(cur.y  - tileCenter.y) <= half) return true;
+            if (Mathf.Abs(prev.x - tileCenter.x) <= half && Mathf.Abs(prev.y - tileCenter.y) <= half) return true;
+
+            float dx = cur.x - prev.x, dy = cur.y - prev.y;
+            if (Mathf.Abs(dx) < 0.0001f && Mathf.Abs(dy) < 0.0001f) return false;
+
+            float txMin = Mathf.Abs(dx) < 0.0001f ? float.NegativeInfinity : (tileCenter.x - half - prev.x) / dx;
+            float txMax = Mathf.Abs(dx) < 0.0001f ? float.PositiveInfinity : (tileCenter.x + half - prev.x) / dx;
+            float tyMin = Mathf.Abs(dy) < 0.0001f ? float.NegativeInfinity : (tileCenter.y - half - prev.y) / dy;
+            float tyMax = Mathf.Abs(dy) < 0.0001f ? float.PositiveInfinity : (tileCenter.y + half - prev.y) / dy;
+
+            if (txMin > txMax) { float tmp = txMin; txMin = txMax; txMax = tmp; }
+            if (tyMin > tyMax) { float tmp = tyMin; tyMin = tyMax; tyMax = tmp; }
+
+            float tEnter = Mathf.Max(txMin, tyMin);
+            float tExit  = Mathf.Min(txMax, tyMax);
+            return tEnter <= tExit && tExit >= 0f && tEnter <= 1f;
         }
 
 private System.Collections.IEnumerator SlashRoutine(bool isCrit = false) { if (_slashSr == null) yield break; Color slashCol = isCrit ? new Color(1f, 0.9f, 0.1f, 0.95f) : new Color(1f, 0.9f, 0.1f, 0.9f); float dur = isCrit ? 0.2f : 0.13f; _slashSr.color = slashCol; float t = 0f; while (t < dur) { _slashSr.color = new Color(slashCol.r, slashCol.g, slashCol.b, Mathf.Lerp(slashCol.a, 0f, t / dur)); t += Time.deltaTime; yield return null; } _slashSr.color = new Color(slashCol.r, slashCol.g, slashCol.b, 0f); }

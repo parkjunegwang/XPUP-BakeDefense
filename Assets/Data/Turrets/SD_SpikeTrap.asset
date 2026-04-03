@@ -20,7 +20,7 @@ MonoBehaviour:
   passableTileIndices: 
   levels:
   - level: 1
-    damage: 25
+    damage: 30
     range: 1.5
     fireRate: 3
     hp: 0
@@ -30,7 +30,7 @@ MonoBehaviour:
     bodySprite: {fileID: 0}
     barrelSprite: {fileID: 0}
   - level: 2
-    damage: 35
+    damage: 37
     range: 1.5
     fireRate: 4
     hp: 0

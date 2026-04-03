@@ -47,9 +47,82 @@ namespace Underdark
             //}
         }
 
-        protected override void OnTick()
+protected override void OnTick()
         {
+            // TurretBase.Update에서 호출되지만 실제 판정은 Update에서 직접 처리
             StartCoroutine(SpikeRoutine());
+        }
+
+protected override void Update()
+        {
+            if (GameManager.Instance == null) return;
+            if (GameManager.Instance.CurrentState != GameState.WaveInProgress) return;
+
+            // 타일 위에 먼스터가 없으면 쾼다운을 다시 조절하지 않음
+            // 타일에 먼스터가 진입하는 순간 바로 발동 가능
+            if (!HasMonsterOnTiles()) return;
+
+            _cooldown -= Time.deltaTime;
+            if (_cooldown > 0f) return;
+
+            StartCoroutine(SpikeRoutine());
+            _cooldown = 1f / Mathf.Max(fireRate, 0.01f);
+        }
+
+
+        /// <summary>점유 타일 위에 먼스터가 있는지 매 프레임 체크</summary>
+private bool HasMonsterOnTiles()
+        {
+            float step     = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
+            float halfTile = step * 0.5f;
+            foreach (var m in MonsterManager.Instance.ActiveMonsters)
+            {
+                if (m == null || !m.IsAlive) continue;
+                foreach (var tile in occupiedTiles)
+                {
+                    if (tile == null) continue;
+                    if (SweepCheck(m.LastPosition, m.transform.position,
+                                   tile.transform.position, halfTile))
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>prev→cur 선분이 tileCenter 중심 halfSize AABB와 교차하는지</summary>
+        private bool SweepCheck(Vector2 prev, Vector2 cur, Vector2 tileCenter, float half)
+        {
+            // 1차: 현재 위치 AABB 체크
+            if (Mathf.Abs(cur.x - tileCenter.x) <= half &&
+                Mathf.Abs(cur.y - tileCenter.y) <= half)
+                return true;
+
+            // 2차: 이전 위치 AABB 체크
+            if (Mathf.Abs(prev.x - tileCenter.x) <= half &&
+                Mathf.Abs(prev.y - tileCenter.y) <= half)
+                return true;
+
+            // 3차: 선분-AABB 스윗 교차 체크
+            // AABB를 (열린 구간)으로 보고 선분이 안에 들어오는 t 찾기
+            float dx = cur.x - prev.x;
+            float dy = cur.y - prev.y;
+            if (Mathf.Abs(dx) < 0.0001f && Mathf.Abs(dy) < 0.0001f) return false;
+
+            float txMin = (tileCenter.x - half - prev.x) / dx;
+            float txMax = (tileCenter.x + half - prev.x) / dx;
+            float tyMin = (tileCenter.y - half - prev.y) / dy;
+            float tyMax = (tileCenter.y + half - prev.y) / dy;
+
+            if (Mathf.Abs(dx) < 0.0001f) { txMin = float.NegativeInfinity; txMax = float.PositiveInfinity; }
+            if (Mathf.Abs(dy) < 0.0001f) { tyMin = float.NegativeInfinity; tyMax = float.PositiveInfinity; }
+
+            if (txMin > txMax) { float tmp = txMin; txMin = txMax; txMax = tmp; }
+            if (tyMin > tyMax) { float tmp = tyMin; tyMin = tyMax; tyMax = tmp; }
+
+            float tEnter = Mathf.Max(txMin, tyMin);
+            float tExit  = Mathf.Min(txMax, tyMax);
+
+            return tEnter <= tExit && tExit >= 0f && tEnter <= 1f;
         }
 
 private IEnumerator SpikeRoutine()
@@ -66,29 +139,24 @@ private IEnumerator SpikeRoutine()
                 t += Time.deltaTime; yield return null;
             }
 
-            float dmg = RollDamage(out bool isCrit);
-            float step = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
+            float dmg      = RollDamage(out bool isCrit);
+            float step     = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
             float halfTile = step * 0.5f;
 
             var monsters = new List<Monster>(MonsterManager.Instance.ActiveMonsters);
             foreach (var m in monsters)
             {
                 if (m == null || !m.IsAlive) continue;
-                // 점유 타일 위에 있는 몸스터만 공격 (AABB 판정)
-                bool onTile = false;
+                bool hit = false;
                 foreach (var tile in occupiedTiles)
                 {
                     if (tile == null) continue;
-                    Vector2 tilePos = tile.transform.position;
-                    Vector2 monPos  = m.transform.position;
-                    if (Mathf.Abs(monPos.x - tilePos.x) <= halfTile &&
-                        Mathf.Abs(monPos.y - tilePos.y) <= halfTile)
-                    {
-                        onTile = true;
-                        break;
-                    }
+                    // 스윗 판정: 이전프레임→현재 선분이 타일 AABB 통과시도 적중
+                    if (SweepCheck(m.LastPosition, m.transform.position,
+                                   tile.transform.position, halfTile))
+                    { hit = true; break; }
                 }
-                if (onTile) m.TakeDamage(dmg, isCrit);
+                if (hit) m.TakeDamage(dmg, isCrit);
             }
 
             yield return new WaitForSeconds(0.18f);

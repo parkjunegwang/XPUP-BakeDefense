@@ -215,6 +215,7 @@ MonoBehaviour:
   occupiedTiles: []
   arrowRenderer: {fileID: 0}
   slashRenderer: {fileID: 0}
+  _ani: {fileID: 1157924178184719849}
 --- !u!1 &6623753724976287274
 GameObject:
   m_ObjectHideFlags: 0
