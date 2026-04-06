@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2192854311093134899}
   - component: {fileID: 6917897950577912444}
   - component: {fileID: 179550389913313072}
+  - component: {fileID: 1421625704125634621}
   m_Layer: 0
   m_Name: PF_PrecisionStrike
   m_TagString: Untagged
@@ -124,6 +125,28 @@ MonoBehaviour:
   occupiedTiles: []
   projectilePrefab: {fileID: 0}
   fixedCritDamage: 5
+--- !u!95 &1421625704125634621
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1070692512632793525}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0cc437d4fbb8e6b4698e1f1cabaa9ac0, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2446276364830016230
 GameObject:
   m_ObjectHideFlags: 0
