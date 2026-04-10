@@ -30,7 +30,7 @@ namespace Underdark
             go.transform.position = startPos;
 
             var sr     = go.AddComponent<SpriteRenderer>();
-            var sprite = Resources.Load<Sprite>("Image/Ball");
+            var sprite = Resources.Load<Sprite>("Image/PinballCannon_Ball");
             if (sprite == null) sprite = GetComponentInChildren<SpriteRenderer>()?.sprite;
             if (sprite == null) sprite = GameSetup.WhiteSquareStatic();
             sr.sprite       = sprite;

@@ -13,6 +13,7 @@ namespace Underdark
     {
         public GameObject projectilePrefab;
 
+
         [Header("Precision Settings")]
         [Tooltip("항상 크리티컬로 입히는 고정 데미지")]
         public float fixedCritDamage = 5f;
@@ -44,8 +45,22 @@ namespace Underdark
                 ? statData.GetLevel(level).damage
                 : fixedCritDamage;
 
-            // 항상 크리티컬로 입힘
-            target.TakeDamage(dmg, true);
+            //// 항상 크리티컬로 입힘
+            //target.TakeDamage(dmg, true);
+
+            Vector3 spawnPos = GetFirePosition();
+
+            if (projectilePrefab != null)
+            {
+                bool was = projectilePrefab.activeSelf;
+                projectilePrefab.SetActive(true);
+                var go =
+                    Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
+                projectilePrefab.SetActive(was);
+                go.GetComponent<Projectile>()?.Init(target, dmg, true);
+            }
+
+
             StartCoroutine(PrecisionFlash());
         }
 

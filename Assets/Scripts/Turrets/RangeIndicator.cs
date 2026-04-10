@@ -174,51 +174,40 @@ namespace Underdark
             _fillGo.SetActive(true);
         }
 
-        /// <summary>좌우 브레스 사각형 (DragonStatue)</summary>
+        /// <summary>오른쪽 브레스 사각형 (DragonStatue) - 오른쪽만 표시</summary>
         public void ShowBreathRect(Vector3 center, float rangeX, float rangeY, Color col, float duration = 0f)
         {
             ClearAll();
             gameObject.SetActive(true);
             SetFade(duration);
 
-            float hw = rangeY * 0.5f;
-            float z  = -0.1f;
+            float hw    = rangeY * 0.5f;
+            float left  = center.x;            // 터렛 중심(입 위치)
+            float right = center.x + rangeX;   // 오른쪽 끝
+            float z     = -0.1f;
 
-            // 외곽선 (기존 방식)
-            _lr.loop          = false;
-            _lr.positionCount = 10;
+            // 외곽선: 오른쪽 직사각형만
+            _lr.loop          = true;
+            _lr.positionCount = 4;
             _lr.startColor    = col;
             _lr.endColor      = col;
             _lr.startWidth    = 0.055f;
             _lr.endWidth      = 0.055f;
-            _lr.SetPosition(0, new Vector3(center.x,          center.y + hw, z));
-            _lr.SetPosition(1, new Vector3(center.x - rangeX, center.y + hw, z));
-            _lr.SetPosition(2, new Vector3(center.x - rangeX, center.y - hw, z));
-            _lr.SetPosition(3, new Vector3(center.x,          center.y - hw, z));
-            _lr.SetPosition(4, new Vector3(center.x,          center.y + hw, z));
-            _lr.SetPosition(5, new Vector3(center.x,          center.y - hw, z));
-            _lr.SetPosition(6, new Vector3(center.x + rangeX, center.y - hw, z));
-            _lr.SetPosition(7, new Vector3(center.x + rangeX, center.y + hw, z));
-            _lr.SetPosition(8, new Vector3(center.x,          center.y + hw, z));
-            _lr.SetPosition(9, new Vector3(center.x,          center.y - hw, z));
+            _lr.SetPosition(0, new Vector3(left,  center.y + hw, z));
+            _lr.SetPosition(1, new Vector3(right, center.y + hw, z));
+            _lr.SetPosition(2, new Vector3(right, center.y - hw, z));
+            _lr.SetPosition(3, new Vector3(left,  center.y - hw, z));
 
-            // fill: 좌우 사각형 반투명
-            Color fillCol = new Color(col.r, col.g, col.b, col.a * 0.18f);
+            // fill: 오른쪽 사각형만
+            Color fillCol  = new Color(col.r, col.g, col.b, col.a * 0.18f);
+            float centerRX = center.x + rangeX * 0.5f;
 
-            float centerL = center.x - rangeX * 0.5f;
-            float centerR = center.x + rangeX * 0.5f;
-
-            _rectGoL.transform.position   = new Vector3(centerL, center.y, -0.05f);
-            _rectGoL.transform.localScale = new Vector3(rangeX, rangeY, 1f);
-            _rectGoL.transform.rotation   = Quaternion.identity;
-            _rectSrL.color                = fillCol;
-            _rectGoL.SetActive(true);
-
-            _rectGoR.transform.position   = new Vector3(centerR, center.y, -0.05f);
+            _rectGoR.transform.position   = new Vector3(centerRX, center.y, -0.05f);
             _rectGoR.transform.localScale = new Vector3(rangeX, rangeY, 1f);
             _rectGoR.transform.rotation   = Quaternion.identity;
             _rectSrR.color                = fillCol;
             _rectGoR.SetActive(true);
+            // _rectGoL은 ClearAll()에서 이미 꺼져 있음
         }
 
         public void Hide()

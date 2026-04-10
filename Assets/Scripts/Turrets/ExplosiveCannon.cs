@@ -179,6 +179,7 @@ namespace Underdark
             var target = FindClosestInRange();
             if (target == null) return;
 
+            if(_ani != null)
             _ani.Rebind();
 
             AimBarrel(target.transform.position);

@@ -123,7 +123,7 @@ MonoBehaviour:
   isFromMapData: 0
   currentTile: {fileID: 0}
   occupiedTiles: []
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 8230984889775588879, guid: 9afae7bf20d90874d8a873598fc45fd7, type: 3}
   fixedCritDamage: 5
 --- !u!95 &1421625704125634621
 Animator:

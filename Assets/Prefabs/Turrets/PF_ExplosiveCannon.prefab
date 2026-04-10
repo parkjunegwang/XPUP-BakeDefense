@@ -240,7 +240,7 @@ MonoBehaviour:
   blastRadius: 0.5
   shellPrefab: {fileID: 8230984889775588879, guid: 3b81634b2f9f0dd48ba08822b28c5f10, type: 3}
   explosionPrefab: {fileID: 2779108073007526270, guid: af7f913ad1ca6874ab732cee7f7bee14, type: 3}
-  _ani: {fileID: 0}
+  _ani: {fileID: 4121251154150597469}
 --- !u!1 &1233847876005129706
 GameObject:
   m_ObjectHideFlags: 0

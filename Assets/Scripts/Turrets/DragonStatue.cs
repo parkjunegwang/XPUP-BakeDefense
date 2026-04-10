@@ -26,10 +26,11 @@ namespace Underdark
         private DragonState _state = DragonState.Idle;
         private float _stateTimer;
 
-        // 화염 이펙트 오브젝트 (좌/우)
-        private GameObject _flameLeft;
+        // 화염 이펙트 오브젝트 (오른쪽만)
+        [Tooltip("공격 스프라이트 (없으면 흰 사각형)")]
+        public Sprite attackSprite;
+
         private GameObject _flameRight;
-        private SpriteRenderer _srLeft;
         private SpriteRenderer _srRight;
 
         // 화상 추적 (중복 화상 방지)
@@ -41,21 +42,23 @@ namespace Underdark
             _stateTimer = breathCooldown * 0.5f; // 처음엔 절반 쿨다운 후 시작
 
             // 좌우 화염 이펙트 오브젝트 미리 생성
-            _flameLeft  = CreateFlame("FlameL", Vector2.left);
-            _flameRight = CreateFlame("FlameR", Vector2.right);
-            _srLeft  = _flameLeft.GetComponent<SpriteRenderer>();
-            _srRight = _flameRight.GetComponent<SpriteRenderer>();
+            // 스프라이트 로드 (없으면 런타임에 기본값 사용)
+            if (attackSprite == null)
+                attackSprite = Resources.Load<Sprite>("Image/DragonStatue_attack");
+
+            _flameRight = CreateFlame("FlameR");
+            _srRight    = _flameRight.GetComponent<SpriteRenderer>();
             SetFlamesActive(false);
         }
 
-        private GameObject CreateFlame(string goName, Vector2 dir)
+        private GameObject CreateFlame(string goName)
         {
             var go = new GameObject(goName);
             go.transform.SetParent(transform, false);
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite       = GameSetup.WhiteSquareStatic();
+            sr.sprite       = attackSprite != null ? attackSprite : GameSetup.WhiteSquareStatic();
+            sr.color        = Color.white; // 색/알파 처리 없음
             sr.sortingOrder = SLayer.Effect;
-            // 방향에 따라 위치/크기 설정은 Update에서
             return go;
         }
 
@@ -121,33 +124,29 @@ namespace Underdark
             }
         }
 
-        private void DamageInBreathRange()
+private void DamageInBreathRange()
         {
             var monsters = new List<Monster>(MonsterManager.Instance?.ActiveMonsters ?? new List<Monster>());
-            var pos = (Vector2)transform.position;
+            var pos      = (Vector2)transform.position;
+            var dir      = Vector2.right; // 오른쪽만
+            var perp     = new Vector2(-dir.y, dir.x);
 
-            foreach (var dir in new[] { Vector2.left, Vector2.right })
+            foreach (var m in monsters)
             {
-                var perp = new Vector2(-dir.y, dir.x);
-                foreach (var m in monsters)
+                if (m == null || !m.IsAlive) continue;
+                var rel      = (Vector2)m.transform.position - pos;
+                float dot    = Vector2.Dot(rel.normalized, dir);
+                float distFw = dot > 0f ? rel.magnitude : -1f;
+                float distSd = Mathf.Abs(Vector2.Dot(rel, perp));
+
+                if (dot <= 0.1f || distFw > breathRange || distSd > breathWidth) continue;
+
+                m.TakeDamage(tickDamage, false);
+
+                if (!_burning.Contains(m))
                 {
-                    if (m == null || !m.IsAlive) continue;
-                    var rel     = (Vector2)m.transform.position - pos;
-                    float dot   = Vector2.Dot(rel.normalized, dir);
-                    float distFw = dot > 0f ? rel.magnitude : -1f;
-                    float distSd = Mathf.Abs(Vector2.Dot(rel, perp));
-
-                    if (dot <= 0.1f || distFw > breathRange || distSd > breathWidth) continue;
-
-                    // 데미지 (크리 없음 - 화염방사기는 안정적 딜)
-                    m.TakeDamage(tickDamage, false);
-
-                    // 화상 중복 방지
-                    if (!_burning.Contains(m))
-                    {
-                        _burning.Add(m);
-                        StartCoroutine(BurnRoutine(m));
-                    }
+                    _burning.Add(m);
+                    StartCoroutine(BurnRoutine(m));
                 }
             }
         }
@@ -172,38 +171,43 @@ namespace Underdark
         // 화염 이펙트 애니메이션 (깜빡이며 살아있는 불꽃 느낌)
         private void UpdateFlameVisual()
         {
-            float t = Time.time;
-            float flicker = 0.6f + Mathf.PerlinNoise(t * 8f, 0f) * 0.4f;
-
-            // 좌우 각각 크기를 시간에 따라 변동 (화염방사기 효과)
+            float t        = Time.time;
+            float flicker  = 0.6f + Mathf.PerlinNoise(t * 8f, 0f) * 0.4f;
             float progress = 1f - (_stateTimer / breathDuration);
-            float warmUp   = Mathf.Clamp01(progress * 4f); // 처음 25%에서 빠르게 커짐
+            float warmUp   = Mathf.Clamp01(progress * 2f);
 
-            float scaleX = breathRange * warmUp * flicker;
-            float scaleY = breathWidth * (0.8f + Mathf.PerlinNoise(t * 6f, 1f) * 0.4f);
+            float scaleX = breathRange * warmUp;// * flicker;
 
-            // 왼쪽 화염
-            _flameLeft.transform.localPosition = new Vector3(-scaleX * 0.5f, 0f, 0f);
-            _flameLeft.transform.localScale    = new Vector3(scaleX, scaleY, 1f);
-            _srLeft.color = new Color(
-                1f,
-                0.3f + Mathf.PerlinNoise(t * 10f, 2f) * 0.4f,
-                0f,
-                0.6f * flicker * warmUp);
+            // 스프라이트 비율 기준으로 높이 계산
+            float scaleY = breathWidth;
+            if (attackSprite != null)
+            {
+                float ppu  = attackSprite.pixelsPerUnit;
+                float sprW = attackSprite.rect.width  / ppu;
+                float sprH = attackSprite.rect.height / ppu;
+                if (sprW > 0f) scaleY = scaleX * (sprH / sprW);
+            }
 
-            // 오른쪽 화염
-            _flameRight.transform.localPosition = new Vector3(scaleX * 0.5f, 0f, 0f);
-            _flameRight.transform.localScale    = new Vector3(scaleX, scaleY, 1f);
-            _srRight.color = new Color(
-                1f,
-                0.3f + Mathf.PerlinNoise(t * 10f, 3f) * 0.4f,
-                0f,
-                0.6f * flicker * warmUp);
+            // 입 위치: firePoint가 있으면 로컬 x 사용, 없으면 0.5f
+            float mouthLocalX = (firePoint != null)
+                ? transform.InverseTransformPoint(firePoint.position).x
+                : 0.5f;
+
+            // 입에서 시작해서 오른쪽으로 뻗음 (pivot=center이므로 +scaleX*0.5)
+            _flameRight.transform.position = firePoint.position;
+            _flameRight.transform.localScale    = new Vector3(1f, 1f, 1f);
+
+            float alpha = warmUp * flicker;
+            //var c = _srRight.color;
+            _srRight.color = new Color(1f, 1f, 1f, alpha);
+
+            // 터렛 스프라이트 위에 확실히 렌더링 (Y소팅 기준으로 터렛보다 +50)
+            int turretOrder = Mathf.RoundToInt(500f - transform.position.y * 10f) + SLayer.Turret;
+            _srRight.sortingOrder = turretOrder + 50;
         }
 
-        private void SetFlamesActive(bool active)
+private void SetFlamesActive(bool active)
         {
-            if (_flameLeft  != null) _flameLeft.SetActive(active);
             if (_flameRight != null) _flameRight.SetActive(active);
         }
     }

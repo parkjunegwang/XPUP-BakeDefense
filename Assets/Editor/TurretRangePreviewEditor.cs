@@ -241,12 +241,8 @@ void OnSceneGUI()
             Handles.DrawLine(pos - new Vector3(0, 0.02f), pos + new Vector3(step * 2, -0.02f));
         }
 
-        void DrawBreathRects(Vector3 pos, float rangeX, float halfY)
+void DrawBreathRects(Vector3 pos, float rangeX, float halfY)
         {
-            // 왼쪽
-            Vector3 lCenter = pos + new Vector3(-rangeX * 0.5f, 0f);
-            DrawBox(lCenter, rangeX * 0.5f, halfY, ColDragonFill, ColDragonLine);
-            // 오른쪽
             Vector3 rCenter = pos + new Vector3(rangeX * 0.5f, 0f);
             DrawBox(rCenter, rangeX * 0.5f, halfY, ColDragonFill, ColDragonLine);
         }
