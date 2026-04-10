@@ -34,14 +34,14 @@ private void Throw(Monster target)
             var sr = go.AddComponent<SpriteRenderer>();
 
             // 투사체 스프라이트 - 1x1 이미지 로드
-            var sprite = Resources.Load<Sprite>("Image/1x1");
+            var sprite = Resources.Load<Sprite>("Image/BoomerangTurret_Ball");
             if (sprite == null) sprite = GetComponentInChildren<SpriteRenderer>()?.sprite;
             if (sprite == null) sprite = GameSetup.WhiteSquareStatic();
 
             sr.sprite       = sprite;
-            sr.color        = new Color(0.4f, 0.9f, 1f); // 하늘색 부메랑
+            //sr.color        = new Color(0.4f, 0.9f, 1f); // 하늘색 부메랑
             sr.sortingOrder = SLayer.Projectile;
-            go.transform.localScale = Vector3.one * 0.28f;
+            go.transform.localScale = Vector3.one;
 
             bool isCrit;
             float baseDmg = RollDamage(out isCrit);
