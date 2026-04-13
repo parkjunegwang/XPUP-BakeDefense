@@ -131,7 +131,7 @@ public void ApplyStatsFromData(int lv) { if (statData == null) return; var s = s
             barrelRenderer.flipX = barrelDefaultFacingLeft ? !targetIsLeft : targetIsLeft;
         }
 
-        public void UpdateSortingOrder()
+        public virtual void UpdateSortingOrder()
         {
             if (_srBaseOrders == null) CacheSrOrders();
             int baseOrder = Mathf.RoundToInt(500f - transform.position.y * 10f);

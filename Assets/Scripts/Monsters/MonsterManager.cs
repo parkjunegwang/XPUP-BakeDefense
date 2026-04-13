@@ -152,19 +152,54 @@ namespace Underdark
             _pathCache.Clear();
             var map = MapManager.Instance;
             if (map == null) return;
+
+            // spawn → end 전체 경로를 캐시
             foreach (var spawn in map.spawnPositions)
                 foreach (var end in map.endPositions)
                 {
                     var path = Pathfinder.FindPath(spawn, end, map);
                     if (path != null) { _pathCache[spawn] = path; break; }
                 }
+
+            // 각 몬스터에게 현재 위치 기준 "가장 가까운 그리드 타일 → end" 의 경로를 전달
             var snapshot = new List<Monster>(ActiveMonsters);
             foreach (var m in snapshot)
             {
                 if (m == null || !m.IsAlive) continue;
-                var sp = GetNearestSpawn(m.transform.position);
-                if (_pathCache.TryGetValue(sp, out var path)) m.UpdatePath(path);
+
+                // 몬스터의 현재 월드 위치를 그리드 좌표로 변환
+                Vector2Int monsterGrid = WorldToGrid(m.transform.position, map);
+
+                // 현재 위치 → end 로 새 경로를 계산
+                List<Vector2Int> bestPath = null;
+                foreach (var end in map.endPositions)
+                {
+                    var p = Pathfinder.FindPath(monsterGrid, end, map);
+                    if (p != null) { bestPath = p; break; }
+                }
+
+                // 현재 위치에서 바로 경로가 없으면 (막힌 타일 위 등) spawn 기준 전체 경로 사용
+                if (bestPath == null)
+                {
+                    var sp = GetNearestSpawn(m.transform.position);
+                    _pathCache.TryGetValue(sp, out bestPath);
+                }
+
+                if (bestPath != null) m.UpdatePath(bestPath);
             }
+        }
+
+        /// <summary>월드 좌표를 가장 가까운 그리드 좌표로 변환</summary>
+        private Vector2Int WorldToGrid(Vector3 worldPos, MapManager map)
+        {
+            float step    = map.tileSize + map.tileGap;
+            float offsetX = -(map.columns - 1) * step * 0.5f;
+            float offsetY = -(map.rows    - 1) * step * 0.5f;
+            int   gx      = Mathf.RoundToInt((worldPos.x - offsetX) / step);
+            int   gy      = Mathf.RoundToInt((worldPos.y - offsetY) / step);
+            gx = Mathf.Clamp(gx, 0, map.columns - 1);
+            gy = Mathf.Clamp(gy, 0, map.rows    - 1);
+            return new Vector2Int(gx, gy);
         }
 
         private Vector2Int GetNearestSpawn(Vector3 worldPos)

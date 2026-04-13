@@ -74,12 +74,35 @@ public void Init(List<Vector2Int> gridPath, Color color) { _hp = maxHp; _pathIdx
             foreach (var gp in newGrid)
                 newWorld.Add(MapManager.Instance.GridToWorld(gp.x, gp.y));
 
-            // 현재 위치에서 가장 가까운 웨이포인트 찾기
+            // ── 현재 위치에서 가장 가까운 웨이포인트를 찾되,
+            //    이미 지나쳐온 방향으로 되돌아가지 않도록 진행방향을 유지한다.
+            //
+            // 전략: 현재 진행 방향 벡터(현재→다음WP)를 기준으로
+            //       후보 WP가 현재 위치보다 "앞쪽"에 있는 것 중 가장 가까운 것을 선택.
+            //       앞쪽 WP가 없으면 (몬스터가 경로 끝 부근) 마지막 WP 사용.
+
+            // 현재 이동 방향 추정 (이전 경로의 다음 WP 기반)
+            Vector3 forwardHint = Vector3.zero;
+            if (_path != null && _pathIdx < _path.Count)
+                forwardHint = (_path[Mathf.Min(_pathIdx, _path.Count - 1)] - transform.position).normalized;
+
             float minDist = float.MaxValue;
-            int   bestIdx = 0;
+            int   bestIdx = newWorld.Count - 1; // 기본: 경로 끝
+
             for (int i = 0; i < newWorld.Count; i++)
             {
                 float d = Vector3.Distance(transform.position, newWorld[i]);
+
+                // 진행방향 힌트가 있으면, 현재 위치보다 뒤에 있는 WP는 패널티를 준다
+                if (forwardHint != Vector3.zero)
+                {
+                    Vector3 toWP    = (newWorld[i] - transform.position).normalized;
+                    float   dotVal  = Vector3.Dot(forwardHint, toWP);
+                    // 완전히 반대 방향(-1) ~ 같은 방향(+1)
+                    // 뒤쪽(-0.3 미만)이면 거리에 큰 패널티 부여 → 선택 안 됨
+                    if (dotVal < -0.3f) d += 100f;
+                }
+
                 if (d < minDist) { minDist = d; bestIdx = i; }
             }
 

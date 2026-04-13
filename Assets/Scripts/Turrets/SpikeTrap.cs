@@ -9,14 +9,10 @@ namespace Underdark
         public override bool IsPassable => true;
 
         // ── Barrel 튀어오르기 설정 ─────────────────────────────────────
-        // Barrel 로컬 Y 기준 위치 (Awake에서 캡처)
         private Vector3 _barrelRestLocalPos;
-        // Barrel이 올라갈 최고 높이 (로컬 Y 오프셋)
         private const float BarrelLaunchOffsetY = 0.55f;
-        // 올라가는 시간 / 내려오는 시간
         private const float RiseTime  = 0.10f;
         private const float FallTime  = 0.14f;
-        // 데미지 판정 최고점 유지 시간
         private const float PeakHold  = 0.04f;
 
         // ── (레거시) Spike 자식 오브젝트 ──────────────────────────────
@@ -26,24 +22,53 @@ namespace Underdark
         {
             turretType = TurretType.SpikeTrap;
             if (statData == null) { damage = 18f; range = 1.1f; fireRate = 0.8f; hp = 150f; }
-            base.Awake();
-
-            if (bodyRenderer == null) bodyRenderer = GetComponent<SpriteRenderer>();
-            if (bodyRenderer != null) bodyRenderer.sortingOrder = SLayer.Tile + 1;
+            base.Awake(); // 내부에서 UpdateSortingOrder() 호출 → 바로 아래서 덮어씀
 
             // Barrel 기본 위치 저장
             if (barrelRenderer != null)
                 _barrelRestLocalPos = barrelRenderer.transform.localPosition;
 
-            // 프리팹에 Spike 자식이 있으면 수집 (없어도 무방)
+            // ── SpikeTrap은 바닥 함정: 모든 SR을 타일 레벨로 고정 ──
+            ForceTrapSortingOrder();
+
+            // 프리팹에 Spike 자식이 있으면 수집
             foreach (var t in GetComponentsInChildren<Transform>())
                 if (t != transform && t.name.StartsWith("Spike"))
                     _spikes.Add(t);
         }
 
+        // ─────────────────────────────────────────────────────────────
+        /// <summary>
+        /// SpikeTrap 전용 소팅 고정.
+        /// TurretBase.UpdateSortingOrder()의 Y소팅(500 기준)을 사용하지 않고
+        /// 타일 바로 위에 고정 → 몬스터(100기준 ~600)가 항상 위에 렌더됨.
+        /// </summary>
+        // ─────────────────────────────────────────────────────────────
+        private void ForceTrapSortingOrder()
+        {
+            // Body: Tile(0) + 1 = 1
+            if (bodyRenderer != null)
+                bodyRenderer.sortingOrder = SLayer.Tile + 1;
+
+            // Barrel: 튀어오를 때 body 위에 보이도록 +2
+            if (barrelRenderer != null)
+                barrelRenderer.sortingOrder = SLayer.Tile + 2;
+
+            // 나머지 자식 SR → TrapEffect(1) 고정
+            foreach (var sr in GetComponentsInChildren<SpriteRenderer>(true))
+            {
+                if (sr == bodyRenderer || sr == barrelRenderer) continue;
+                sr.sortingOrder = SLayer.TrapEffect;
+            }
+        }
+
+        // TurretManager 등 외부에서 UpdateSortingOrder()를 호출해도 트랩 레이어 유지
+        public override void UpdateSortingOrder() => ForceTrapSortingOrder();
+
+        // ─────────────────────────────────────────────────────────────
         protected override void OnTick()
         {
-            // SpikeTrap은 Update()에서 직접 트리거 → 여기서는 아무것도 안 함
+            // Update()에서 직접 트리거 → 여기는 사용 안 함
         }
 
         protected override void Update()
@@ -70,16 +95,14 @@ namespace Underdark
             Vector3   restPos  = _barrelRestLocalPos;
             Vector3   peakPos  = restPos + new Vector3(0f, BarrelLaunchOffsetY, 0f);
 
-            // ① 빠르게 위로 솟구침 ──────────────────────────────────
+            // ① 빠르게 위로 솟구침 (EaseOut)
             float t = 0f;
             while (t < RiseTime)
             {
                 float ratio = t / RiseTime;
-                // EaseOut: 처음에 빠르고 끝에 느려지게
                 float eased = 1f - (1f - ratio) * (1f - ratio);
                 if (barrelTf != null)
                     barrelTf.localPosition = Vector3.LerpUnclamped(restPos, peakPos, eased);
-                // 레거시 Spike도 함께 올리기
                 foreach (var s in _spikes)
                 {
                     var lp = s.localPosition;
@@ -89,25 +112,20 @@ namespace Underdark
                 t += Time.deltaTime;
                 yield return null;
             }
-
-            // 최고점 고정
             if (barrelTf != null) barrelTf.localPosition = peakPos;
 
-            // ② 최고점에서 데미지 판정 ──────────────────────────────
+            // ② 최고점에서 데미지 판정
             DealDamageToTileMonsters();
-
             yield return new WaitForSeconds(PeakHold);
 
-            // ③ 천천히 내려옴 ───────────────────────────────────────
+            // ③ 천천히 내려옴 (EaseIn — 중력감)
             t = 0f;
             while (t < FallTime)
             {
                 float ratio = t / FallTime;
-                // EaseIn: 처음에 느리고 끝에 빠르게 (중력감)
                 float eased = ratio * ratio;
                 if (barrelTf != null)
                     barrelTf.localPosition = Vector3.LerpUnclamped(peakPos, restPos, eased);
-                // 레거시 Spike도 함께 내리기
                 foreach (var s in _spikes)
                 {
                     var lp = s.localPosition;
@@ -126,8 +144,6 @@ namespace Underdark
             }
         }
 
-        // ─────────────────────────────────────────────────────────────
-        /// <summary>점유 타일 위 몬스터에게 데미지 적용</summary>
         // ─────────────────────────────────────────────────────────────
         private void DealDamageToTileMonsters()
         {
@@ -148,14 +164,12 @@ namespace Underdark
                         Mathf.Abs(mp.y - tp.y) <= halfTile)
                     {
                         m.TakeDamage(dmg, isCrit);
-                        break; // 같은 몬스터 중복 피해 방지
+                        break;
                     }
                 }
             }
         }
 
-        // ─────────────────────────────────────────────────────────────
-        /// <summary>점유 타일 위에 살아있는 몬스터가 있는지 체크</summary>
         // ─────────────────────────────────────────────────────────────
         private bool HasMonsterOnTiles()
         {
