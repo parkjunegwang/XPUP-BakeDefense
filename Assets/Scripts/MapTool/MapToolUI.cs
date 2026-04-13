@@ -24,6 +24,9 @@ namespace Underdark
         private Button        _tabMap, _tabStage;
         private GameObject    _cvGo;        // MapToolCanvas 루트
 
+        // BuildUI() 후 Baker가 BuildStagePanel()을 호출할 때 필요한 크기 캐시
+        private float _builtSw, _builtSh; // sh는 tabH 뺀 값
+
 private void Awake()
 {
     // BuildUI() 내부에서 _stageUI가 필요하므로 Start보다 먼저 확보
@@ -218,14 +221,11 @@ private void ConnectListeners() { ConnectBtn("Btn_Floor  [F]",   () => _tool.cur
                     new Color(0.15f, 0.20f, 0.35f), () => SwitchTab(ToolTab.Stage), 14);
             }
 
-            // 기존 StagePanel이 베이크돼 있으면 제거 후 새로 빌드
+            // StagePanel: _builtSw/Sh를 설정하고 BuildStagePanel()로 통일
             // (C# 내부 참조가 null이라 재사용 불가 — 항상 Build로 연결해야 함)
-            var existingStagePanel = cvGo.transform.Find("StagePanel");
-            if (existingStagePanel != null)
-                Destroy(existingStagePanel.gameObject);
-
-            if (_stageUI != null)
-                _stageUI.Build(cvGo, sw, sh - tabH);
+            _builtSw = sw;
+            _builtSh = sh - tabH;
+            BuildStagePanel();
 
             UpdateTabColors();
         }
@@ -288,6 +288,7 @@ private void ConnectListeners() { ConnectBtn("Btn_Floor  [F]",   () => _tool.cur
 
             // ── 화면 사이즈를 탭 높이만큼 줄임 (기존 맵 UI용) ─────────
             sh = sh - tabH;
+            _builtSw = sw; _builtSh = sh; // Baker에서 BuildStagePanel() 호출 시 사용
 
             // ── 상단바 (_mapPanels 아래) ──────────────────────────────
             var top = Rect(_mapPanels, "Top",
@@ -388,10 +389,33 @@ private void ConnectListeners() { ConnectBtn("Btn_Floor  [F]",   () => _tool.cur
             Btn(bot, "Clear All",    sideW + bw*2.5f + 16, botH/2, bw, botH-10,
                 new Color(0.48f,0.18f,0.18f), () => _tool.BuildGrid(), fsBtn);
 
-            // StagePanel은 동적 빌드 경로(BuildUI)에서만 여기서 생성
-            // Bake 경로에서는 BuildUI()를 호출하지 않으므로 StagePanel이 씬/프리팹에 포함되지 않음
-            if (_stageUI != null)
-                _stageUI.Build(cvGo, sw, sh); // sh는 이미 tabH 뺀 값
+            // StagePanel은 BuildUI() 에서 직접 생성하지 않음
+            // → 아래 BuildStagePanel()을 호출하는 쪽에서 필요 시 명시적으로 생성
+            BuildStagePanel();
+        }
+
+        /// <summary>
+        /// StagePanel을 _cvGo(MapToolCanvas)에 생성/재생성.
+        /// - 동적 빌드(프리팹/씬 없음): BuildUI() 내부에서 자동 호출
+        /// - Bake To Scene: BuildUI() 후 Baker에서 추가 호출 (씬에 구움)
+        /// - Bake To Prefab: BuildUI() 후 Baker가 호출 안 함 (프리팹에 미포함)
+        /// - 런타임(베이크 씬/프리팹): AppendTabBarToExistingCanvas()에서 호출
+        /// </summary>
+        public void BuildStagePanel()
+        {
+            if (_cvGo == null || _stageUI == null) return;
+
+            // 기존 StagePanel이 있으면 제거 후 새로 빌드
+            var existing = _cvGo.transform.Find("StagePanel");
+            if (existing != null)
+            {
+#if UNITY_EDITOR
+                Object.DestroyImmediate(existing.gameObject);
+#else
+                Destroy(existing.gameObject);
+#endif
+            }
+            _stageUI.Build(_cvGo, _builtSw, _builtSh);
         }
 
         // ── 헬퍼 ──────────────────────────────────────────────────────

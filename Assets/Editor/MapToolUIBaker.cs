@@ -41,20 +41,22 @@ namespace Underdark
             var existingES = GameObject.Find("EventSystem");
             if (existingES != null) Undo.DestroyObjectImmediate(existingES);
 
-            // _tool + _stageUI 초기화 후 BuildUI 호출
+            // _tool + _stageUI 초기화 후 BuildUI 호출 → StagePanel도 포함해 Bake
             uiComp.InitForEditor();
             uiComp.BuildUI();
+            uiComp.BuildStagePanel(); // StagePanel을 씬에 같이 구움
 
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
             Debug.Log("[MapToolUIBaker] Bake to Scene 완료 — MapToolCanvas를 Hierarchy에서 확인하세요.");
             EditorUtility.DisplayDialog("씬 Bake 완료",
-                "MapToolCanvas가 Hierarchy에 생성됐어요!\n\n" +
+                "MapToolCanvas + StagePanel이 Hierarchy에 생성됐어요!\n\n" +
                 "이제 Inspector에서 직접:\n" +
                 "• RectTransform으로 크기/위치 조절\n" +
                 "• Image로 배경색 변경\n" +
                 "• TextMeshProUGUI로 폰트/색상 변경\n\n" +
+                "Stage 탭 패널도 에디터에서 바로 확인 가능합니다.\n" +
                 "만족스러우면 Ctrl+S 씬 저장 후\n" +
-                "[Bake to Prefab]으로 프리팹도 저장하세요.", "OK");
+                "[Bake to Prefab]으로 맵 UI 프리팹도 저장하세요.", "OK");
         }
 
         // ──────────────────────────────────────────────────────────────
@@ -76,6 +78,14 @@ namespace Underdark
 
             uiComp.InitForEditor();
             uiComp.BuildUI();
+            // 프리팹에는 StagePanel 미포함 — 런타임에 AppendTabBar에서 동적 생성
+            // BuildUI()가 자동으로 BuildStagePanel()까지 호출하므로 여기서 제거
+            var canvasForRemove = GameObject.Find("MapToolCanvas");
+            if (canvasForRemove != null)
+            {
+                var stagePanelToRemove = canvasForRemove.transform.Find("StagePanel");
+                if (stagePanelToRemove != null) Object.DestroyImmediate(stagePanelToRemove.gameObject);
+            }
 
             var canvas = GameObject.Find("MapToolCanvas");
             if (canvas == null)
