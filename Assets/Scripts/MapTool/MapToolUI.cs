@@ -401,7 +401,7 @@ private void ConnectListeners() { ConnectBtn("Btn_Floor  [F]",   () => _tool.cur
         /// - Bake To Prefab: BuildUI() 후 Baker가 호출 안 함 (프리팹에 미포함)
         /// - 런타임(베이크 씬/프리팹): AppendTabBarToExistingCanvas()에서 호출
         /// </summary>
-        public void BuildStagePanel()
+        public void BuildStagePanel(bool startActive = false)
         {
             if (_cvGo == null || _stageUI == null) return;
 
@@ -415,7 +415,7 @@ private void ConnectListeners() { ConnectBtn("Btn_Floor  [F]",   () => _tool.cur
                 Destroy(existing.gameObject);
 #endif
             }
-            _stageUI.Build(_cvGo, _builtSw, _builtSh);
+            _stageUI.Build(_cvGo, _builtSw, _builtSh, startActive);
         }
 
         // ── 헬퍼 ──────────────────────────────────────────────────────

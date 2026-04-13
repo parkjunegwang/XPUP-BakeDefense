@@ -82,13 +82,14 @@ namespace Underdark
         #region Public API
         // ─────────────────────────────────────────────────────────────
 
-        public void Build(GameObject canvasGo, float sw, float sh)
+        public void Build(GameObject canvasGo, float sw, float sh, bool startActive = false)
         {
             _sw = sw; _sh = sh;
 
             // 루트: 전체 영역을 덮는 배경
+            // startActive=true: Bake to Scene 등 에디터에서 바로 보이게 할 때
             _root = R(canvasGo, "StagePanel", 0, 0, sw, sh, new Color(0.07f,0.07f,0.15f,1f));
-            _root.SetActive(false);
+            _root.SetActive(startActive);
 
             BuildTop();
             BuildSheet();

@@ -44,7 +44,8 @@ namespace Underdark
             // _tool + _stageUI 초기화 후 BuildUI 호출 → StagePanel도 포함해 Bake
             uiComp.InitForEditor();
             uiComp.BuildUI();
-            uiComp.BuildStagePanel(); // StagePanel을 씬에 같이 구움
+            // BuildUI()가 이미 BuildStagePanel(false) 호출함 → startActive=true로 재호출해 활성화 상태로 교체
+            uiComp.BuildStagePanel(startActive: true);
 
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
             Debug.Log("[MapToolUIBaker] Bake to Scene 완료 — MapToolCanvas를 Hierarchy에서 확인하세요.");
