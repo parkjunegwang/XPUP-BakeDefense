@@ -28,7 +28,7 @@ namespace Underdark
         [MenuItem("Underdark/Bake Map Tool UI to Scene")]
         public static void BakeToScene()
         {
-            var uiComp = Object.FindObjectOfType<MapToolUI>();
+            var uiComp = Object.FindFirstObjectByType<MapToolUI>();
             if (uiComp == null)
             {
                 EditorUtility.DisplayDialog("Error", "MapToolUI component not found in scene!", "OK");
@@ -61,7 +61,7 @@ namespace Underdark
         [MenuItem("Underdark/Bake Map Tool UI to Prefab")]
         public static void BakeToPrefab()
         {
-            var uiComp = Object.FindObjectOfType<MapToolUI>();
+            var uiComp = Object.FindFirstObjectByType<MapToolUI>();
             if (uiComp == null)
             {
                 EditorUtility.DisplayDialog("Error", "MapToolUI component not found in scene!", "OK");
@@ -70,9 +70,9 @@ namespace Underdark
 
             // 기존 임시 Canvas 제거 후 새로 빌드
             var existing = GameObject.Find("MapToolCanvas");
-            if (existing != null) DestroyImmediate(existing);
+            if (existing != null) Object.DestroyImmediate(existing);
             var existingES = GameObject.Find("EventSystem");
-            if (existingES != null) DestroyImmediate(existingES);
+            if (existingES != null) Object.DestroyImmediate(existingES);
 
             uiComp.InitForEditor();
             uiComp.BuildUI();
@@ -88,13 +88,13 @@ namespace Underdark
             EnsureFolder("Assets/Prefabs/UI");
 
             // 프리팹으로 저장
-            bool success;
-            PrefabUtility.SaveAsPrefabAsset(canvas, PrefabPath, out success);
+            var saved = PrefabUtility.SaveAsPrefabAsset(canvas, PrefabPath);
+            bool success = saved != null;
 
             // 씬에 임시로 만든 Canvas는 제거 (프리팹만 남김)
-            DestroyImmediate(canvas);
+            Object.DestroyImmediate(canvas);
             var es = GameObject.Find("EventSystem");
-            if (es != null) DestroyImmediate(es);
+            if (es != null) Object.DestroyImmediate(es);
 
             AssetDatabase.Refresh();
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());

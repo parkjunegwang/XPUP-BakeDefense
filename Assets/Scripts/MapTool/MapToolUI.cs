@@ -33,7 +33,7 @@ private void Awake()
 
 private void Start()
 {
-    _tool = FindObjectOfType<MapToolController>();
+    _tool = Object.FindFirstObjectByType<MapToolController>();
     var existing = GameObject.Find("MapToolCanvas");
     if (existing != null)
     {
@@ -209,11 +209,11 @@ private void ConnectListeners() { ConnectBtn("Btn_Floor  [F]",   () => _tool.cur
             UpdateTabColors();
         }
 
-        public void InitForEditor() { if (_tool == null) _tool = FindObjectOfType<MapToolController>(); }
+        public void InitForEditor() { if (_tool == null) _tool = Object.FindFirstObjectByType<MapToolController>(); }
 
         public void BuildUI()
         {
-            if (FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
+            if (Object.FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>() == null)
             {
                 var es = new GameObject("EventSystem");
                 es.AddComponent<UnityEngine.EventSystems.EventSystem>();
