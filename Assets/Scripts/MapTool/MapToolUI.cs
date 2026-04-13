@@ -282,9 +282,9 @@ private void ConnectListeners() { ConnectBtn("Btn_Floor  [F]",   () => _tool.cur
                 0, 0, sw, sh - tabH,
                 new Color(0, 0, 0, 0)); // 투명 컨테이너 — 맵 UI 요소들의 부모
 
-            // Stage 에디터 패널도 미리 빌드 (cvGo 직접 자식으로 생성됨)
-            if (_stageUI != null)
-                _stageUI.Build(cvGo, sw, sh - tabH);
+            // ※ StagePanel은 BuildUI()에서 생성하지 않음
+            //   → Bake 시 StagePanel이 프리팹/씬에 포함되지 않도록 의도적으로 제외
+            //   → 런타임 Start() → AppendTabBarToExistingCanvas()에서 동적으로 Build
 
             // ── 화면 사이즈를 탭 높이만큼 줄임 (기존 맵 UI용) ─────────
             sh = sh - tabH;
@@ -387,6 +387,11 @@ private void ConnectListeners() { ConnectBtn("Btn_Floor  [F]",   () => _tool.cur
                 new Color(0.08f,0.28f,0.65f), () => _tool.LoadFromMapData(), fsBtn);
             Btn(bot, "Clear All",    sideW + bw*2.5f + 16, botH/2, bw, botH-10,
                 new Color(0.48f,0.18f,0.18f), () => _tool.BuildGrid(), fsBtn);
+
+            // StagePanel은 동적 빌드 경로(BuildUI)에서만 여기서 생성
+            // Bake 경로에서는 BuildUI()를 호출하지 않으므로 StagePanel이 씬/프리팹에 포함되지 않음
+            if (_stageUI != null)
+                _stageUI.Build(cvGo, sw, sh); // sh는 이미 tabH 뺀 값
         }
 
         // ── 헬퍼 ──────────────────────────────────────────────────────
