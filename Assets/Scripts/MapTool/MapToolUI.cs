@@ -44,7 +44,29 @@ private void Start()
     }
     else
     {
-        BuildUI();
+        // 프리팹이 있으면 Instantiate, 없으면 코드로 동적 빌드
+        var prefab = Resources.Load<GameObject>("UI/PF_MapToolUI");
+        if (prefab == null)
+        {
+            // Resources 폴더 외부 경로도 시도 (AssetDatabase는 에디터 전용)
+#if UNITY_EDITOR
+            prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/Prefabs/UI/PF_MapToolUI.prefab");
+#endif
+        }
+
+        if (prefab != null)
+        {
+            var inst = Instantiate(prefab);
+            inst.name = "MapToolCanvas";
+            _cvGo = inst;
+            ConnectListeners();
+            AppendTabBarToExistingCanvas(inst);
+        }
+        else
+        {
+            BuildUI();
+        }
     }
 }
 
