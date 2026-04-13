@@ -56,27 +56,42 @@ namespace Underdark
         }
 
         /// <summary>
-        /// 현재 편집 내용을 연결된 에셋에 저장 (Unity Editor 전용).
-        /// 런타임에서는 경고만 출력.
+        /// 현재 편집 내용을 저장 — 항상 SaveFilePanel을 띄워 경로 확인 후 저장.
+        /// 기존 에셋이면 해당 폴더를 기본 경로로 제안, 새 에셋이면 Assets/Data/Stages/ 제안.
         /// </summary>
         public void SaveStage()
         {
 #if UNITY_EDITOR
             if (currentStage == null) { Debug.LogWarning("[StageEditor] 저장할 StageData 없음"); return; }
 
-            string path = AssetDatabase.GetAssetPath(currentStage);
-            if (string.IsNullOrEmpty(path))
-            {
-                // 새 에셋이면 경로 생성
-                path = _assetPath;
-                EnsureFolder(System.IO.Path.GetDirectoryName(path));
-                AssetDatabase.CreateAsset(currentStage, path);
-            }
+            // 기존 에셋 경로가 있으면 그 폴더를, 없으면 기본 폴더를 기준으로 다이얼로그 열기
+            string existingPath = AssetDatabase.GetAssetPath(currentStage);
+            string defaultDir   = string.IsNullOrEmpty(existingPath)
+                ? System.IO.Path.GetDirectoryName(_assetPath)
+                : System.IO.Path.GetDirectoryName(existingPath);
+            string defaultName  = string.IsNullOrEmpty(existingPath)
+                ? System.IO.Path.GetFileNameWithoutExtension(_assetPath)
+                : System.IO.Path.GetFileNameWithoutExtension(existingPath);
+
+            // 절대 경로로 다이얼로그 열기
+            string absDir = System.IO.Path.Combine(Application.dataPath, "..", defaultDir).Replace('\\', '/');
+            string absPath = EditorUtility.SaveFilePanel("StageData 저장", absDir, defaultName, "asset");
+            if (string.IsNullOrEmpty(absPath)) return; // 취소
+
+            // 절대 경로 → 프로젝트 상대 경로
+            string savePath = "Assets" + absPath.Replace(Application.dataPath, "").Replace('\\', '/');
+
+            EnsureFolder(System.IO.Path.GetDirectoryName(savePath));
+
+            // 기존 에셋 경로와 다르면 새 에셋으로 생성, 같으면 덮어쓰기
+            if (existingPath != savePath)
+                AssetDatabase.CreateAsset(currentStage, savePath);
+
             EditorUtility.SetDirty(currentStage);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             isDirty = false;
-            Debug.Log($"[StageEditor] 저장 완료: {path}");
+            Debug.Log($"[StageEditor] 저장 완료: {savePath}");
 #else
             Debug.LogWarning("[StageEditor] Save는 Unity Editor 전용입니다.");
 #endif
