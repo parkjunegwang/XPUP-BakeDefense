@@ -45,6 +45,8 @@ namespace Underdark
         private TMP_InputField _ifSHP, _ifEHP, _ifSSPD, _ifESPD;
 
         // ─────────────────────────────────────────────────────────────
+        private bool _eventsRegistered = false;
+
         private void Awake()
         {
             _ctrl = GetComponent<StageEditorController>();
@@ -53,12 +55,19 @@ namespace Underdark
 
         private void Start()
         {
+            // Build()가 Start() 이전에 호출됐으면 이미 등록됨 → 중복 방지
+            RegisterEvents();
+            // 현재 데이터가 있으면 즉시 갱신 (Build에서 NewStage 안 불렸을 경우 대비)
+            if (_ctrl?.currentStage != null && _sheetContent != null)
+                RefreshSheet();
+        }
+
+        private void RegisterEvents()
+        {
+            if (_eventsRegistered) return;
+            _eventsRegistered = true;
             _ctrl.onDataChanged      += RefreshSheet;
             _ctrl.onSelectionChanged += RefreshDetail;
-            // Build()는 Start()보다 먼저 호출될 수 있으므로,
-            // 현재 데이터가 있으면 즉시 갱신
-            if (_ctrl?.currentStage != null)
-                RefreshSheet();
         }
 
         private void OnDestroy()
@@ -66,6 +75,7 @@ namespace Underdark
             if (_ctrl == null) return;
             _ctrl.onDataChanged      -= RefreshSheet;
             _ctrl.onSelectionChanged -= RefreshDetail;
+            _eventsRegistered = false;
         }
 
         // ─────────────────────────────────────────────────────────────
@@ -86,6 +96,8 @@ namespace Underdark
             BuildBottom();
             BuildAutoScale();
 
+            // UI 빌드 완료 후 이벤트 먼저 등록 — 그래야 NewStage() → onDataChanged → RefreshSheet()가 정상 동작
+            RegisterEvents();
             _ctrl.NewStage();
         }
 

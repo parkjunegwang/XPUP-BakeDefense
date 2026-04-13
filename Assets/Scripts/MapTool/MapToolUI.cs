@@ -169,9 +169,6 @@ private void ConnectListeners() { ConnectBtn("Btn_Floor  [F]",   () => _tool.cur
         {
             float tabH = 34f;
 
-            // 탭 바가 이미 있으면 스킵 (중복 방지)
-            if (cvGo.transform.Find("TabBar") != null) return;
-
             // Canvas 논리 픽셀 크기를 정확히 계산
             float sw, sh;
             var cvs = cvGo.GetComponent<CanvasScaler>();
@@ -189,19 +186,43 @@ private void ConnectListeners() { ConnectBtn("Btn_Floor  [F]",   () => _tool.cur
             }
             else
             {
-                // 기본: 실제 픽셀
+                // CanvasScaler 없거나 기본: 실제 픽셀
                 sw = Screen.width;
                 sh = Screen.height;
             }
 
-            var tabBar = Rect(cvGo, "TabBar",
-                0, sh - tabH, sw, tabH,
-                new Color(0.04f, 0.04f, 0.10f, 0.99f));
+            // 탭 바가 이미 있으면 버튼 참조만 재연결하고 StageUI는 새로 빌드
+            var existingTabBar = cvGo.transform.Find("TabBar");
+            if (existingTabBar != null)
+            {
+                // 탭 버튼 참조 복구
+                var mapBtnGo   = existingTabBar.Find("Btn_🗺 Map");
+                var stageBtnGo = existingTabBar.Find("Btn_📋 Stage");
+                if (mapBtnGo   != null) _tabMap   = mapBtnGo.GetComponent<Button>();
+                if (stageBtnGo != null) _tabStage = stageBtnGo.GetComponent<Button>();
 
-            _tabMap   = Btn(tabBar, "🗺 Map",   sw/4,   tabH/2, sw/2 - 4, tabH - 6,
-                new Color(0.30f, 0.45f, 0.75f), () => SwitchTab(ToolTab.Map),   14);
-            _tabStage = Btn(tabBar, "📋 Stage", sw*3/4, tabH/2, sw/2 - 4, tabH - 6,
-                new Color(0.15f, 0.20f, 0.35f), () => SwitchTab(ToolTab.Stage), 14);
+                // 탭 리스너 재등록 (베이크된 프리팹에는 클로저가 없음)
+                if (_tabMap   != null) { _tabMap.onClick.RemoveAllListeners();   _tabMap.onClick.AddListener(()   => SwitchTab(ToolTab.Map)); }
+                if (_tabStage != null) { _tabStage.onClick.RemoveAllListeners(); _tabStage.onClick.AddListener(() => SwitchTab(ToolTab.Stage)); }
+            }
+            else
+            {
+                // TabBar가 없으면 새로 생성
+                var tabBar = Rect(cvGo, "TabBar",
+                    0, sh - tabH, sw, tabH,
+                    new Color(0.04f, 0.04f, 0.10f, 0.99f));
+
+                _tabMap   = Btn(tabBar, "🗺 Map",   sw/4,   tabH/2, sw/2 - 4, tabH - 6,
+                    new Color(0.30f, 0.45f, 0.75f), () => SwitchTab(ToolTab.Map),   14);
+                _tabStage = Btn(tabBar, "📋 Stage", sw*3/4, tabH/2, sw/2 - 4, tabH - 6,
+                    new Color(0.15f, 0.20f, 0.35f), () => SwitchTab(ToolTab.Stage), 14);
+            }
+
+            // 기존 StagePanel이 베이크돼 있으면 제거 후 새로 빌드
+            // (C# 내부 참조가 null이라 재사용 불가 — 항상 Build로 연결해야 함)
+            var existingStagePanel = cvGo.transform.Find("StagePanel");
+            if (existingStagePanel != null)
+                Destroy(existingStagePanel.gameObject);
 
             if (_stageUI != null)
                 _stageUI.Build(cvGo, sw, sh - tabH);
