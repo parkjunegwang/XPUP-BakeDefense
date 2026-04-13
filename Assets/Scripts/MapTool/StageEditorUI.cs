@@ -114,7 +114,10 @@ namespace Underdark
             B(bar, "Load", bx - 132, TOP_H/2f, 62, TOP_H-10, new Color(0.10f,0.30f,0.65f), OnLoad, 12);
             B(bar, "Save", bx - 200, TOP_H/2f, 62, TOP_H-10, new Color(0.08f,0.52f,0.18f), () => _ctrl.SaveStage(), 12);
 
-            _lblStatus = L(bar, "status", "", 62 + 170, TOP_H/2f, 160, TOP_H-4, 11, new Color(0.5f,1f,0.5f));
+            // status 라벨: 버튼 왼쪽 공간 (스테이지 이름 IF 끝 ~ Save 버튼 시작 사이)
+            float statusX = 62 + 166;           // ifName 끝 바로 뒤
+            float statusW = (bx - 200) - statusX - 8; // Save 버튼 왼쪽까지
+            _lblStatus = L(bar, "status", "", statusX, TOP_H/2f, Mathf.Max(statusW, 10f), TOP_H-4, 10, new Color(0.5f,1f,0.5f));
         }
 
         // 시트 영역 (ScrollRect)
@@ -277,8 +280,9 @@ namespace Underdark
         {
             if (_sheetContent == null || _ctrl?.currentStage == null) return;
 
-            // 기존 셀 전부 삭제
-            foreach (Transform c in _sheetContent.transform) Destroy(c.gameObject);
+            // 기존 셀 전부 즉시 삭제 (Destroy는 다음 프레임이라 중복 빌드 발생)
+            for (int i = _sheetContent.transform.childCount - 1; i >= 0; i--)
+                DestroyImmediate(_sheetContent.transform.GetChild(i).gameObject);
 
             var waves = _ctrl.currentStage.waves;
             if (waves == null) return;
