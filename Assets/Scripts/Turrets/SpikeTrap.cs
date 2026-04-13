@@ -8,9 +8,19 @@ namespace Underdark
     {
         public override bool IsPassable => true;
 
+        // ── Barrel 튀어오르기 설정 ─────────────────────────────────────
+        // Barrel 로컬 Y 기준 위치 (Awake에서 캡처)
+        private Vector3 _barrelRestLocalPos;
+        // Barrel이 올라갈 최고 높이 (로컬 Y 오프셋)
+        private const float BarrelLaunchOffsetY = 0.55f;
+        // 올라가는 시간 / 내려오는 시간
+        private const float RiseTime  = 0.10f;
+        private const float FallTime  = 0.14f;
+        // 데미지 판정 최고점 유지 시간
+        private const float PeakHold  = 0.04f;
+
+        // ── (레거시) Spike 자식 오브젝트 ──────────────────────────────
         private List<Transform> _spikes = new List<Transform>();
-        private static readonly Vector3 SpikeHide = new Vector3(0f, -0.55f, 0f);
-        private static readonly Vector3 SpikeShow = new Vector3(0f,  0.05f, 0f);
 
         protected override void Awake()
         {
@@ -21,60 +31,136 @@ namespace Underdark
             if (bodyRenderer == null) bodyRenderer = GetComponent<SpriteRenderer>();
             if (bodyRenderer != null) bodyRenderer.sortingOrder = SLayer.Tile + 1;
 
-            // 프리팹에 Spike 자식이 없으면 자동 생성
-            var existing = GetComponentsInChildren<Transform>();
-            bool hasSpikes = false;
-            foreach (var t in existing)
-                if (t.name.StartsWith("Spike")) { _spikes.Add(t); hasSpikes = true; }
+            // Barrel 기본 위치 저장
+            if (barrelRenderer != null)
+                _barrelRestLocalPos = barrelRenderer.transform.localPosition;
 
-            if (!hasSpikes) BuildSpikes();
+            // 프리팹에 Spike 자식이 있으면 수집 (없어도 무방)
+            foreach (var t in GetComponentsInChildren<Transform>())
+                if (t != transform && t.name.StartsWith("Spike"))
+                    _spikes.Add(t);
         }
 
-        private void BuildSpikes()
+        protected override void OnTick()
         {
-            //float[] xPos = { -0.35f, -0.12f, 0.12f, 0.35f };
-            //foreach (var xOff in xPos)
-            //{
-            //    var spike = new GameObject("Spike");
-            //    spike.transform.SetParent(transform);
-            //    spike.transform.localPosition = SpikeHide + new Vector3(xOff, 0f, 0f);
-            //    spike.transform.localScale    = new Vector3(0.045f, 0.3f, 1f);
-            //    var sr = spike.AddComponent<SpriteRenderer>();
-            //    sr.sprite       = GameSetup.WhiteSquareStatic();
-            //    sr.color        = new Color(0.75f, 0.75f, 0.8f);
-            //    sr.sortingOrder = SLayer.TrapEffect;
-            //    _spikes.Add(spike.transform);
-            //}
+            // SpikeTrap은 Update()에서 직접 트리거 → 여기서는 아무것도 안 함
         }
 
-protected override void OnTick()
-        {
-            // TurretBase.Update에서 호출되지만 실제 판정은 Update에서 직접 처리
-            StartCoroutine(SpikeRoutine());
-        }
-
-protected override void Update()
+        protected override void Update()
         {
             if (GameManager.Instance == null) return;
             if (GameManager.Instance.CurrentState != GameState.WaveInProgress) return;
 
-            // 타일 위에 먼스터가 없으면 쾼다운을 다시 조절하지 않음
-            // 타일에 먼스터가 진입하는 순간 바로 발동 가능
+            // 타일 위에 몬스터가 있을 때만 쿨다운 진행
             if (!HasMonsterOnTiles()) return;
 
             _cooldown -= Time.deltaTime;
             if (_cooldown > 0f) return;
 
-            StartCoroutine(SpikeRoutine());
+            StartCoroutine(BarrelLaunchRoutine());
             _cooldown = 1f / Mathf.Max(fireRate, 0.01f);
         }
 
+        // ─────────────────────────────────────────────────────────────
+        /// <summary>Barrel이 위로 솟구쳤다가 내려오며 데미지를 줌</summary>
+        // ─────────────────────────────────────────────────────────────
+        private IEnumerator BarrelLaunchRoutine()
+        {
+            Transform barrelTf = barrelRenderer != null ? barrelRenderer.transform : null;
+            Vector3   restPos  = _barrelRestLocalPos;
+            Vector3   peakPos  = restPos + new Vector3(0f, BarrelLaunchOffsetY, 0f);
 
-        /// <summary>점유 타일 위에 먼스터가 있는지 매 프레임 체크</summary>
-private bool HasMonsterOnTiles()
+            // ① 빠르게 위로 솟구침 ──────────────────────────────────
+            float t = 0f;
+            while (t < RiseTime)
+            {
+                float ratio = t / RiseTime;
+                // EaseOut: 처음에 빠르고 끝에 느려지게
+                float eased = 1f - (1f - ratio) * (1f - ratio);
+                if (barrelTf != null)
+                    barrelTf.localPosition = Vector3.LerpUnclamped(restPos, peakPos, eased);
+                // 레거시 Spike도 함께 올리기
+                foreach (var s in _spikes)
+                {
+                    var lp = s.localPosition;
+                    lp.y = Mathf.Lerp(-0.55f, 0.05f, eased);
+                    s.localPosition = lp;
+                }
+                t += Time.deltaTime;
+                yield return null;
+            }
+
+            // 최고점 고정
+            if (barrelTf != null) barrelTf.localPosition = peakPos;
+
+            // ② 최고점에서 데미지 판정 ──────────────────────────────
+            DealDamageToTileMonsters();
+
+            yield return new WaitForSeconds(PeakHold);
+
+            // ③ 천천히 내려옴 ───────────────────────────────────────
+            t = 0f;
+            while (t < FallTime)
+            {
+                float ratio = t / FallTime;
+                // EaseIn: 처음에 느리고 끝에 빠르게 (중력감)
+                float eased = ratio * ratio;
+                if (barrelTf != null)
+                    barrelTf.localPosition = Vector3.LerpUnclamped(peakPos, restPos, eased);
+                // 레거시 Spike도 함께 내리기
+                foreach (var s in _spikes)
+                {
+                    var lp = s.localPosition;
+                    lp.y = Mathf.Lerp(0.05f, -0.55f, eased);
+                    s.localPosition = lp;
+                }
+                t += Time.deltaTime;
+                yield return null;
+            }
+
+            // 원점 정확히 복귀
+            if (barrelTf != null) barrelTf.localPosition = restPos;
+            foreach (var s in _spikes)
+            {
+                var lp = s.localPosition; lp.y = -0.55f; s.localPosition = lp;
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        /// <summary>점유 타일 위 몬스터에게 데미지 적용</summary>
+        // ─────────────────────────────────────────────────────────────
+        private void DealDamageToTileMonsters()
+        {
+            float dmg      = RollDamage(out bool isCrit);
+            float step     = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
+            float halfTile = step * 0.6f;
+
+            var monsters = new List<Monster>(MonsterManager.Instance.ActiveMonsters);
+            foreach (var m in monsters)
+            {
+                if (m == null || !m.IsAlive) continue;
+                foreach (var tile in occupiedTiles)
+                {
+                    if (tile == null) continue;
+                    Vector2 tp = tile.transform.position;
+                    Vector2 mp = m.transform.position;
+                    if (Mathf.Abs(mp.x - tp.x) <= halfTile &&
+                        Mathf.Abs(mp.y - tp.y) <= halfTile)
+                    {
+                        m.TakeDamage(dmg, isCrit);
+                        break; // 같은 몬스터 중복 피해 방지
+                    }
+                }
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        /// <summary>점유 타일 위에 살아있는 몬스터가 있는지 체크</summary>
+        // ─────────────────────────────────────────────────────────────
+        private bool HasMonsterOnTiles()
         {
             float step     = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
-            float halfTile = step * 0.6f; // 조금 넓게서 판정 너널하게
+            float halfTile = step * 0.6f;
             foreach (var m in MonsterManager.Instance.ActiveMonsters)
             {
                 if (m == null || !m.IsAlive) continue;
@@ -89,94 +175,6 @@ private bool HasMonsterOnTiles()
                 }
             }
             return false;
-        }
-
-        /// <summary>prev→cur 선분이 tileCenter 중심 halfSize AABB와 교차하는지</summary>
-        private bool SweepCheck(Vector2 prev, Vector2 cur, Vector2 tileCenter, float half)
-        {
-            // 1차: 현재 위치 AABB 체크
-            if (Mathf.Abs(cur.x - tileCenter.x) <= half &&
-                Mathf.Abs(cur.y - tileCenter.y) <= half)
-                return true;
-
-            // 2차: 이전 위치 AABB 체크
-            if (Mathf.Abs(prev.x - tileCenter.x) <= half &&
-                Mathf.Abs(prev.y - tileCenter.y) <= half)
-                return true;
-
-            // 3차: 선분-AABB 스윗 교차 체크
-            // AABB를 (열린 구간)으로 보고 선분이 안에 들어오는 t 찾기
-            float dx = cur.x - prev.x;
-            float dy = cur.y - prev.y;
-            if (Mathf.Abs(dx) < 0.0001f && Mathf.Abs(dy) < 0.0001f) return false;
-
-            float txMin = (tileCenter.x - half - prev.x) / dx;
-            float txMax = (tileCenter.x + half - prev.x) / dx;
-            float tyMin = (tileCenter.y - half - prev.y) / dy;
-            float tyMax = (tileCenter.y + half - prev.y) / dy;
-
-            if (Mathf.Abs(dx) < 0.0001f) { txMin = float.NegativeInfinity; txMax = float.PositiveInfinity; }
-            if (Mathf.Abs(dy) < 0.0001f) { tyMin = float.NegativeInfinity; tyMax = float.PositiveInfinity; }
-
-            if (txMin > txMax) { float tmp = txMin; txMin = txMax; txMax = tmp; }
-            if (tyMin > tyMax) { float tmp = tyMin; tyMin = tyMax; tyMax = tmp; }
-
-            float tEnter = Mathf.Max(txMin, tyMin);
-            float tExit  = Mathf.Min(txMax, tyMax);
-
-            return tEnter <= tExit && tExit >= 0f && tEnter <= 1f;
-        }
-
-private IEnumerator SpikeRoutine()
-        {
-            float dur = 0.12f, t = 0f;
-            while (t < dur)
-            {
-                float ratio = t / dur;
-                foreach (var s in _spikes)
-                {
-                    var lp = s.localPosition; lp.y = Mathf.Lerp(SpikeHide.y, SpikeShow.y, ratio);
-                    s.localPosition = lp;
-                }
-                t += Time.deltaTime; yield return null;
-            }
-
-            float dmg      = RollDamage(out bool isCrit);
-            float step     = MapManager.Instance.tileSize + MapManager.Instance.tileGap;
-            float halfTile = step * 0.6f;
-
-            var monsters = new List<Monster>(MonsterManager.Instance.ActiveMonsters);
-            foreach (var m in monsters)
-            {
-                if (m == null || !m.IsAlive) continue;
-                bool hit = false;
-                foreach (var tile in occupiedTiles)
-                {
-                    if (tile == null) continue;
-                    // AABB 판정 (halfTile 넓게 주어 통과 시도 안정적으로 적중)
-                    Vector2 tp2 = tile.transform.position;
-                    Vector2 mp2 = m.transform.position;
-                    if (Mathf.Abs(mp2.x - tp2.x) <= halfTile &&
-                        Mathf.Abs(mp2.y - tp2.y) <= halfTile)
-                    { hit = true; break; }
-                }
-                if (hit) m.TakeDamage(dmg, isCrit);
-            }
-
-            yield return new WaitForSeconds(0.18f);
-
-            t = 0f;
-            while (t < dur)
-            {
-                float ratio = t / dur;
-                foreach (var s in _spikes)
-                {
-                    var lp = s.localPosition; lp.y = Mathf.Lerp(SpikeShow.y, SpikeHide.y, ratio);
-                    s.localPosition = lp;
-                }
-                t += Time.deltaTime; yield return null;
-            }
-            foreach (var s in _spikes) { var lp = s.localPosition; lp.y = SpikeHide.y; s.localPosition = lp; }
         }
     }
 }

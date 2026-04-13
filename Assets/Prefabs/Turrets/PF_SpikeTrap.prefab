@@ -115,9 +115,9 @@ MonoBehaviour:
   hp: 0
   critChance: 0.05
   critMultiplier: 2
-  bodyRenderer: {fileID: 0}
+  bodyRenderer: {fileID: 6435038165659501385}
   firePoint: {fileID: 0}
-  barrelRenderer: {fileID: 0}
+  barrelRenderer: {fileID: 3952699125647923550}
   barrelDefaultFacingLeft: 0
   isFromMapData: 0
   currentTile: {fileID: 0}
