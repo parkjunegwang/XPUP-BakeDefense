@@ -146,8 +146,10 @@ namespace Underdark
             var vpRt = vpGo.AddComponent<RectTransform>();
             vpRt.anchorMin = Vector2.zero; vpRt.anchorMax = Vector2.one;
             vpRt.offsetMin = Vector2.zero; vpRt.offsetMax = Vector2.zero;
-            vpGo.AddComponent<Image>().color = Color.clear;
-            vpGo.AddComponent<Mask>().showMaskGraphic = false;
+            var vpImg = vpGo.AddComponent<Image>();
+            vpImg.color = Color.white; // Mask는 Image alpha=0이면 자식을 전부 가림 → white 유지
+            var vpMask = vpGo.AddComponent<Mask>();
+            vpMask.showMaskGraphic = false; // Image는 렌더 안 하고 클리핑만
             _scrollRect.viewport = vpRt;
 
             // Content — top-left pivot, Y grows downward
