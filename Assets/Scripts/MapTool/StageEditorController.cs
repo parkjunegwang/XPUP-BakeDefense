@@ -325,6 +325,37 @@ namespace Underdark
             MarkDirty(false);
         }
 
+        /// <summary>
+        /// 그룹의 statData를 에셋 이름으로 검색해 설정.
+        /// 빈 문자열 입력 시 null 초기화. 반환값: 실제 에셋명 (없으면 "? 이름")
+        /// </summary>
+        public string SetGroupStatData(int wi, int gi, string assetName)
+        {
+            if (!ValidGroup(wi, gi)) return "";
+#if UNITY_EDITOR
+            if (string.IsNullOrWhiteSpace(assetName))
+            {
+                currentStage.waves[wi].groups[gi].statData = null;
+                MarkDirty(false);
+                return "";
+            }
+            string[] guids = UnityEditor.AssetDatabase.FindAssets(
+                $"{assetName} t:MonsterStatData");
+            if (guids.Length == 0)
+            {
+                Debug.LogWarning($"[StageEditor] MonsterStatData '{assetName}' 를 찾을 수 없습니다.");
+                return $"?{assetName}";
+            }
+            string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guids[0]);
+            var data = UnityEditor.AssetDatabase.LoadAssetAtPath<MonsterStatData>(path);
+            currentStage.waves[wi].groups[gi].statData = data;
+            MarkDirty(false);
+            return data != null ? data.name : "";
+#else
+            return "";
+#endif
+        }
+
         public void SetStageName(string val)
         {
             if (currentStage == null) return;

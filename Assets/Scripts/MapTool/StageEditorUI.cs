@@ -38,6 +38,8 @@ namespace Underdark
         // 상세 패널
         private TextMeshProUGUI _lblDetail;
         private TMP_InputField  _ifHP, _ifSpeed, _ifCount, _ifInterval, _ifReward, _ifBossHpMult;
+        private TMP_InputField  _ifWaveXp;      // 웨이브 클리어 XP (웨이브 선택 시)
+        private TMP_InputField  _ifStatData;    // MonsterStatData 에셋 이름 (그룹 선택 시)
         private Toggle          _togBoss;
         private Button          _btnDelGroup, _btnDupGroup;
 
@@ -78,6 +80,16 @@ namespace Underdark
             _eventsRegistered = false;
         }
 
+        // 에디터 모드에서 Awake 대신 수동 초기화
+        public void InitForEditor()
+        {
+            if (_ctrl == null)
+            {
+                _ctrl = GetComponent<StageEditorController>();
+                if (_ctrl == null) _ctrl = gameObject.AddComponent<StageEditorController>();
+            }
+        }
+
         // ─────────────────────────────────────────────────────────────
         #region Public API
         // ─────────────────────────────────────────────────────────────
@@ -104,6 +116,101 @@ namespace Underdark
 
         public void Show() { if (_root) { _root.SetActive(true);  RefreshSheet(); } }
         public void Hide() { if (_root)   _root.SetActive(false); }
+
+        // 씬에 이미 구워진 StagePanel에서 C# 레퍼런스 복원
+        public void ConnectToExisting(GameObject root, float sw, float sh)
+        {
+            _root = root; _sw = sw; _sh = sh;
+
+            TMP_InputField FindIF(GameObject par, string n)
+            {
+                var t = par.transform.Find(n); return t ? t.GetComponent<TMP_InputField>() : null;
+            }
+            TextMeshProUGUI FindTMP(GameObject par, string n)
+            {
+                var t = par.transform.Find(n); return t ? t.GetComponent<TextMeshProUGUI>() : null;
+            }
+
+            _ifStageName  = FindIF(root.transform.Find("Top")?.gameObject ?? root, "IF_ifName");
+            _lblStatus    = FindTMP(root.transform.Find("Top")?.gameObject ?? root, "status");
+
+            var scroll    = root.transform.Find("SheetBg/SheetScroll");
+            _scrollRect   = scroll ? scroll.GetComponent<ScrollRect>() : null;
+            var content   = scroll ? scroll.Find("Viewport/SheetContent") : null;
+            _sheetContent = content ? content.gameObject : null;
+
+            var dp        = root.transform.Find("DetailPanel")?.gameObject;
+            if (dp != null)
+            {
+                _lblDetail    = FindTMP(dp, "hdr");
+                _ifHP         = FindIF(dp, "DIF_HP");
+                _ifSpeed      = FindIF(dp, "DIF_Spd");
+                _ifCount      = FindIF(dp, "DIF_Cnt");
+                _ifInterval   = FindIF(dp, "DIF_Itv");
+                _ifReward     = FindIF(dp, "DIF_Rwd");
+                _ifBossHpMult = FindIF(dp, "DIF_BHM");
+                _ifWaveXp     = FindIF(dp, "DIF_WXp");
+                _ifStatData   = FindIF(dp, "DIF_Stat");
+                var togT      = dp.transform.Find("DTog"); _togBoss = togT ? togT.GetComponent<Toggle>() : null;
+                var delT      = dp.transform.Find("DB_삭제"); _btnDelGroup = delT ? delT.GetComponent<Button>() : null;
+                var dupT      = dp.transform.Find("DB_복제"); _btnDupGroup = dupT ? dupT.GetComponent<Button>() : null;
+            }
+
+            var ap = root.transform.Find("AutoScale")?.gameObject;
+            if (ap != null)
+            {
+                _ifSHP  = FindIF(ap, "ASIF_SHP");
+                _ifEHP  = FindIF(ap, "ASIF_EHP");
+                _ifSSPD = FindIF(ap, "ASIF_SSPD");
+                _ifESPD = FindIF(ap, "ASIF_ESPD");
+            }
+
+            ReconnectDetailListeners();
+        }
+
+        private void ReconnectDetailListeners()
+        {
+            void Wire(TMP_InputField f, string key, bool isInt = false)
+            {
+                if (f == null) return;
+                f.onEndEdit.RemoveAllListeners();
+                f.onEndEdit.AddListener(v =>
+                {
+                    if (isInt)
+                    { if (int.TryParse(v, out int iv)) _ctrl.SetGroupField(_ctrl.selectedWaveIdx, _ctrl.selectedGroupIdx, key, iv); }
+                    else
+                    { if (float.TryParse(v, out float fv)) _ctrl.SetGroupField(_ctrl.selectedWaveIdx, _ctrl.selectedGroupIdx, key, fv); }
+                    RefreshSheet();
+                });
+            }
+            Wire(_ifHP,         "hp");
+            Wire(_ifSpeed,      "speed");
+            Wire(_ifCount,      "count",    isInt: true);
+            Wire(_ifInterval,   "interval");
+            Wire(_ifReward,     "reward",   isInt: true);
+            Wire(_ifBossHpMult, "bossHpMult");
+
+            if (_ifWaveXp != null)
+            {
+                _ifWaveXp.onEndEdit.RemoveAllListeners();
+                _ifWaveXp.onEndEdit.AddListener(v =>
+                {
+                    if (int.TryParse(v, out int iv)) _ctrl.SetWaveXp(_ctrl.selectedWaveIdx, iv);
+                    RefreshSheet();
+                });
+            }
+
+            if (_ifStatData != null)
+            {
+                _ifStatData.onEndEdit.RemoveAllListeners();
+                _ifStatData.onEndEdit.AddListener(v =>
+                {
+                    string found = _ctrl.SetGroupStatData(_ctrl.selectedWaveIdx, _ctrl.selectedGroupIdx, v);
+                    _ifStatData.SetTextWithoutNotify(found);
+                    RefreshSheet();
+                });
+            }
+        }
 
         #endregion
 
@@ -185,48 +292,70 @@ namespace Underdark
             var dp = R(_root, "DetailPanel", _sw - DETAIL_W, BOT_H, DETAIL_W, panelH,
                 new Color(0.09f,0.09f,0.18f,1f));
 
-            // 패널 내부는 top-left 기준으로 Y를 아래로 쌓음
-            // → 헬퍼 DL/DIF/DB: y = panelH - (아래로 쌓인 픽셀)
-            float y = panelH - 24f;
+            // 패널 내부는 top-left anchor 기준으로 Y를 아래로 쌓음
+            // DL/DIF/HR 헬퍼: anchoredPosition.y = -topY  (topY 작을수록 위)
+            // → topY = 12에서 시작해서 += 방향으로 증가
+            float y = 12f;
 
             _lblDetail = DL(dp, "hdr", "셀 선택하세요", DETAIL_W/2f, y, DETAIL_W-8, 22, 13, Color.yellow, true);
-            y -= 30f;
+            y += 30f;
+
+            // Wave XP 행 (웨이브 선택 시 표시)
+            HR(dp, y, DETAIL_W); y += 8f;
+            DL(dp, "lWXp", "Wave XP",  8, y, 72, 22, 12, new Color(0.4f,0.9f,0.4f), false);
+            _ifWaveXp = DIFINT(dp, "WXp", "-1", DETAIL_W/2f, y, DETAIL_W/2f-6, 26);
+            y += 32f;
 
             // 구분선
-            HR(dp, y, DETAIL_W); y -= 8f;
+            HR(dp, y, DETAIL_W); y += 8f;
 
             DL(dp, "lHP",  "HP",       8, y, 60, 22, 12, Color.white, false);
-            _ifHP    = DIF(dp, "HP",   "0", DETAIL_W/2f, y, DETAIL_W/2f-6, 26, "hp");     y -= 32f;
+            _ifHP    = DIF(dp, "HP",   "0", DETAIL_W/2f, y, DETAIL_W/2f-6, 26, "hp");     y += 32f;
 
             DL(dp, "lSpd", "Speed",    8, y, 60, 22, 12, Color.white, false);
-            _ifSpeed = DIF(dp, "Spd",  "0", DETAIL_W/2f, y, DETAIL_W/2f-6, 26, "speed");  y -= 32f;
+            _ifSpeed = DIF(dp, "Spd",  "0", DETAIL_W/2f, y, DETAIL_W/2f-6, 26, "speed");  y += 32f;
 
             DL(dp, "lCnt", "Count",    8, y, 60, 22, 12, Color.white, false);
-            _ifCount = DIF(dp, "Cnt",  "0", DETAIL_W/2f, y, DETAIL_W/2f-6, 26, "count");  y -= 32f;
+            _ifCount = DIF(dp, "Cnt",  "0", DETAIL_W/2f, y, DETAIL_W/2f-6, 26, "count");  y += 32f;
 
             DL(dp, "lItv", "Interval", 8, y, 70, 22, 12, Color.white, false);
-            _ifInterval = DIF(dp, "Itv","0", DETAIL_W/2f, y, DETAIL_W/2f-6, 26, "interval"); y -= 32f;
+            _ifInterval = DIF(dp, "Itv","0", DETAIL_W/2f, y, DETAIL_W/2f-6, 26, "interval"); y += 32f;
 
             DL(dp, "lRwd", "Reward",   8, y, 60, 22, 12, Color.white, false);
-            _ifReward = DIF(dp, "Rwd", "0", DETAIL_W/2f, y, DETAIL_W/2f-6, 26, "reward"); y -= 38f;
+            _ifReward = DIF(dp, "Rwd", "0", DETAIL_W/2f, y, DETAIL_W/2f-6, 26, "reward"); y += 38f;
 
-            HR(dp, y, DETAIL_W); y -= 8f;
+            HR(dp, y, DETAIL_W); y += 8f;
 
             // Boss 토글
             DL(dp, "lBoss","Boss",     8, y, 48, 22, 12, Color.red, false);
             _togBoss = DTog(dp, y, 58, 26, v => { _ctrl.SetGroupBoss(_ctrl.selectedWaveIdx, _ctrl.selectedGroupIdx, v); RefreshSheet(); });
-            y -= 30f;
+            y += 30f;
 
             DL(dp, "lBHM","Boss HP×",  8, y, 70, 22, 12, Color.white, false);
-            _ifBossHpMult = DIF(dp, "BHM","1", DETAIL_W/2f, y, DETAIL_W/2f-6, 26, "bossHpMult"); y -= 38f;
+            _ifBossHpMult = DIF(dp, "BHM","1", DETAIL_W/2f, y, DETAIL_W/2f-6, 26, "bossHpMult"); y += 38f;
 
-            HR(dp, y, DETAIL_W); y -= 8f;
+            HR(dp, y, DETAIL_W); y += 8f;
 
-            // 그룹 조작 버튼
+            // StatData 행 (몬스터 에셋 이름 입력)
+            DL(dp, "lStat","StatData", 8, y, 68, 22, 11, new Color(0.6f,0.8f,1f), false);
+            _ifStatData = DIFSTR(dp, "Stat", "", DETAIL_W/2f, y, DETAIL_W/2f-6, 26);
+            _ifStatData.onEndEdit.AddListener(v =>
+            {
+                string found = _ctrl.SetGroupStatData(_ctrl.selectedWaveIdx, _ctrl.selectedGroupIdx, v);
+                _ifStatData.SetTextWithoutNotify(found);
+                RefreshSheet();
+            });
+            y += 32f;
+
+            HR(dp, y, DETAIL_W); y += 12f;
+
+            // 그룹 조작 버튼 — DB는 bottom-left anchor 기준 y
+            // panelH에서 현재까지 내려온 거리를 뺀 위치에 배치
+            float btnY = panelH - y - 15f;
             float bw = (DETAIL_W - 12) / 2f;
-            _btnDupGroup = DB(dp, "복제", 6,          y - 16, bw, 30, new Color(0.2f,0.38f,0.6f),
+            _btnDupGroup = DB(dp, "복제", 6,      btnY, bw, 30, new Color(0.2f,0.38f,0.6f),
                 () => { _ctrl.DuplicateGroup(_ctrl.selectedWaveIdx, _ctrl.selectedGroupIdx); });
-            _btnDelGroup = DB(dp, "삭제", 8 + bw,     y - 16, bw, 30, new Color(0.6f,0.15f,0.15f),
+            _btnDelGroup = DB(dp, "삭제", 8 + bw, btnY, bw, 30, new Color(0.6f,0.15f,0.15f),
                 () => { _ctrl.DeleteGroup(_ctrl.selectedWaveIdx, _ctrl.selectedGroupIdx); });
 
             RefreshDetail();
@@ -379,28 +508,38 @@ namespace Underdark
 
         private void RefreshDetail()
         {
-            var grp = _ctrl?.SelectedGroup;
-            bool has = grp != null;
+            var grp  = _ctrl?.SelectedGroup;
+            var wave = _ctrl?.SelectedWave;
+            bool hasGrp  = grp  != null;
+            bool hasWave = wave != null;
 
-            if (_lblDetail) _lblDetail.text = has
+            if (_lblDetail) _lblDetail.text = hasGrp
                 ? $"W{_ctrl.selectedWaveIdx+1} / G{_ctrl.selectedGroupIdx+1}"
-                : "셀 선택하세요";
+                : (hasWave ? $"Wave {_ctrl.selectedWaveIdx+1}" : "셀 선택하세요");
 
             void SetF(TMP_InputField f, string v) { if (f) f.SetTextWithoutNotify(v); }
-            SetF(_ifHP,       has ? grp.hp.ToString("0")           : "");
-            SetF(_ifSpeed,    has ? grp.speed.ToString("0.0")      : "");
-            SetF(_ifCount,    has ? grp.count.ToString()           : "");
-            SetF(_ifInterval, has ? grp.spawnInterval.ToString("0.00") : "");
-            SetF(_ifReward,   has ? grp.reward.ToString()          : "");
-            SetF(_ifBossHpMult, has ? grp.bossHpMult.ToString("0.0") : "");
-            if (_togBoss) _togBoss.SetIsOnWithoutNotify(has && grp.isBoss);
+            SetF(_ifHP,       hasGrp ? grp.hp.ToString("0")              : "");
+            SetF(_ifSpeed,    hasGrp ? grp.speed.ToString("0.0")         : "");
+            SetF(_ifCount,    hasGrp ? grp.count.ToString()              : "");
+            SetF(_ifInterval, hasGrp ? grp.spawnInterval.ToString("0.00") : "");
+            SetF(_ifReward,   hasGrp ? grp.reward.ToString()             : "");
+            SetF(_ifBossHpMult, hasGrp ? grp.bossHpMult.ToString("0.0") : "");
+            if (_togBoss) _togBoss.SetIsOnWithoutNotify(hasGrp && grp.isBoss);
+
+            // Wave XP: 웨이브 선택(그룹 선택 여부 무관)
+            SetF(_ifWaveXp, hasWave ? wave.waveCompleteXp.ToString() : "");
+
+            // StatData: 그룹 선택 시 현재 에셋 이름 표시
+            SetF(_ifStatData, hasGrp && grp.statData != null ? grp.statData.name : "");
 
             void SetI(TMP_InputField f, bool v) { if (f) f.interactable = v; }
-            SetI(_ifHP, has); SetI(_ifSpeed, has); SetI(_ifCount, has);
-            SetI(_ifInterval, has); SetI(_ifReward, has); SetI(_ifBossHpMult, has);
-            if (_togBoss)    _togBoss.interactable    = has;
-            if (_btnDelGroup) _btnDelGroup.interactable = has;
-            if (_btnDupGroup) _btnDupGroup.interactable = has;
+            SetI(_ifHP, hasGrp); SetI(_ifSpeed, hasGrp); SetI(_ifCount, hasGrp);
+            SetI(_ifInterval, hasGrp); SetI(_ifReward, hasGrp); SetI(_ifBossHpMult, hasGrp);
+            SetI(_ifStatData, hasGrp);
+            if (_togBoss)     _togBoss.interactable     = hasGrp;
+            if (_btnDelGroup) _btnDelGroup.interactable = hasGrp;
+            if (_btnDupGroup) _btnDupGroup.interactable = hasGrp;
+            SetI(_ifWaveXp, hasWave);
         }
 
         #endregion
@@ -630,6 +769,47 @@ namespace Underdark
                     _ctrl.SetGroupField(_ctrl.selectedWaveIdx, _ctrl.selectedGroupIdx, fieldKey, fv);
                 RefreshSheet();
             });
+            return f;
+        }
+
+        // DIFINT: 디테일 InputField (정수 전용, waveXp 등에 사용)
+        TMP_InputField DIFINT(GameObject par, string name, string val,
+            float x, float topY, float w, float h)
+        {
+            var go = new GameObject($"DIF_{name}");
+            go.transform.SetParent(par.transform, false);
+            var rt = go.AddComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0,1); rt.anchorMax = new Vector2(0,1);
+            rt.pivot = new Vector2(0f, 0.5f);
+            rt.anchoredPosition = new Vector2(x, -topY);
+            rt.sizeDelta = new Vector2(w, h);
+            go.AddComponent<Image>().color = new Color(0.12f,0.12f,0.22f);
+            var f = AttachTMPInput(go, val, 13);
+            f.contentType = TMP_InputField.ContentType.IntegerNumber;
+            f.onEndEdit.AddListener(v =>
+            {
+                if (int.TryParse(v, out int iv))
+                    _ctrl.SetWaveXp(_ctrl.selectedWaveIdx, iv);
+                RefreshSheet();
+            });
+            return f;
+        }
+
+        // DIFSTR: 디테일 InputField (문자열 전용, StatData 이름 등에 사용)
+        TMP_InputField DIFSTR(GameObject par, string name, string val,
+            float x, float topY, float w, float h)
+        {
+            var go = new GameObject($"DIF_{name}");
+            go.transform.SetParent(par.transform, false);
+            var rt = go.AddComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0,1); rt.anchorMax = new Vector2(0,1);
+            rt.pivot = new Vector2(0f, 0.5f);
+            rt.anchoredPosition = new Vector2(x, -topY);
+            rt.sizeDelta = new Vector2(w, h);
+            go.AddComponent<Image>().color = new Color(0.10f, 0.14f, 0.20f);
+            var f = AttachTMPInput(go, val, 11);
+            f.contentType = TMP_InputField.ContentType.Standard;
+            // 리스너는 BuildDetail 외부(ReconnectDetailListeners)에서 등록
             return f;
         }
 

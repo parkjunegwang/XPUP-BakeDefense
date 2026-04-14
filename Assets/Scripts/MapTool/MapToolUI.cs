@@ -130,24 +130,16 @@ private void ConnectListeners() { ConnectBtn("Btn_Floor  [F]",   () => _tool.cur
             _activeTab = tab;
             bool isMap = (tab == ToolTab.Map);
 
-            // 동적 생성(BuildUI) 케이스: _mapPanels 컨테이너 하나로 토글
+            // _mapPanels가 null이면 cvGo에서 즉시 재탐색 (호출 타이밍 문제 방어)
+            if (_mapPanels == null && _cvGo != null)
+            {
+                var mp = _cvGo.transform.Find("MapPanels");
+                if (mp != null) _mapPanels = mp.gameObject;
+            }
+
             if (_mapPanels != null)
             {
                 _mapPanels.SetActive(isMap);
-            }
-            else
-            {
-                // 베이크된 씬(AppendTabBarToExistingCanvas) 케이스:
-                // 개별 패널 이름으로 찾아서 토글
-                string[] mapPanelNames = { "Top", "Side", "Right", "Bot" };
-                foreach (var n in mapPanelNames)
-                {
-                    // 1) 캔버스 직접 자식에서 찾기
-                    var go = _cvGo != null ? _cvGo.transform.Find(n)?.gameObject : null;
-                    // 2) 없으면 씬 전체에서 찾기
-                    if (go == null) go = GameObject.Find(n);
-                    if (go != null) go.SetActive(isMap);
-                }
             }
 
             // Stage 패널 토글
@@ -171,6 +163,15 @@ private void ConnectListeners() { ConnectBtn("Btn_Floor  [F]",   () => _tool.cur
         private void AppendTabBarToExistingCanvas(GameObject cvGo)
         {
             float tabH = 34f;
+
+            // 씬에 베이크된 MapPanels 컨테이너를 _mapPanels에 직접 연결.
+            // → SwitchTab이 항상 _mapPanels.SetActive() 경로를 사용하게 되어
+            //   비활성 후 재활성화가 정상 동작함 (GameObject.Find는 비활성 오브젝트를 못 찾음).
+            if (_mapPanels == null)
+            {
+                var mp = cvGo.transform.Find("MapPanels");
+                if (mp != null) _mapPanels = mp.gameObject;
+            }
 
             // Canvas 논리 픽셀 크기를 정확히 계산
             float sw, sh;
@@ -225,12 +226,55 @@ private void ConnectListeners() { ConnectBtn("Btn_Floor  [F]",   () => _tool.cur
             // (C# 내부 참조가 null이라 재사용 불가 — 항상 Build로 연결해야 함)
             _builtSw = sw;
             _builtSh = sh - tabH;
+
             BuildStagePanel();
 
             UpdateTabColors();
         }
 
-        public void InitForEditor() { if (_tool == null) _tool = Object.FindFirstObjectByType<MapToolController>(); }
+        public void InitForEditor()
+        {
+            if (_tool == null) _tool = Object.FindFirstObjectByType<MapToolController>();
+            // 에디터 모드에서 BuildStagePanel() 호출을 위해 _cvGo 복원
+            RestoreCvGoForEditor();
+        }
+
+        /// <summary>
+        /// 에디터 베이크 시 _cvGo / _builtSw / _builtSh 를 씬에서 복원.
+        /// BuildStagePanel()은 _cvGo가 null이면 아무것도 안 하므로 이 메서드를 먼저 호출해야 함.
+        /// </summary>
+        public void RestoreCvGoForEditor()
+        {
+            // _stageUI 복원 (Awake가 안 불렸을 때 대비)
+            if (_stageUI == null)
+            {
+                _stageUI = GetComponent<StageEditorUI>();
+                if (_stageUI == null) _stageUI = gameObject.AddComponent<StageEditorUI>();
+            }
+            // StageEditorUI._ctrl도 에디터 모드에선 Awake가 안 불리므로 수동 초기화
+            _stageUI.InitForEditor();
+
+            if (_cvGo == null)
+                _cvGo = GameObject.Find("MapToolCanvas");
+            if (_cvGo == null) return;
+
+            if (_builtSw <= 0f)
+            {
+                var tabBar = _cvGo.transform.Find("TabBar");
+                float tabH = 34f;
+                if (tabBar != null)
+                {
+                    var tbRt = tabBar.GetComponent<RectTransform>();
+                    if (tbRt != null && tbRt.sizeDelta.y > 0f) tabH = tbRt.sizeDelta.y;
+                }
+                var cvRt = _cvGo.GetComponent<RectTransform>();
+                if (cvRt != null)
+                {
+                    _builtSw = cvRt.rect.width;
+                    _builtSh = cvRt.rect.height - tabH;
+                }
+            }
+        }
 
         public void BuildUI()
         {
