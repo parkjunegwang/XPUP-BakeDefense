@@ -165,6 +165,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.TurretManager
   rangedTurretPrefab: {fileID: 1070692512632793525, guid: fb1371d3957d7e348adb57ff8e1ff1af, type: 3}
   meleeTurretPrefab: {fileID: 3455424580391969573, guid: 0c5b00c103f1ddb4ea7f77f78f5246e8, type: 3}
+  CrossTurretPrefab: {fileID: 3455424580391969573, guid: d2857279bfdd80b4e93114af099e4173, type: 3}
   spikeTrapPrefab: {fileID: 56163832344639542, guid: 72b9aea2bc120d94babb1621c1d548e5, type: 3}
   electricGatePrefab: {fileID: 7035528861799589883, guid: 52f2b4f28d8cbde4ea999e0a14413c0c, type: 3}
   wallPrefab: {fileID: 3894489620708773690, guid: 0a45027f7959b2742b83a640be01efa4, type: 3}
@@ -256,6 +257,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 459a560545f52ac40b761bd24ca34c2f, type: 2}
   - {fileID: 11400000, guid: fb9ce23c4b3a12b4c8533404333e2062, type: 2}
   - {fileID: 11400000, guid: a066fc4339d22da47934b9756315860b, type: 2}
+  - {fileID: 11400000, guid: 9e07903f7dd3640468d37c17cadac2af, type: 2}
+  - {fileID: 11400000, guid: fab76e34345f5ff4882e8267cdd13caf, type: 2}
 --- !u!1 &87424948
 GameObject:
   m_ObjectHideFlags: 0
@@ -302,6 +305,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.GameSetup
   rangedTurretPrefab: {fileID: 1070692512632793525, guid: fb1371d3957d7e348adb57ff8e1ff1af, type: 3}
   meleeTurretPrefab: {fileID: 3455424580391969573, guid: 0c5b00c103f1ddb4ea7f77f78f5246e8, type: 3}
+  CrossTurretPrefab: {fileID: 3455424580391969573, guid: d2857279bfdd80b4e93114af099e4173, type: 3}
   spikeTrapPrefab: {fileID: 56163832344639542, guid: 72b9aea2bc120d94babb1621c1d548e5, type: 3}
   electricGatePrefab: {fileID: 7035528861799589883, guid: 52f2b4f28d8cbde4ea999e0a14413c0c, type: 3}
   wallPrefab: {fileID: 3894489620708773690, guid: 0a45027f7959b2742b83a640be01efa4, type: 3}

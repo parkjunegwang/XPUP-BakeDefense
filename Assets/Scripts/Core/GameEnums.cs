@@ -43,5 +43,6 @@ namespace Underdark
         HasteTower,     // 13. 주변 터렛 공격속도 버프
         PinballCannon,  // 14. 튕기는 포탄
         BoomerangTurret,// 15. 부메랑 (왕복 관통 데미지 감쇄)
+        CrossMeleeTurret,// 16. 십자 4방향 근접 공격
     }
 }

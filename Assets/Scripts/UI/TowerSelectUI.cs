@@ -44,6 +44,7 @@ namespace Underdark
             TurretType.HasteTower,
             TurretType.PinballCannon,
             TurretType.BoomerangTurret,
+            TurretType.CrossMeleeTurret,
         };
         // 총 19종 공격 터렛 (Wall 4종 제외)
 
@@ -68,6 +69,7 @@ namespace Underdark
             { TurretType.BlackHole,       ("Black Hole",  new Color(0.5f,0f,0.8f))      },
             { TurretType.PrecisionStrike, ("Precision",   new Color(1f,0.95f,0.2f))     },
             { TurretType.GambleBat,       ("Gamble Bat",  new Color(0.9f,0.3f,0.9f))   },
+            { TurretType.CrossMeleeTurret,("CrossMelle",  new Color(0.9f,0.3f,0.9f))   },
         };
 
         private StageData        _stage;

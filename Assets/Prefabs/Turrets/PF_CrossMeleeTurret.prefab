@@ -101,9 +101,9 @@ GameObject:
   m_Component:
   - component: {fileID: 9147933775124151940}
   - component: {fileID: 8753498856751782740}
-  - component: {fileID: 7710970471336291248}
+  - component: {fileID: 3927500124432636841}
   m_Layer: 0
-  m_Name: PF_MeleeTurret2
+  m_Name: PF_CrossMeleeTurret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -185,7 +185,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
---- !u!114 &7710970471336291248
+--- !u!114 &3927500124432636841
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -194,15 +194,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 3455424580391969573}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d01562607efe6834e99a9f60d11646d4, type: 3}
+  m_Script: {fileID: 11500000, guid: e9bc447e47597fa4ea4a086163432a0a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Underdark.MeleeTurret
-  turretType: 2
+  m_EditorClassIdentifier: Assembly-CSharp::Underdark.CrossMeleeTurret
+  turretType: 24
   level: 1
-  statData: {fileID: 11400000, guid: 3f531a58b5f155d4ea89dfa496fcf4ab, type: 2}
-  damage: 18
-  range: 1.2
-  fireRate: 1.5
+  statData: {fileID: 11400000, guid: 18a493958cd9121489dfb50e9408255f, type: 2}
+  damage: 0
+  range: 0
+  fireRate: 0
   hp: 0
   critChance: 0.1
   critMultiplier: 2
@@ -213,9 +213,6 @@ MonoBehaviour:
   isFromMapData: 0
   currentTile: {fileID: 0}
   occupiedTiles: []
-  arrowRenderer: {fileID: 0}
-  slashRenderer: {fileID: 0}
-  _ani: {fileID: 1157924178184719849}
 --- !u!1 &6623753724976287274
 GameObject:
   m_ObjectHideFlags: 0
