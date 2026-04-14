@@ -10,7 +10,7 @@ namespace Underdark
 
         // ── Barrel 튀어오르기 설정 ─────────────────────────────────────
         private Vector3 _barrelRestLocalPos;
-        private const float BarrelLaunchOffsetY = 0.55f;
+        private const float BarrelLaunchOffsetY = 0.17f;
         private const float RiseTime  = 0.10f;
         private const float FallTime  = 0.14f;
         private const float PeakHold  = 0.04f;
@@ -47,19 +47,19 @@ namespace Underdark
         private void ForceTrapSortingOrder()
         {
             // Body: Tile(0) + 1 = 1
-            if (bodyRenderer != null)
-                bodyRenderer.sortingOrder = SLayer.Tile + 1;
+            //if (bodyRenderer != null)
+            //    bodyRenderer.sortingOrder = SLayer.Tile + 1;
 
-            // Barrel: 튀어오를 때 body 위에 보이도록 +2
-            if (barrelRenderer != null)
-                barrelRenderer.sortingOrder = SLayer.Tile + 2;
+            //// Barrel: 튀어오를 때 body 위에 보이도록 +2
+            //if (barrelRenderer != null)
+            //    barrelRenderer.sortingOrder = SLayer.Tile + 2;
 
-            // 나머지 자식 SR → TrapEffect(1) 고정
-            foreach (var sr in GetComponentsInChildren<SpriteRenderer>(true))
-            {
-                if (sr == bodyRenderer || sr == barrelRenderer) continue;
-                sr.sortingOrder = SLayer.TrapEffect;
-            }
+            //// 나머지 자식 SR → TrapEffect(1) 고정
+            //foreach (var sr in GetComponentsInChildren<SpriteRenderer>(true))
+            //{
+            //    if (sr == bodyRenderer || sr == barrelRenderer) continue;
+            //    sr.sortingOrder = SLayer.TrapEffect;
+            //}
         }
 
         // TurretManager 등 외부에서 UpdateSortingOrder()를 호출해도 트랩 레이어 유지
