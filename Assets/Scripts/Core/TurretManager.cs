@@ -11,6 +11,7 @@ namespace Underdark
         [Header("Prefabs")]
         public GameObject rangedTurretPrefab;
         public GameObject meleeTurretPrefab;
+        public GameObject CrossTurretPrefab;
         public GameObject spikeTrapPrefab;
         public GameObject electricGatePrefab;
         public GameObject wallPrefab;
@@ -52,7 +53,8 @@ private void InitDefaultDefs() { turretDefs.Add(new TurretDef { type=TurretType.
         turretDefs.Add(new TurretDef { type=TurretType.HasteTower,       sizeX=1,sizeY=1,cost=22,color=new Color(0.9f,1f,0.3f),   label="Haste",        emoji="Haste",isPassable=false });
         turretDefs.Add(new TurretDef { type=TurretType.PinballCannon,    sizeX=1,sizeY=1,cost=24,color=new Color(1f,0.85f,0.1f),  label="Pinball",      emoji="Ball", isPassable=false });
         turretDefs.Add(new TurretDef { type=TurretType.BoomerangTurret,  sizeX=1,sizeY=1,cost=20,color=new Color(0.5f,1f,0.3f),   label="Boomerang",    emoji="Boom", isPassable=false });
-    }
+        turretDefs.Add(new TurretDef { type = TurretType.CrossMeleeTurret, sizeX = 1, sizeY = 1, cost = 20, color = new Color(0.5f, 1f, 0.3f), label = "Cross", emoji = "Cross", isPassable = false });
+        }
 
         public TurretDef GetDef(TurretType type)
         {
@@ -380,13 +382,26 @@ public void TryMerge(Tile from, Tile to) { TurretBase tFrom = from.placedTurret;
         }
 
 public GameObject GetPrefabPublic(TurretType type) => GetPrefab(type);
-private GameObject GetPrefab(TurretType type) => type switch { TurretType.RangedTurret => rangedTurretPrefab, TurretType.MeleeTurret => meleeTurretPrefab, TurretType.SpikeTrap => spikeTrapPrefab, TurretType.ElectricGate => electricGatePrefab, TurretType.Wall => wallPrefab, TurretType.Wall2x1 => wall2x1Prefab != null ? wall2x1Prefab : wallPrefab, TurretType.Wall1x2 => wall1x2Prefab != null ? wall1x2Prefab : wallPrefab, TurretType.Wall2x2 => wall2x2Prefab != null ? wall2x2Prefab : wallPrefab, TurretType.AreaDamage => areaDamagePrefab, TurretType.ExplosiveCannon => explosiveCannonPrefab, TurretType.SlowShooter => slowShooterPrefab, TurretType.RapidFire => rapidFirePrefab, TurretType.Tornado => tornadoPrefab, TurretType.LavaRain => lavaRainPrefab, TurretType.ChainLightning => chainLightningPrefab, TurretType.BlackHole => blackHolePrefab, TurretType.PrecisionStrike => precisionStrikePrefab, TurretType.GambleBat        => gambleBatPrefab,
+private GameObject GetPrefab(TurretType type) => type switch { 
+    TurretType.RangedTurret => rangedTurretPrefab,
+    TurretType.MeleeTurret => meleeTurretPrefab,
+    TurretType.SpikeTrap => spikeTrapPrefab,
+    TurretType.ElectricGate => electricGatePrefab, 
+    TurretType.Wall => wallPrefab, TurretType.Wall2x1 => wall2x1Prefab != null ? wall2x1Prefab : wallPrefab,
+    TurretType.Wall1x2 => wall1x2Prefab != null ? wall1x2Prefab : wallPrefab, 
+    TurretType.Wall2x2 => wall2x2Prefab != null ? wall2x2Prefab : wallPrefab, 
+    TurretType.AreaDamage => areaDamagePrefab, TurretType.ExplosiveCannon => explosiveCannonPrefab,
+    TurretType.SlowShooter => slowShooterPrefab, TurretType.RapidFire => rapidFirePrefab,
+    TurretType.Tornado => tornadoPrefab, TurretType.LavaRain => lavaRainPrefab, 
+    TurretType.ChainLightning => chainLightningPrefab, TurretType.BlackHole => blackHolePrefab,
+    TurretType.PrecisionStrike => precisionStrikePrefab, TurretType.GambleBat        => gambleBatPrefab,
         TurretType.PulseSlower      => pulseSlowerPrefab,
         TurretType.DragonStatue     => dragonStatuePrefab,
         TurretType.HasteTower       => hasteTowerPrefab,
         TurretType.PinballCannon    => pinballCannonPrefab,
         TurretType.BoomerangTurret  => boomerangTurretPrefab,
-        _ => null };
+    TurretType.CrossMeleeTurret => CrossTurretPrefab,
+    _ => null };
 
         public List<TurretBase> GetAll() => _all;
 

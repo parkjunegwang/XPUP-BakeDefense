@@ -12,6 +12,7 @@ namespace Underdark
         [Header("=== Turret Prefabs ===")]
         public GameObject rangedTurretPrefab;
         public GameObject meleeTurretPrefab;
+        public GameObject CrossTurretPrefab;
         public GameObject spikeTrapPrefab;
         public GameObject electricGatePrefab;
         public GameObject wallPrefab;
@@ -125,6 +126,7 @@ namespace Underdark
             }
             if (rangedTurretPrefab    == null) rangedTurretPrefab    = tm?.rangedTurretPrefab    ?? MakeTurretFallback<RangedTurret>(new Color(0.3f,0.6f,1f));
             if (meleeTurretPrefab     == null) meleeTurretPrefab     = tm?.meleeTurretPrefab     ?? MakeTurretFallback<MeleeTurret>(new Color(0.9f,0.7f,0.2f));
+            if (CrossTurretPrefab == null) CrossTurretPrefab = tm?.CrossTurretPrefab ?? MakeTurretFallback<CrossMeleeTurret>(new Color(0.9f, 0.7f, 0.2f));
             if (spikeTrapPrefab       == null) spikeTrapPrefab       = tm?.spikeTrapPrefab       ?? MakeTurretFallback<SpikeTrap>(new Color(0.4f,0.35f,0.3f));
             if (electricGatePrefab    == null) electricGatePrefab    = tm?.electricGatePrefab    ?? MakeTurretFallback<ElectricGate>(new Color(0.9f,0.8f,0.1f));
             if (wallPrefab            == null) wallPrefab            = tm?.wallPrefab            ?? MakeTurretFallback<WallTurret>(new Color(0.55f,0.45f,0.35f));
@@ -172,6 +174,7 @@ namespace Underdark
             {
                 if (tm.rangedTurretPrefab    == null) tm.rangedTurretPrefab    = rangedTurretPrefab;
                 if (tm.meleeTurretPrefab     == null) tm.meleeTurretPrefab     = meleeTurretPrefab;
+                if (tm.CrossTurretPrefab == null) tm.CrossTurretPrefab = CrossTurretPrefab;
                 if (tm.spikeTrapPrefab       == null) tm.spikeTrapPrefab       = spikeTrapPrefab;
                 if (tm.electricGatePrefab    == null) tm.electricGatePrefab    = electricGatePrefab;
                 if (tm.wallPrefab            == null) tm.wallPrefab            = wallPrefab;
