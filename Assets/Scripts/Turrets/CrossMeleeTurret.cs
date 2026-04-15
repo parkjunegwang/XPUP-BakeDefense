@@ -19,6 +19,7 @@ namespace Underdark
         };
 
         private int _attackTiles = 1;
+        public  int AttackTiles => _attackTiles;
 
         // 각 방향당 슬래시 이펙트 SpriteRenderer
         private SpriteRenderer[] _slashSrs = new SpriteRenderer[4];

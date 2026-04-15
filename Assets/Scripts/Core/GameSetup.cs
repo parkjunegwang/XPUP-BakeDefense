@@ -9,31 +9,7 @@ namespace Underdark
     {
         private bool _init;
 
-        [Header("=== Turret Prefabs ===")]
-        public GameObject rangedTurretPrefab;
-        public GameObject meleeTurretPrefab;
-        public GameObject CrossTurretPrefab;
-        public GameObject spikeTrapPrefab;
-        public GameObject electricGatePrefab;
-        public GameObject wallPrefab;
-        public GameObject wall2x1Prefab;
-        public GameObject wall1x2Prefab;
-        public GameObject wall2x2Prefab;
-        public GameObject areaDamagePrefab;
-        public GameObject explosiveCannonPrefab;
-        public GameObject slowShooterPrefab;
-        public GameObject rapidFirePrefab;
-        public GameObject tornadoPrefab;
-        public GameObject lavaRainPrefab;
-        public GameObject chainLightningPrefab;
-        public GameObject blackHolePrefab;
-        public GameObject precisionStrikePrefab;
-        public GameObject gambleBatPrefab;
-        public GameObject pulseSlowerPrefab;
-        public GameObject dragonStatuePrefab;
-        public GameObject hasteTowerPrefab;
-        public GameObject pinballCannonPrefab;
-        public GameObject boomerangTurretPrefab;
+        [Header("=== Fallback Prefabs (Registry 연결 안 됐을 때만 사용) ===")]
         public GameObject projectilePrefab;
 
         [Header("=== Tile / Monster Prefab ===")]
@@ -69,7 +45,6 @@ namespace Underdark
             else
             {
                 // 타워선택 없이 직접 진입한 경우 (디버그/에디터)
-                // StageData에 startTurretPool이 있으면 그걸 세션으로, 없으면 기본 4종
                 var stage = StageManager.Instance?.CurrentStage;
                 if (stage?.startTurretPool != null && stage.startTurretPool.Length > 0)
                     CardManager.Instance?.SetSessionTurrets(stage.startTurretPool);
@@ -117,6 +92,8 @@ namespace Underdark
         private void EnsurePrefabs()
         {
             var tm = FindObjectOfType<TurretManager>();
+
+            // 타일 프리팹
             if (tilePrefab == null)
             {
                 tilePrefab = MakeGO("_TilePfb", new Color(0.18f,0.18f,0.28f), 1.0f, SLayer.Tile);
@@ -124,37 +101,80 @@ namespace Underdark
                 tilePrefab.AddComponent<Tile>();
                 tilePrefab.SetActive(false);
             }
-            if (rangedTurretPrefab    == null) rangedTurretPrefab    = tm?.rangedTurretPrefab    ?? MakeTurretFallback<RangedTurret>(new Color(0.3f,0.6f,1f));
-            if (meleeTurretPrefab     == null) meleeTurretPrefab     = tm?.meleeTurretPrefab     ?? MakeTurretFallback<MeleeTurret>(new Color(0.9f,0.7f,0.2f));
-            if (CrossTurretPrefab == null) CrossTurretPrefab = tm?.CrossTurretPrefab ?? MakeTurretFallback<CrossMeleeTurret>(new Color(0.9f, 0.7f, 0.2f));
-            if (spikeTrapPrefab       == null) spikeTrapPrefab       = tm?.spikeTrapPrefab       ?? MakeTurretFallback<SpikeTrap>(new Color(0.4f,0.35f,0.3f));
-            if (electricGatePrefab    == null) electricGatePrefab    = tm?.electricGatePrefab    ?? MakeTurretFallback<ElectricGate>(new Color(0.9f,0.8f,0.1f));
-            if (wallPrefab            == null) wallPrefab            = tm?.wallPrefab            ?? MakeTurretFallback<WallTurret>(new Color(0.55f,0.45f,0.35f));
-            if (wall2x1Prefab         == null) wall2x1Prefab         = tm?.wall2x1Prefab         ?? MakeTurretFallback<WallTurret>(new Color(0.50f,0.40f,0.30f));
-            if (wall1x2Prefab         == null) wall1x2Prefab         = tm?.wall1x2Prefab         ?? MakeTurretFallback<WallTurret>(new Color(0.50f,0.40f,0.30f));
-            if (wall2x2Prefab         == null) wall2x2Prefab         = tm?.wall2x2Prefab         ?? MakeTurretFallback<WallTurret>(new Color(0.45f,0.35f,0.25f));
-            if (areaDamagePrefab      == null) areaDamagePrefab      = tm?.areaDamagePrefab      ?? MakeTurretFallback<AreaDamageTurret>(new Color(0.7f,0.2f,0.85f));
-            if (explosiveCannonPrefab == null) explosiveCannonPrefab = tm?.explosiveCannonPrefab ?? MakeTurretFallback<ExplosiveCannon>(new Color(1f,0.4f,0.1f));
-            if (slowShooterPrefab     == null) slowShooterPrefab     = tm?.slowShooterPrefab     ?? MakeTurretFallback<SlowShooterTurret>(new Color(0.3f,0.6f,1f));
-            if (rapidFirePrefab       == null) rapidFirePrefab       = tm?.rapidFirePrefab       ?? MakeTurretFallback<RapidFireTurret>(new Color(1f,0.85f,0.2f));
-            if (tornadoPrefab         == null) tornadoPrefab         = tm?.tornadoPrefab         ?? MakeTurretFallback<TornadoTurret>(new Color(0.5f,0.85f,1f));
-            if (lavaRainPrefab        == null) lavaRainPrefab        = tm?.lavaRainPrefab        ?? MakeTurretFallback<LavaRainTurret>(new Color(1f,0.3f,0f));
-            if (chainLightningPrefab  == null) chainLightningPrefab  = tm?.chainLightningPrefab  ?? MakeTurretFallback<ChainLightningTurret>(new Color(0.4f,0.8f,1f));
-            if (blackHolePrefab       == null) blackHolePrefab       = tm?.blackHolePrefab       ?? MakeTurretFallback<BlackHoleTurret>(new Color(0.5f,0f,0.8f));
-            if (precisionStrikePrefab == null) precisionStrikePrefab = tm?.precisionStrikePrefab ?? MakeTurretFallback<PrecisionStrikeTurret>(new Color(1f,0.95f,0.2f));
-            if (gambleBatPrefab       == null) gambleBatPrefab       = tm?.gambleBatPrefab       ?? MakeTurretFallback<GambleBatTurret>(new Color(0.9f,0.3f,0.9f));
-            if (pulseSlowerPrefab     == null) pulseSlowerPrefab     = tm?.pulseSlowerPrefab     ?? MakeTurretFallback<PulseSlower>(new Color(0.4f,0.8f,1f));
-            if (dragonStatuePrefab    == null) dragonStatuePrefab    = tm?.dragonStatuePrefab    ?? MakeTurretFallback<DragonStatue>(new Color(1f,0.45f,0.1f));
-            if (hasteTowerPrefab      == null) hasteTowerPrefab      = tm?.hasteTowerPrefab      ?? MakeTurretFallback<HasteTower>(new Color(0.9f,1f,0.3f));
-            if (pinballCannonPrefab   == null) pinballCannonPrefab   = tm?.pinballCannonPrefab   ?? MakeTurretFallback<PinballCannon>(new Color(1f,0.85f,0.1f));
-            if (boomerangTurretPrefab == null) boomerangTurretPrefab = tm?.boomerangTurretPrefab ?? MakeTurretFallback<BoomerangTurret>(new Color(0.5f,1f,0.3f));
+
+            // 프로젝타일 프리팹
             if (projectilePrefab == null)
             {
                 projectilePrefab = MakeGO("_ProjPfb", new Color(1f,1f,0.2f), 0.18f, SLayer.Projectile);
                 projectilePrefab.AddComponent<Projectile>();
                 projectilePrefab.SetActive(false);
             }
-            if (monsterPrefab == null) monsterPrefab = BuildMonsterFallback();
+
+            // 몬스터 프리팹
+            if (monsterPrefab == null)
+                monsterPrefab = BuildMonsterFallback();
+
+            // Registry가 있으면 빠진 prefab만 fallback 생성
+            if (tm?.registry != null)
+            {
+                tm.registry.RebuildCache();
+                EnsureRegistryFallbacks(tm);
+            }
+            else if (tm != null)
+            {
+                Debug.LogWarning("[GameSetup] TurretManager에 Registry가 없습니다.");
+                Debug.LogError("[GameSetup] TurretRegistry가 없습니다! Assets/Resources/TurretRegistry.asset을 확인하세요.");
+            }
+        }
+
+        /// <summary>Registry는 있으나 일부 prefab이 null인 항목만 fallback 생성</summary>
+        private void EnsureRegistryFallbacks(TurretManager tm)
+        {
+            var defs = new (TurretType type, System.Type script, Color col)[]
+            {
+                (TurretType.RangedTurret,        typeof(RangedTurret),          new Color(0.3f,0.6f,1f)),
+                (TurretType.MeleeTurret,         typeof(MeleeTurret),           new Color(0.9f,0.7f,0.2f)),
+                (TurretType.CrossMeleeTurret,    typeof(CrossMeleeTurret),      new Color(0.9f,0.7f,0.2f)),
+                (TurretType.SpikeTrap,           typeof(SpikeTrap),             new Color(0.4f,0.35f,0.3f)),
+                (TurretType.ElectricGate,        typeof(ElectricGate),          new Color(0.9f,0.8f,0.1f)),
+                (TurretType.Wall,                typeof(WallTurret),            new Color(0.55f,0.45f,0.35f)),
+                (TurretType.Wall2x1,             typeof(WallTurret),            new Color(0.50f,0.40f,0.30f)),
+                (TurretType.Wall1x2,             typeof(WallTurret),            new Color(0.50f,0.40f,0.30f)),
+                (TurretType.Wall2x2,             typeof(WallTurret),            new Color(0.45f,0.35f,0.25f)),
+                (TurretType.AreaDamage,          typeof(AreaDamageTurret),      new Color(0.7f,0.2f,0.85f)),
+                (TurretType.ExplosiveCannon,     typeof(ExplosiveCannon),       new Color(1f,0.4f,0.1f)),
+                (TurretType.SlowShooter,         typeof(SlowShooterTurret),     new Color(0.3f,0.6f,1f)),
+                (TurretType.RapidFire,           typeof(RapidFireTurret),       new Color(1f,0.85f,0.2f)),
+                (TurretType.Tornado,             typeof(TornadoTurret),         new Color(0.5f,0.85f,1f)),
+                (TurretType.LavaRain,            typeof(LavaRainTurret),        new Color(1f,0.3f,0f)),
+                (TurretType.ChainLightning,      typeof(ChainLightningTurret),  new Color(0.4f,0.8f,1f)),
+                (TurretType.BlackHole,           typeof(BlackHoleTurret),       new Color(0.5f,0f,0.8f)),
+                (TurretType.PrecisionStrike,     typeof(PrecisionStrikeTurret), new Color(1f,0.95f,0.2f)),
+                (TurretType.GambleBat,           typeof(GambleBatTurret),       new Color(0.9f,0.3f,0.9f)),
+                (TurretType.PulseSlower,         typeof(PulseSlower),           new Color(0.4f,0.8f,1f)),
+                (TurretType.DragonStatue,        typeof(DragonStatue),          new Color(1f,0.45f,0.1f)),
+                (TurretType.HasteTower,          typeof(HasteTower),            new Color(0.9f,1f,0.3f)),
+                (TurretType.PinballCannon,       typeof(PinballCannon),         new Color(1f,0.85f,0.1f)),
+                (TurretType.BoomerangTurret,     typeof(BoomerangTurret),       new Color(0.5f,1f,0.3f)),
+            };
+
+            foreach (var (type, script, col) in defs)
+            {
+                var entry = tm.registry.Get(type);
+                if (entry != null && entry.prefab == null)
+                {
+                    entry.prefab = MakeTurretFallbackByType(script, col);
+                    Debug.LogWarning($"[GameSetup] {type} 프리팹 없음 - 런타임 fallback 생성됨");
+                }
+            }
+        }
+
+        private GameObject MakeTurretFallbackByType(System.Type turretScript, Color col)
+        {
+            var go = MakeGO($"_Pfb_{turretScript.Name}", col, 0.70f, SLayer.Turret);
+            go.AddComponent(turretScript);
+            go.SetActive(false);
+            return go;
         }
 
         private GameObject MakeTurretFallback<T>(Color col) where T : TurretBase
@@ -168,35 +188,31 @@ namespace Underdark
             var map = FindObjectOfType<MapManager>();
             var tm  = FindObjectOfType<TurretManager>();
             var mm  = FindObjectOfType<MonsterManager>();
+
+            // 타일/몬스터 연결
             if (map != null) map.tilePrefab = tilePrefab;
             if (mm  != null && mm.monsterPrefab == null) mm.monsterPrefab = monsterPrefab;
-            if (tm  != null)
+
+            if (tm != null)
             {
-                if (tm.rangedTurretPrefab    == null) tm.rangedTurretPrefab    = rangedTurretPrefab;
-                if (tm.meleeTurretPrefab     == null) tm.meleeTurretPrefab     = meleeTurretPrefab;
-                if (tm.CrossTurretPrefab == null) tm.CrossTurretPrefab = CrossTurretPrefab;
-                if (tm.spikeTrapPrefab       == null) tm.spikeTrapPrefab       = spikeTrapPrefab;
-                if (tm.electricGatePrefab    == null) tm.electricGatePrefab    = electricGatePrefab;
-                if (tm.wallPrefab            == null) tm.wallPrefab            = wallPrefab;
-                if (tm.wall2x1Prefab         == null) tm.wall2x1Prefab         = wall2x1Prefab;
-                if (tm.wall1x2Prefab         == null) tm.wall1x2Prefab         = wall1x2Prefab;
-                if (tm.wall2x2Prefab         == null) tm.wall2x2Prefab         = wall2x2Prefab;
-                if (tm.areaDamagePrefab      == null) tm.areaDamagePrefab      = areaDamagePrefab;
-                if (tm.explosiveCannonPrefab == null) tm.explosiveCannonPrefab = explosiveCannonPrefab;
-                if (tm.slowShooterPrefab     == null) tm.slowShooterPrefab     = slowShooterPrefab;
-                if (tm.rapidFirePrefab       == null) tm.rapidFirePrefab       = rapidFirePrefab;
-                if (tm.tornadoPrefab         == null) tm.tornadoPrefab         = tornadoPrefab;
-                if (tm.lavaRainPrefab        == null) tm.lavaRainPrefab        = lavaRainPrefab;
-                if (tm.chainLightningPrefab  == null) tm.chainLightningPrefab  = chainLightningPrefab;
-                if (tm.blackHolePrefab       == null) tm.blackHolePrefab       = blackHolePrefab;
-                if (tm.precisionStrikePrefab == null) tm.precisionStrikePrefab = precisionStrikePrefab;
-                if (tm.gambleBatPrefab       == null) tm.gambleBatPrefab       = gambleBatPrefab;
-                if (tm.pulseSlowerPrefab     == null) tm.pulseSlowerPrefab     = pulseSlowerPrefab;
-                if (tm.dragonStatuePrefab    == null) tm.dragonStatuePrefab    = dragonStatuePrefab;
-                if (tm.hasteTowerPrefab      == null) tm.hasteTowerPrefab      = hasteTowerPrefab;
-                if (tm.pinballCannonPrefab   == null) tm.pinballCannonPrefab   = pinballCannonPrefab;
-                if (tm.boomerangTurretPrefab == null) tm.boomerangTurretPrefab = boomerangTurretPrefab;
-                if (tm.projectilePrefab      == null) tm.projectilePrefab      = projectilePrefab;
+                // Registry가 없으면 Resources에서 로드 시도
+                if (tm.registry == null)
+                {
+                    tm.registry = Resources.Load<TurretRegistry>("TurretRegistry");
+                    if (tm.registry != null)
+                    {
+                        tm.registry.RebuildCache();
+                        Debug.Log("[GameSetup] TurretRegistry Resources 로드 완료");
+                    }
+                    else
+                    {
+                        Debug.LogError("[GameSetup] TurretRegistry를 찾을 수 없습니다! 인스펙터 또는 Assets/Resources에 추가하세요.");
+                    }
+                }
+
+                // 프로젝타일 연결
+                if (tm.projectilePrefab == null)
+                    tm.projectilePrefab = projectilePrefab;
             }
         }
 
@@ -274,7 +290,6 @@ namespace Underdark
             ui.xpText = Txt(xpBg, "XPText", "0/100",
                 new Vector2(0.5f,0.5f), new Vector2(0.5f,0.5f), Vector2.zero, new Vector2(200f,14f), 9);
 
-            // messageText - raycastTarget false로 생성 (클릭 씹힘 방지)
             ui.messageText = Txt(cvGo, "MsgText", "",
                 new Vector2(0.5f,0.65f), new Vector2(0.5f,0.5f), Vector2.zero, new Vector2(340f,54f), 18);
             ui.messageText.gameObject.SetActive(false);
@@ -300,7 +315,6 @@ namespace Underdark
             ui.gameOverPanel = FullPanel(cvGo, "GOPanel", new Color(0,0,0,0.88f));
             Txt(ui.gameOverPanel, "TxtGO", "GAME OVER",
                 new Vector2(0.5f,0.62f), new Vector2(0.5f,0.5f), Vector2.zero, new Vector2(320f,70f), 42, Color.red);
-            // 리스타트 버튼 제거 - 로비 버튼만 사용
             ui.lobbyBtn = Btn(ui.gameOverPanel, "BtnGOL", "Lobby",
                 new Vector2(0.5f, 0.45f), new Color(0.2f, 0.5f, 0.2f), Vector2.zero, new Vector2(200f, 54f));
             ui.gameOverPanel.SetActive(false);
@@ -308,7 +322,6 @@ namespace Underdark
             ui.victoryPanel = FullPanel(cvGo, "VicPanel", new Color(0,0,0,0.88f));
             Txt(ui.victoryPanel, "TxtVic", "STAGE CLEAR!",
                 new Vector2(0.5f,0.62f), new Vector2(0.5f,0.5f), Vector2.zero, new Vector2(320f,70f), 42, Color.yellow);
-            // 빕토리 리스타트 버튼 제거
             ui.victoryLobbyBtn = Btn(ui.victoryPanel, "BtnVicL", "Lobby",
                 new Vector2(0.5f, 0.45f), new Color(0.2f, 0.5f, 0.2f), Vector2.zero, new Vector2(200f, 54f));
             ui.victoryPanel.SetActive(false);
@@ -395,7 +408,7 @@ namespace Underdark
             return Sprite.Create(tex, new Rect(0,0,px,px), new Vector2(0.5f,0.5f), px);
         }
 
-private TextMeshProUGUI Txt(GameObject p, string name, string text,
+        private TextMeshProUGUI Txt(GameObject p, string name, string text,
             Vector2 anchor, Vector2 pivot, Vector2 pos, Vector2 size, int fs, Color? col = null)
         {
             var go = new GameObject(name); go.transform.SetParent(p.transform, false);
@@ -405,7 +418,7 @@ private TextMeshProUGUI Txt(GameObject p, string name, string text,
             var tmp = go.AddComponent<TextMeshProUGUI>();
             tmp.text = text; tmp.fontSize = fs; tmp.color = col ?? Color.white;
             tmp.alignment = TextAlignmentOptions.Center;
-            tmp.raycastTarget = false; // 클릭 이벤트 통과 (설치 씩힐 방지)
+            tmp.raycastTarget = false;
             return tmp;
         }
 

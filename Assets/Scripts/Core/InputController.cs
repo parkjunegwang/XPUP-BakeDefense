@@ -215,6 +215,12 @@ private void ShowTurretRange(TurretBase turret)
                         RangeIndicator.Instance.ShowTiles(meleeTiles, new Color(col.r, col.g, col.b, 0.55f), 2.5f);
                     return;
 
+                case TurretType.CrossMeleeTurret:
+                    var cross = turret as CrossMeleeTurret;
+                    int atkTiles = cross != null ? cross.AttackTiles : 1;
+                    RangeIndicator.Instance.ShowCross(turret.transform.position, atkTiles, col, 2.5f);
+                    return;
+
                 case TurretType.DragonStatue:
                     var dragon = turret as DragonStatue;
                     float bRange = dragon != null ? dragon.breathRange : 2.2f;
@@ -272,6 +278,11 @@ private void UpdateRangeIndicator(Vector3 center, TurretStatData sd, bool canPla
                     if (dragMeleeTiles != null && dragMeleeTiles.Count > 0)
                         RangeIndicator.Instance.ShowTiles(dragMeleeTiles, new Color(baseCol.r, baseCol.g, baseCol.b, 0.45f));
                     else RangeIndicator.Instance.Hide();
+                    return;
+
+                case TurretType.CrossMeleeTurret:
+                    // 드래그 중: lv1 기준 1칸 미리보기
+                    RangeIndicator.Instance.ShowCross(center, 1, baseCol);
                     return;
 
                 case TurretType.DragonStatue:

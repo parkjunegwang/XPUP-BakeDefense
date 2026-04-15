@@ -1,0 +1,255 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eca53334f56aa7e4494f08cad7bb73c0, type: 3}
+  m_Name: TurretRegistry
+  m_EditorClassIdentifier: Assembly-CSharp::Underdark.TurretRegistry
+  entries:
+  - type: 1
+    prefab: {fileID: 1070692512632793525, guid: fb1371d3957d7e348adb57ff8e1ff1af, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 15
+    isPassable: 0
+    label: Ranged
+    emoji: Gun
+    color: {r: 0.3, g: 0.6, b: 1, a: 1}
+    isWall: 0
+  - type: 2
+    prefab: {fileID: 3455424580391969573, guid: 0c5b00c103f1ddb4ea7f77f78f5246e8, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 12
+    isPassable: 0
+    label: Melee
+    emoji: Sword
+    color: {r: 0.9, g: 0.7, b: 0.2, a: 1}
+    isWall: 0
+  - type: 24
+    prefab: {fileID: 3455424580391969573, guid: d2857279bfdd80b4e93114af099e4173, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 20
+    isPassable: 0
+    label: Cross
+    emoji: Cross
+    color: {r: 0.5, g: 1, b: 0.3, a: 1}
+    isWall: 0
+  - type: 3
+    prefab: {fileID: 56163832344639542, guid: 72b9aea2bc120d94babb1621c1d548e5, type: 3}
+    sizeX: 2
+    sizeY: 1
+    cost: 10
+    isPassable: 1
+    label: Spikes
+    emoji: Trap
+    color: {r: 0.4, g: 0.35, b: 0.3, a: 1}
+    isWall: 0
+  - type: 4
+    prefab: {fileID: 7035528861799589883, guid: 52f2b4f28d8cbde4ea999e0a14413c0c, type: 3}
+    sizeX: 3
+    sizeY: 1
+    cost: 20
+    isPassable: 0
+    label: Elec Gate
+    emoji: Elec
+    color: {r: 0.9, g: 0.8, b: 0.1, a: 1}
+    isWall: 0
+  - type: 5
+    prefab: {fileID: 3894489620708773690, guid: 0a45027f7959b2742b83a640be01efa4, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 5
+    isPassable: 0
+    label: Wall 1x1
+    emoji: Wall
+    color: {r: 0.55, g: 0.45, b: 0.35, a: 1}
+    isWall: 1
+  - type: 6
+    prefab: {fileID: 3894489620708773690, guid: 264bc8c00fa6a2b4283d5b41602e34c7, type: 3}
+    sizeX: 2
+    sizeY: 1
+    cost: 8
+    isPassable: 0
+    label: Wall 2x1
+    emoji: Wall
+    color: {r: 0.5, g: 0.4, b: 0.3, a: 1}
+    isWall: 1
+  - type: 7
+    prefab: {fileID: 3894489620708773690, guid: 02ec81ffdaaea564c81aa4525d2b9808, type: 3}
+    sizeX: 1
+    sizeY: 2
+    cost: 8
+    isPassable: 0
+    label: Wall 1x2
+    emoji: Wall
+    color: {r: 0.5, g: 0.4, b: 0.3, a: 1}
+    isWall: 1
+  - type: 8
+    prefab: {fileID: 3894489620708773690, guid: 38d427f320b038045828b3dcee03d537, type: 3}
+    sizeX: 2
+    sizeY: 2
+    cost: 12
+    isPassable: 0
+    label: Wall 2x2
+    emoji: Wall
+    color: {r: 0.45, g: 0.35, b: 0.25, a: 1}
+    isWall: 1
+  - type: 9
+    prefab: {fileID: 1070692512632793525, guid: 7ca1044da63541a4ea2040defcc71be7, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 18
+    isPassable: 0
+    label: Area Dmg
+    emoji: Area
+    color: {r: 0.7, g: 0.2, b: 0.85, a: 1}
+    isWall: 0
+  - type: 10
+    prefab: {fileID: 1070692512632793525, guid: 1a9fe774b9886e7449b758d8273c12f6, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 22
+    isPassable: 0
+    label: Cannon
+    emoji: Bomb
+    color: {r: 1, g: 0.4, b: 0.1, a: 1}
+    isWall: 0
+  - type: 11
+    prefab: {fileID: 1070692512632793525, guid: 9747c9caccbdbc143b924df936da41b1, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 16
+    isPassable: 0
+    label: Slow
+    emoji: Ice
+    color: {r: 0.3, g: 0.6, b: 1, a: 1}
+    isWall: 0
+  - type: 12
+    prefab: {fileID: 1070692512632793525, guid: d6d27ee2a710cbd47a0c81cf49ced578, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 14
+    isPassable: 0
+    label: Rapid
+    emoji: Fast
+    color: {r: 1, g: 0.85, b: 0.2, a: 1}
+    isWall: 0
+  - type: 13
+    prefab: {fileID: 1070692512632793525, guid: 678a732b7c2e7dd49add40ec8e3e1461, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 25
+    isPassable: 0
+    label: Tornado
+    emoji: Wind
+    color: {r: 0.5, g: 0.85, b: 1, a: 1}
+    isWall: 0
+  - type: 14
+    prefab: {fileID: 1070692512632793525, guid: df6488309bf80974284728cc90eb8fc8, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 20
+    isPassable: 0
+    label: Lava Rain
+    emoji: Lava
+    color: {r: 1, g: 0.3, b: 0, a: 1}
+    isWall: 0
+  - type: 15
+    prefab: {fileID: 1070692512632793525, guid: 5a8f9517db3e83f438e54b973228b874, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 24
+    isPassable: 0
+    label: Chain Bolt
+    emoji: Bolt
+    color: {r: 0.4, g: 0.8, b: 1, a: 1}
+    isWall: 0
+  - type: 16
+    prefab: {fileID: 1070692512632793525, guid: a365a21501a35904cbeaa43ab1eeef29, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 30
+    isPassable: 0
+    label: Black Hole
+    emoji: Hole
+    color: {r: 0.5, g: 0, b: 0.8, a: 1}
+    isWall: 0
+  - type: 17
+    prefab: {fileID: 1070692512632793525, guid: cbc62bf4886ad854c8bc28677089e7ac, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 20
+    isPassable: 0
+    label: Precision
+    emoji: Aim
+    color: {r: 1, g: 0.95, b: 0.2, a: 1}
+    isWall: 0
+  - type: 18
+    prefab: {fileID: 1070692512632793525, guid: 39036a6314493994388c5c674bd3edec, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 18
+    isPassable: 0
+    label: Gamble Bat
+    emoji: Bat
+    color: {r: 0.9, g: 0.3, b: 0.9, a: 1}
+    isWall: 0
+  - type: 19
+    prefab: {fileID: 806616702479643111, guid: bdb5cd1bf8e3a054fb9fabf68c4d2979, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 20
+    isPassable: 0
+    label: Pulse Slow
+    emoji: Pulse
+    color: {r: 0.4, g: 0.8, b: 1, a: 1}
+    isWall: 0
+  - type: 20
+    prefab: {fileID: 7906140199756075341, guid: ea5d9e0c7d5153745a94e8b6b312236f, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 28
+    isPassable: 0
+    label: Dragon
+    emoji: Fire
+    color: {r: 1, g: 0.45, b: 0.1, a: 1}
+    isWall: 0
+  - type: 21
+    prefab: {fileID: 958379739599025587, guid: 24c96b5655a058c45a70517d63107a1f, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 22
+    isPassable: 0
+    label: Haste
+    emoji: Haste
+    color: {r: 0.9, g: 1, b: 0.3, a: 1}
+    isWall: 0
+  - type: 22
+    prefab: {fileID: 349964659190088970, guid: caa807d3624f37c46bdfbd9d2cb7b058, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 24
+    isPassable: 0
+    label: Pinball
+    emoji: Ball
+    color: {r: 1, g: 0.85, b: 0.1, a: 1}
+    isWall: 0
+  - type: 23
+    prefab: {fileID: 3943884608347132747, guid: 6b927bb4579b7dd46a4a290235fe92f9, type: 3}
+    sizeX: 1
+    sizeY: 1
+    cost: 20
+    isPassable: 0
+    label: Boomerang
+    emoji: Boom
+    color: {r: 0.5, g: 1, b: 0.3, a: 1}
+    isWall: 0

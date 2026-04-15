@@ -174,6 +174,84 @@ namespace Underdark
             _fillGo.SetActive(true);
         }
 
+        /// <summary>십자(+) 4방향 타일 하이라이트 (CrossMeleeTurret)</summary>
+        public void ShowCross(Vector3 center, int attackTiles, Color col, float duration = 0f)
+        {
+            ClearAll();
+            gameObject.SetActive(true);
+            SetFade(duration);
+
+            var map = MapManager.Instance;
+            if (map == null) return;
+
+            float tileSize = map.tileSize;
+            float step     = tileSize + map.tileGap;
+
+            var dirs = new Vector2Int[]
+            {
+                new Vector2Int( 0,  1),
+                new Vector2Int( 0, -1),
+                new Vector2Int(-1,  0),
+                new Vector2Int( 1,  0),
+            };
+
+            // 십자 방향별 직사각형 fill
+            Color fillCol = new Color(col.r, col.g, col.b, col.a * 0.28f);
+
+            // LineRenderer로 십자 외곽선 (각 arm을 사각형으로)
+            // 총 포인트: 4방향 × 4꼭짓점 = 16점 (loop 없이 개별 rect)
+            // → 타일 하이라이트 방식이 더 깔끔하므로 ShowTiles 방식 재사용
+            foreach (var dir in dirs)
+            {
+                for (int i = 1; i <= attackTiles; i++)
+                {
+                    Vector3 pos = center + new Vector3(dir.x * step * i, dir.y * step * i, 0f);
+
+                    var go = new GameObject("CrossTH");
+                    go.transform.SetParent(_tileRoot.transform);
+                    go.transform.position   = new Vector3(pos.x, pos.y, -0.05f);
+                    go.transform.localScale = Vector3.one * tileSize * 0.92f;
+                    var sr = go.AddComponent<SpriteRenderer>();
+                    sr.sprite       = GameSetup.WhiteSquareStatic();
+                    sr.color        = fillCol;
+                    sr.sortingOrder = TopOrder;
+                    _tileHighlights.Add(sr);
+                }
+            }
+
+            // 외곽선: 각 arm을 얇은 사각형 선으로
+            float hw = tileSize * 0.46f;   // 타일 반폭
+            float lw = step * attackTiles; // arm 길이
+
+            // positionCount = 4방향 × 5점(rect닫기) = 20
+            _lr.loop          = false;
+            _lr.positionCount = 0;
+            _lr.startColor    = col;
+            _lr.endColor      = col;
+            _lr.startWidth    = 0.05f;
+            _lr.endWidth      = 0.05f;
+
+            var pts = new List<Vector3>();
+            foreach (var dir in dirs)
+            {
+                Vector3 d    = new Vector3(dir.x, dir.y, 0f);
+                Vector3 perp = new Vector3(-dir.y, dir.x, 0f) * hw;
+                Vector3 near = center + d * (step - tileSize * 0.5f);
+                Vector3 far  = center + d * (step * attackTiles + tileSize * 0.5f);
+                float z = -0.1f;
+
+                pts.Add(near + perp + Vector3.forward * z);
+                pts.Add(far  + perp + Vector3.forward * z);
+                pts.Add(far  - perp + Vector3.forward * z);
+                pts.Add(near - perp + Vector3.forward * z);
+                pts.Add(near + perp + Vector3.forward * z); // 닫기
+            }
+
+            _lr.positionCount = pts.Count;
+            for (int i = 0; i < pts.Count; i++)
+                _lr.SetPosition(i, pts[i]);
+        }
+
         /// <summary>오른쪽 브레스 사각형 (DragonStatue) - 오른쪽만 표시</summary>
         public void ShowBreathRect(Vector3 center, float rangeX, float rangeY, Color col, float duration = 0f)
         {

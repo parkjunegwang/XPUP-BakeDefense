@@ -163,8 +163,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 240b64bdc455212478b73c206c0cb4ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.TurretManager
-  registry: {fileID: 11400000, guid: 0d21032cdbc28e84b99a68d464211c8a, type: 2}
+  rangedTurretPrefab: {fileID: 1070692512632793525, guid: fb1371d3957d7e348adb57ff8e1ff1af, type: 3}
+  meleeTurretPrefab: {fileID: 3455424580391969573, guid: 0c5b00c103f1ddb4ea7f77f78f5246e8, type: 3}
+  CrossTurretPrefab: {fileID: 3455424580391969573, guid: d2857279bfdd80b4e93114af099e4173, type: 3}
+  spikeTrapPrefab: {fileID: 56163832344639542, guid: 72b9aea2bc120d94babb1621c1d548e5, type: 3}
+  electricGatePrefab: {fileID: 7035528861799589883, guid: 52f2b4f28d8cbde4ea999e0a14413c0c, type: 3}
+  wallPrefab: {fileID: 3894489620708773690, guid: 0a45027f7959b2742b83a640be01efa4, type: 3}
+  wall2x1Prefab: {fileID: 3894489620708773690, guid: 264bc8c00fa6a2b4283d5b41602e34c7, type: 3}
+  wall1x2Prefab: {fileID: 3894489620708773690, guid: 02ec81ffdaaea564c81aa4525d2b9808, type: 3}
+  wall2x2Prefab: {fileID: 3894489620708773690, guid: 38d427f320b038045828b3dcee03d537, type: 3}
+  areaDamagePrefab: {fileID: 1070692512632793525, guid: 7ca1044da63541a4ea2040defcc71be7, type: 3}
+  explosiveCannonPrefab: {fileID: 1070692512632793525, guid: 1a9fe774b9886e7449b758d8273c12f6, type: 3}
+  slowShooterPrefab: {fileID: 1070692512632793525, guid: 9747c9caccbdbc143b924df936da41b1, type: 3}
+  rapidFirePrefab: {fileID: 1070692512632793525, guid: d6d27ee2a710cbd47a0c81cf49ced578, type: 3}
+  tornadoPrefab: {fileID: 1070692512632793525, guid: 678a732b7c2e7dd49add40ec8e3e1461, type: 3}
+  lavaRainPrefab: {fileID: 1070692512632793525, guid: df6488309bf80974284728cc90eb8fc8, type: 3}
+  chainLightningPrefab: {fileID: 1070692512632793525, guid: 5a8f9517db3e83f438e54b973228b874, type: 3}
+  blackHolePrefab: {fileID: 1070692512632793525, guid: a365a21501a35904cbeaa43ab1eeef29, type: 3}
+  precisionStrikePrefab: {fileID: 1070692512632793525, guid: cbc62bf4886ad854c8bc28677089e7ac, type: 3}
+  gambleBatPrefab: {fileID: 1070692512632793525, guid: 39036a6314493994388c5c674bd3edec, type: 3}
+  pulseSlowerPrefab: {fileID: 806616702479643111, guid: bdb5cd1bf8e3a054fb9fabf68c4d2979, type: 3}
+  dragonStatuePrefab: {fileID: 7906140199756075341, guid: ea5d9e0c7d5153745a94e8b6b312236f, type: 3}
+  hasteTowerPrefab: {fileID: 958379739599025587, guid: 24c96b5655a058c45a70517d63107a1f, type: 3}
+  pinballCannonPrefab: {fileID: 349964659190088970, guid: caa807d3624f37c46bdfbd9d2cb7b058, type: 3}
+  boomerangTurretPrefab: {fileID: 3943884608347132747, guid: 6b927bb4579b7dd46a4a290235fe92f9, type: 3}
   projectilePrefab: {fileID: 8337581961609253473, guid: 81c475cbaddf57c428b049e8f8efd8de, type: 3}
+  turretDefs: []
 --- !u!1 &39192861
 GameObject:
   m_ObjectHideFlags: 0
@@ -279,6 +303,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 960112f5c6d643445bc6083c7f57b380, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.GameSetup
+  rangedTurretPrefab: {fileID: 1070692512632793525, guid: fb1371d3957d7e348adb57ff8e1ff1af, type: 3}
+  meleeTurretPrefab: {fileID: 3455424580391969573, guid: 0c5b00c103f1ddb4ea7f77f78f5246e8, type: 3}
+  CrossTurretPrefab: {fileID: 3455424580391969573, guid: d2857279bfdd80b4e93114af099e4173, type: 3}
+  spikeTrapPrefab: {fileID: 56163832344639542, guid: 72b9aea2bc120d94babb1621c1d548e5, type: 3}
+  electricGatePrefab: {fileID: 7035528861799589883, guid: 52f2b4f28d8cbde4ea999e0a14413c0c, type: 3}
+  wallPrefab: {fileID: 3894489620708773690, guid: 0a45027f7959b2742b83a640be01efa4, type: 3}
+  wall2x1Prefab: {fileID: 0}
+  wall1x2Prefab: {fileID: 0}
+  wall2x2Prefab: {fileID: 0}
+  areaDamagePrefab: {fileID: 0}
+  explosiveCannonPrefab: {fileID: 0}
+  slowShooterPrefab: {fileID: 0}
+  rapidFirePrefab: {fileID: 0}
+  tornadoPrefab: {fileID: 0}
+  lavaRainPrefab: {fileID: 0}
+  chainLightningPrefab: {fileID: 1070692512632793525, guid: 5a8f9517db3e83f438e54b973228b874, type: 3}
+  blackHolePrefab: {fileID: 1070692512632793525, guid: a365a21501a35904cbeaa43ab1eeef29, type: 3}
+  precisionStrikePrefab: {fileID: 1070692512632793525, guid: cbc62bf4886ad854c8bc28677089e7ac, type: 3}
+  gambleBatPrefab: {fileID: 1070692512632793525, guid: 39036a6314493994388c5c674bd3edec, type: 3}
+  pulseSlowerPrefab: {fileID: 806616702479643111, guid: bdb5cd1bf8e3a054fb9fabf68c4d2979, type: 3}
+  dragonStatuePrefab: {fileID: 7906140199756075341, guid: ea5d9e0c7d5153745a94e8b6b312236f, type: 3}
+  hasteTowerPrefab: {fileID: 958379739599025587, guid: 24c96b5655a058c45a70517d63107a1f, type: 3}
+  pinballCannonPrefab: {fileID: 349964659190088970, guid: caa807d3624f37c46bdfbd9d2cb7b058, type: 3}
+  boomerangTurretPrefab: {fileID: 3943884608347132747, guid: 6b927bb4579b7dd46a4a290235fe92f9, type: 3}
   projectilePrefab: {fileID: 0}
   tilePrefab: {fileID: 0}
   monsterPrefab: {fileID: 0}
