@@ -156,12 +156,10 @@ namespace Underdark
             scrollRect.movementType      = ScrollRect.MovementType.Elastic;
             scrollRect.elasticity        = 0.1f;
 
-            // Viewport
+            // Viewport (RectMask2D = Image alpha 불필요, rect 경계로만 클리핑)
             var vpGo = MakeRectChild(scrollGo, "Viewport");
             Stretch(vpGo.GetComponent<RectTransform>());
-            vpGo.AddComponent<Image>().color = Color.clear;
-            var mask = vpGo.AddComponent<Mask>();
-            mask.showMaskGraphic = false;
+            vpGo.AddComponent<RectMask2D>();
             scrollRect.viewport = vpGo.GetComponent<RectTransform>();
 
             // Content
