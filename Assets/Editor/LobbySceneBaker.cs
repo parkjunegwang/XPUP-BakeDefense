@@ -172,19 +172,8 @@ namespace Underdark
 
             // ── 스테이지 카드 생성 (StageRegistry 기반) ────────────
             // Registry가 없으면 자동 스캔해서 생성
-            var registry = AssetDatabase.LoadAssetAtPath<StageRegistry>("Assets/Data/StageRegistry.asset");
-            if (registry == null)
-            {
-                Debug.Log("[LobbySceneBaker] StageRegistry 없음 → 자동 스캔 실행");
-                registry = StageRegistryEditor.ScanAndSave();
-            }
-            var stageList = registry != null ? registry.ValidStages() : new List<StageData>();
-
-            int cardCount = Mathf.Max(stageList.Count, 1);
-            contentRt.sizeDelta = new Vector2(cardCount * (CARD_W + CARD_GAP) + CARD_GAP, 0);
-
-            for (int i = 0; i < stageList.Count; i++)
-                CreateStageCard(contentGo, i, stageList[i]);
+            // 카드는 런타임에 LobbyUI가 StageCardPrefab으로 생성함
+            contentRt.sizeDelta = new Vector2(0, 0);
 
             // 좌우 화살표 힌트
             MakeArrow(areaGo, "ArrowL", "◀", new Vector2(0.01f, 0.32f));
@@ -224,7 +213,6 @@ namespace Underdark
             var lobbyGo = new GameObject("LobbyUI");
             var lobbyUI = lobbyGo.AddComponent<LobbyUI>();
             lobbyUI.towerSelectScene = "TowerSelectScene";
-            lobbyUI.stages           = stageList;
             lobbyUI.goldText         = goldTmp;
             lobbyUI.gemText          = gemTmp;
             lobbyUI.stageNameText    = stageNameTmp;
@@ -436,10 +424,7 @@ namespace Underdark
             var sm = go.AddComponent<StageManager>();
             sm.lobbySceneName = "LobbyScene";
 
-            var s1 = AssetDatabase.LoadAssetAtPath<StageData>("Assets/Data/Stages/Stage1.asset");
-            var s2 = AssetDatabase.LoadAssetAtPath<StageData>("Assets/Data/Stages/Stage2.asset");
-            var s3 = AssetDatabase.LoadAssetAtPath<StageData>("Assets/Data/Stages/Stage3.asset");
-            sm.stages = new List<StageData> { s1, s2, s3 };
+            // stages는 런타임에 StageRegistry에서 자동 로드됨
 
             EditorSceneManager.SaveScene(scene);
             Debug.Log("[LobbySceneBaker] StageManager를 GameScene에 추가 완료!");

@@ -40,7 +40,9 @@ namespace Underdark
 
         private void Start() { }
 
-public void InitButtons() { if (startWaveBtn != null) startWaveBtn.onClick.AddListener(() => { if (StageManager.Instance != null) StageManager.Instance.StartNextWave(); else WaveManager.Instance?.StartNextWave(); }); restartBtn?.onClick.AddListener(() => { if (StageManager.Instance != null) StageManager.Instance.RestartStage(); else GameManager.Instance.RestartGame(); }); victoryRestartBtn?.onClick.AddListener(() => { if (StageManager.Instance != null) StageManager.Instance.RestartStage(); else GameManager.Instance.RestartGame(); }); lobbyBtn?.onClick.AddListener(() => StageManager.Instance?.GoToLobby()); victoryLobbyBtn?.onClick.AddListener(() => StageManager.Instance?.GoToLobby()); debugXPBtn?.onClick.AddListener(() => GameManager.Instance?.AddXP(50)); }
+public void InitButtons()
+        { 
+            if (startWaveBtn != null) startWaveBtn.onClick.AddListener(() => { if (StageManager.Instance != null) StageManager.Instance.StartNextWave(); else WaveManager.Instance?.StartNextWave(); }); restartBtn?.onClick.AddListener(() => { if (StageManager.Instance != null) StageManager.Instance.RestartStage(); else GameManager.Instance.RestartGame(); }); victoryRestartBtn?.onClick.AddListener(() => { if (StageManager.Instance != null) StageManager.Instance.RestartStage(); else GameManager.Instance.RestartGame(); }); lobbyBtn?.onClick.AddListener(() => StageManager.Instance?.GoToLobby()); victoryLobbyBtn?.onClick.AddListener(() => StageManager.Instance?.GoToLobby()); debugXPBtn?.onClick.AddListener(() => GameManager.Instance?.AddXP(50)); }
 
         private void Update()
         {

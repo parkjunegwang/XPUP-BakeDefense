@@ -2345,10 +2345,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cad5fe3ddbd7572469f7f00cee905a49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.StageManager
-  stages:
-  - {fileID: 11400000, guid: 34723250f63b6124a9857a1882fd0e74, type: 2}
-  - {fileID: 11400000, guid: 0ed6156e2ad76404eb56aba62952dfed, type: 2}
-  - {fileID: 11400000, guid: 037359c9133fe39438648ffb7744ce0d, type: 2}
+  stages: []
   lobbySceneName: LobbyScene
 --- !u!4 &1195316302
 Transform:

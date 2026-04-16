@@ -9,16 +9,16 @@ namespace Underdark
 {
     /// <summary>
     /// 로비 메인 UI 컨트롤러.
-    /// LobbySceneBaker가 에디터에서 씬을 구성하며, 이 스크립트는
-    /// 인스펙터에서 연결된 참조로 런타임 로직(스테이지 선택, 버튼 등)만 담당.
+    /// StageCard 프리팹을 Instantiate해서 스테이지 카드를 동적 생성.
     /// </summary>
     public class LobbyUI : MonoBehaviour
     {
         [Header("Scenes")]
         public string towerSelectScene = "TowerSelectScene";
 
-        [Header("Stage Data")]
-        public List<StageData> stages = new List<StageData>();
+        [Header("Stage Card Prefab")]
+        [Tooltip("StageCard 프리팹 - 이걸 복제해서 스테이지 카드를 만듦")]
+        public GameObject stageCardPrefab;
 
         [Header("References - TopHUD")]
         public TextMeshProUGUI goldText;
@@ -43,29 +43,24 @@ namespace Underdark
         private static readonly Color COL_PLAY  = new Color(0.15f, 0.70f, 0.25f);
 
         // ── 런타임 상태 ─────────────────────────────────────────────
-        private int  _selectedIndex;
-        private bool _isDragging;
+        private List<StageData>  _stages = new List<StageData>();
+        private int              _selectedIndex;
+        private bool             _isDragging;
         private List<GameObject> _cards = new List<GameObject>();
 
         // ────────────────────────────────────────────────────────────
 
         private void Start()
         {
-            if (stages == null || stages.Count == 0)
-                LoadStagesFromResources();
+            LoadStagesFromRegistry();
 
             _selectedIndex = GetCurrentPlayableIndex();
 
             if (playButton != null)
                 playButton.onClick.AddListener(OnPlayClick);
 
-            // scrollContent 하위 Card_* 오브젝트 수집
-            if (scrollContent != null)
-            {
-                _cards.Clear();
-                foreach (Transform c in scrollContent)
-                    _cards.Add(c.gameObject);
-            }
+            // 프리팹으로 카드 생성
+            BuildCards();
 
             // 드래그 이벤트 감지
             if (stageScroll != null)
@@ -89,28 +84,138 @@ namespace Underdark
             StartCoroutine(InitAfterLayout());
         }
 
+        // ── 스테이지 로드 ────────────────────────────────────────────
+
+        private void LoadStagesFromRegistry()
+        {
+            var registry = Resources.Load<StageRegistry>("StageRegistry");
+            if (registry != null)
+            {
+                _stages = registry.ValidStages();
+                return;
+            }
+
+            // 폴백: Resources/Stages/*.asset 직접 로드
+            _stages = new List<StageData>();
+            var loaded = Resources.LoadAll<StageData>("Stages");
+            var sorted = new List<StageData>(loaded);
+            sorted.Sort((a, b) => string.Compare(a.stageName, b.stageName, System.StringComparison.Ordinal));
+            _stages.AddRange(sorted);
+        }
+
+        // ── 카드 생성 ────────────────────────────────────────────────
+
+        private void BuildCards()
+        {
+            if (scrollContent == null) return;
+
+            // 기존 카드 제거
+            foreach (Transform c in scrollContent)
+                Destroy(c.gameObject);
+            _cards.Clear();
+
+            if (stageCardPrefab == null)
+            {
+                Debug.LogError("[LobbyUI] stageCardPrefab이 연결되지 않았습니다!");
+                return;
+            }
+
+            for (int i = 0; i < _stages.Count; i++)
+            {
+                var card = Instantiate(stageCardPrefab, scrollContent);
+                card.name = $"Card_{i}";
+                SetupCard(card, i, _stages[i]);
+                _cards.Add(card);
+            }
+        }
+
+        /// <summary>카드 프리팹에 스테이지 데이터를 채움</summary>
+        private void SetupCard(GameObject card, int idx, StageData sd)
+        {
+            bool cleared  = SaveData.IsCleared(idx);
+            bool unlocked = SaveData.IsUnlocked(idx);
+
+            // Outline 색상
+            var ol = card.GetComponent<Outline>();
+            if (ol != null)
+                ol.effectColor = cleared ? COL_CLEAR : unlocked ? COL_AVAIL : COL_LOCK;
+
+            // 썸네일
+            var thumbImg = card.transform.Find("Thumb")?.GetComponent<Image>();
+            if (thumbImg != null)
+            {
+                if (!unlocked)
+                {
+                    thumbImg.color  = new Color(0.1f, 0.1f, 0.15f);
+                    thumbImg.sprite = null;
+                }
+                else if (sd.thumbnail != null)
+                {
+                    thumbImg.sprite         = sd.thumbnail;
+                    thumbImg.preserveAspect = true;
+                    thumbImg.color          = Color.white;
+                }
+                else
+                {
+                    thumbImg.color  = new Color(0.18f, 0.20f, 0.35f);
+                    thumbImg.sprite = null;
+                }
+            }
+
+            // 잠금 텍스트 (Thumb/Lock)
+            var lockTmp = card.transform.Find("Thumb/Lock")?.GetComponent<TextMeshProUGUI>();
+            if (lockTmp != null)
+                lockTmp.gameObject.SetActive(!unlocked);
+
+            // 스테이지 번호 텍스트 (Thumb/StageNum)
+            var numTmp = card.transform.Find("Thumb/StageNum")?.GetComponent<TextMeshProUGUI>();
+            if (numTmp != null)
+            {
+                numTmp.gameObject.SetActive(unlocked && sd.thumbnail == null);
+                numTmp.text = $"STAGE\n{idx + 1}";
+            }
+
+            // 이름
+            var nameTmp = card.transform.Find("Info/Name")?.GetComponent<TextMeshProUGUI>();
+            if (nameTmp != null)
+                nameTmp.text = unlocked ? sd.stageName : $"Stage {idx + 1}";
+
+            // 웨이브 수
+            var waveTmp = card.transform.Find("Info/Waves")?.GetComponent<TextMeshProUGUI>();
+            if (waveTmp != null)
+                waveTmp.text = unlocked ? $"{sd.waves?.Count ?? 0} Waves" : "???";
+
+            // 상태 뱃지
+            var statusTmp = card.transform.Find("Info/Status")?.GetComponent<TextMeshProUGUI>();
+            if (statusTmp != null)
+            {
+                statusTmp.text  = cleared ? "✓ CLEAR" : unlocked ? "PLAY" : "🔒";
+                statusTmp.color = cleared ? COL_CLEAR : unlocked ? COL_AVAIL : COL_LOCK;
+            }
+
+            // 버튼 클릭
+            var btn = card.GetComponent<Button>();
+            if (btn != null)
+            {
+                int captured = idx;
+                btn.onClick.AddListener(() => SelectCard(captured));
+            }
+        }
+
+        // ── 초기화 ──────────────────────────────────────────────────
+
         private IEnumerator InitAfterLayout()
         {
-            // Canvas 레이아웃이 완전히 계산될 때까지 대기
             yield return new WaitForEndOfFrame();
-            // 강제 레이아웃 갱신
             if (scrollContent != null)
                 UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(scrollContent);
 
-            // 첫/마지막 카드가 뷰포트 중앙에 올 수 있도록 Content 양쪽에 패딩 추가
             ApplyScrollPadding();
-
             UpdateCardVisuals(_selectedIndex);
             UpdateStageInfo(_selectedIndex);
             SnapImmediate(_selectedIndex);
         }
 
-        /// <summary>
-        /// Content 양 끝에 패딩을 줘서 첫/마지막 카드도 뷰포트 중앙에 스냅될 수 있게 함.
-        /// 패딩 = (viewW - cardW) / 2
-        /// 카드들의 anchoredPosition.x를 padding만큼 오른쪽으로 이동하고
-        /// Content sizeDelta.x를 padding * 2 만큼 늘림.
-        /// </summary>
         private void ApplyScrollPadding()
         {
             if (scrollContent == null || _cards.Count == 0) return;
@@ -120,68 +225,35 @@ namespace Underdark
             float viewW      = GetViewportWidth();
             float padding    = Mathf.Max(0f, (viewW - cardW) * 0.5f);
 
-            // Content 너비 = 기존 카드 영역 + 양쪽 패딩
-            float cardAreaW = _cards.Count * cardStride + 16f; // CARD_GAP + count*(W+GAP)
+            float cardAreaW = _cards.Count * cardStride + 16f;
             scrollContent.sizeDelta = new Vector2(cardAreaW + padding * 2f, scrollContent.sizeDelta.y);
 
-            // 카드 x 위치를 padding만큼 오른쪽으로 이동
             for (int i = 0; i < _cards.Count; i++)
             {
                 if (_cards[i] == null) continue;
                 var rt = _cards[i].GetComponent<RectTransform>();
                 if (rt == null) continue;
-                float origX = 16f + i * cardStride; // 원래 x
+                float origX = 16f + i * cardStride;
                 rt.anchoredPosition = new Vector2(padding + origX, rt.anchoredPosition.y);
             }
         }
 
-        /// <summary>
-        /// 클리어 안 한 스테이지 중 가장 앞 인덱스를 반환.
-        /// 전부 클리어했으면 마지막 스테이지.
-        /// </summary>
+        // ── 카드 선택 & 스냅 ────────────────────────────────────────
+
         private int GetCurrentPlayableIndex()
         {
-            for (int i = 0; i < stages.Count; i++)
+            for (int i = 0; i < _stages.Count; i++)
             {
                 if (!SaveData.IsCleared(i))
                     return i;
             }
-            // 전부 클리어 → 마지막 스테이지
-            return Mathf.Max(0, stages.Count - 1);
+            return Mathf.Max(0, _stages.Count - 1);
         }
-
-        private void LoadStagesFromResources()
-        {
-            // StageRegistry 우선 로드
-            var registry = Resources.Load<StageRegistry>("StageRegistry");
-            if (registry != null)
-            {
-                stages = registry.ValidStages();
-                return;
-            }
-
-            // 폴백: Resources/Stages/*.asset 직접 로드
-            stages = new List<StageData>();
-            var loaded = Resources.LoadAll<StageData>("Stages");
-            var sorted = new List<StageData>(loaded);
-            sorted.Sort((a, b) => string.Compare(a.stageName, b.stageName, System.StringComparison.Ordinal));
-            stages.AddRange(sorted);
-        }
-
-        // ── 전체 갱신 ────────────────────────────────────────────────
-
-        private void RefreshAll()
-        {
-            if (goldText != null) goldText.text = "0";
-            if (gemText  != null) gemText.text  = "0";
-        }
-
-        // ── 카드 선택 & 스냅 ────────────────────────────────────────
 
         public void SelectCard(int idx, bool animate = true)
         {
-            if (stages.Count == 0) return;
-            idx = Mathf.Clamp(idx, 0, stages.Count - 1);
+            if (_stages.Count == 0) return;
+            idx = Mathf.Clamp(idx, 0, _stages.Count - 1);
             _selectedIndex = idx;
             SaveData.SelectedStageIndex = idx;
 
@@ -200,9 +272,6 @@ namespace Underdark
             for (int i = 0; i < _cards.Count; i++)
             {
                 if (_cards[i] == null) continue;
-                float scale = (i == idx) ? 1.04f : 0.96f;
-                _cards[i].transform.localScale = Vector3.one ;
-
                 var ol = _cards[i].GetComponent<Outline>();
                 if (ol != null)
                     ol.effectDistance = (i == idx) ? new Vector2(3, -3) : new Vector2(1, -1);
@@ -211,8 +280,8 @@ namespace Underdark
 
         private void UpdateStageInfo(int idx)
         {
-            if (stages.Count == 0) return;
-            var sd       = stages[idx];
+            if (_stages.Count == 0) return;
+            var sd       = _stages[idx];
             bool cleared  = SaveData.IsCleared(idx);
             bool unlocked = SaveData.IsUnlocked(idx);
 
@@ -235,12 +304,19 @@ namespace Underdark
                                       : "▶  PLAY";
         }
 
+        // ── 전체 갱신 ────────────────────────────────────────────────
+
+        private void RefreshAll()
+        {
+            if (goldText != null) goldText.text = "0";
+            if (gemText  != null) gemText.text  = "0";
+        }
+
         // ── 드래그 끝 → 스냅 ────────────────────────────────────────
 
         private void OnEndDrag()
         {
             _isDragging = false;
-            // 현재 스크롤 위치에서 가장 가까운 카드 찾아 스냅
             int nearest = GetNearestCardIndex();
             if (nearest != _selectedIndex)
             {
@@ -254,24 +330,23 @@ namespace Underdark
 
         private int GetNearestCardIndex()
         {
-            if (stageScroll == null || scrollContent == null || stages.Count == 0) return 0;
+            if (stageScroll == null || scrollContent == null || _stages.Count == 0) return 0;
 
-            float cardStride = GetCardStride();
-            float contentW   = GetContentWidth();
-            float viewW      = GetViewportWidth();
+            float cardStride       = GetCardStride();
+            float contentW         = GetContentWidth();
+            float viewW            = GetViewportWidth();
 
             if (contentW <= viewW) return 0;
 
-            float scrolledX = stageScroll.horizontalNormalizedPosition * (contentW - viewW);
-            float padding   = GetCurrentPadding();
+            float scrolledX        = stageScroll.horizontalNormalizedPosition * (contentW - viewW);
+            float padding          = GetCurrentPadding();
             float cardCenterOffset = padding + 16f + (cardStride - 16f) * 0.5f;
-            int nearest = Mathf.RoundToInt((scrolledX + viewW * 0.5f - cardCenterOffset) / cardStride);
-            return Mathf.Clamp(nearest, 0, stages.Count - 1);
+            int   nearest          = Mathf.RoundToInt((scrolledX + viewW * 0.5f - cardCenterOffset) / cardStride);
+            return Mathf.Clamp(nearest, 0, _stages.Count - 1);
         }
 
         // ── 스냅 ────────────────────────────────────────────────────
 
-        // contentW, viewW 를 안정적으로 읽기 (rect.width는 레이아웃 전 0일 수 있음)
         private float GetContentWidth()
         {
             float w = scrollContent.rect.width;
@@ -287,7 +362,6 @@ namespace Underdark
             return w > 0 ? w : vp.sizeDelta.x;
         }
 
-        // 현재 적용된 패딩 계산 (ApplyScrollPadding과 동일 공식)
         private float GetCurrentPadding()
         {
             float cardStride = GetCardStride();
@@ -296,7 +370,6 @@ namespace Underdark
             return Mathf.Max(0f, (viewW - cardW) * 0.5f);
         }
 
-        // 카드 idx 의 content 내 중심 x (패딩 포함)
         private float GetCardCenterX(int idx)
         {
             float cardStride = GetCardStride();
@@ -328,7 +401,7 @@ namespace Underdark
         {
             if (stageScroll == null || scrollContent == null) yield break;
 
-            yield return null; // EndDrag 직후 ScrollRect 관성 초기화 대기
+            yield return null;
 
             float contentW = GetContentWidth();
             float viewW    = GetViewportWidth();
@@ -339,7 +412,6 @@ namespace Underdark
             float scrolledX   = cardCenterX - viewW * 0.5f;
             float targetT     = Mathf.Clamp01(scrolledX / (contentW - viewW));
 
-            // 관성 끄고 Lerp 스냅
             bool prevInertia = stageScroll.inertia;
             stageScroll.inertia = false;
 
@@ -355,7 +427,6 @@ namespace Underdark
             stageScroll.inertia = prevInertia;
         }
 
-        // stride = 카드 너비 + 간격 (CARD_W + CARD_GAP = 300 + 16 = 316)
         private float GetCardStride()
         {
             if (_cards.Count > 0 && _cards[0] != null)

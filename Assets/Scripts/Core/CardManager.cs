@@ -16,11 +16,26 @@ namespace Underdark
         private GameObject _panel;
         private System.Action _onDone;
 
-private void Awake() { if (Instance != null && Instance != this) { Destroy(gameObject); return; } Instance = this; AutoLoadCards(); }
-
-private void AutoLoadCards()
+        private void Awake()
         {
+            if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+            Instance = this;
+            AutoLoadCards();
+        }
+
+        private void AutoLoadCards()
+        {
+            // CardRegistry 우선 로드
+            var registry = Resources.Load<CardRegistry>("CardRegistry");
+            if (registry != null)
+            {
+                cardPool = registry.ValidCards();
+                Debug.Log($"[CardManager] CardRegistry에서 {cardPool.Count}개 카드 로드");
+                return;
+            }
+
 #if UNITY_EDITOR
+            // 에디터 폴백: Assets/Data/Cards 직접 스캔
             var guids = UnityEditor.AssetDatabase.FindAssets("t:CardData", new[] { "Assets/Data/Cards" });
             cardPool = new List<CardData>();
             foreach (var g in guids)
@@ -29,18 +44,14 @@ private void AutoLoadCards()
                 var card = UnityEditor.AssetDatabase.LoadAssetAtPath<CardData>(p);
                 if (card != null) cardPool.Add(card);
             }
-            Debug.Log($"[CardManager] Auto-loaded {cardPool.Count} cards");
+            Debug.Log($"[CardManager] Editor 직접 스캔: {cardPool.Count}개 카드");
 #else
-            // 빌드: Resources/Cards 폴더에서 로드
             var cards = Resources.LoadAll<CardData>("Cards");
-            if (cards == null || cards.Length == 0)
-                cards = Resources.LoadAll<CardData>("");
             if (cards != null) cardPool = new List<CardData>(cards);
-            Debug.Log($"[CardManager] Build loaded {cardPool.Count} cards");
+            Debug.Log($"[CardManager] Build fallback: {cardPool.Count}개 카드");
 #endif
         }
 
-        // 이 세션에서 사용할 타워 타입 고정 (카드 필터 기준)
         public void SetSessionTurrets(IEnumerable<TurretType> types)
         {
             _sessionTurrets.Clear();
@@ -52,7 +63,73 @@ private void AutoLoadCards()
 
         public IReadOnlyList<TurretType> SessionTurrets => _sessionTurrets;
 
-public void ShowCards(System.Action onDone = null) { _onDone = onDone; if (cardPool == null || cardPool.Count == 0) { Debug.LogWarning("[CardManager] No cards in pool!"); onDone?.Invoke(); return; } var pool = FilteredPool(); Debug.Log($"[CardManager] ShowCards: pool={cardPool.Count}, filtered={pool.Count}, session=[{string.Join(",", _sessionTurrets)}]"); if (pool.Count == 0) { Debug.LogWarning("[CardManager] Filtered pool empty — using full pool"); pool = new List<CardData>(cardPool); } for (int i = pool.Count - 1; i > 0; i--) { int j = Random.Range(0, i + 1); (pool[i], pool[j]) = (pool[j], pool[i]); } BuildUI(pool.GetRange(0, Mathf.Min(3, pool.Count))); }
+        public void ShowCards(System.Action onDone = null)
+        {
+            _onDone = onDone;
+            if (cardPool == null || cardPool.Count == 0)
+            {
+                Debug.LogWarning("[CardManager] No cards in pool!");
+                onDone?.Invoke();
+                return;
+            }
+
+            var pool = FilteredPool();
+            if (pool.Count == 0)
+            {
+                Debug.LogWarning("[CardManager] Filtered pool empty — using full pool");
+                pool = new List<CardData>(cardPool);
+            }
+
+            // ── 무작위 3장 선택 (GiveTurret 최소 1장 보장) ──────────
+            var selected = PickCards(pool, count: 3, guaranteeInstall: true);
+            BuildUI(selected);
+        }
+
+        /// <summary>
+        /// pool에서 count장 무작위 선택.
+        /// guaranteeInstall=true면 GiveTurret/GiveRandomWalls 카드가 1장 이상 포함되도록 보장.
+        /// </summary>
+        private List<CardData> PickCards(List<CardData> pool, int count, bool guaranteeInstall)
+        {
+            // pool 셔플
+            var shuffled = new List<CardData>(pool);
+            for (int i = shuffled.Count - 1; i > 0; i--)
+            {
+                int j = Random.Range(0, i + 1);
+                (shuffled[i], shuffled[j]) = (shuffled[j], shuffled[i]);
+            }
+
+            count = Mathf.Min(count, shuffled.Count);
+            var picked = shuffled.GetRange(0, count);
+
+            if (!guaranteeInstall) return picked;
+
+            // 설치 카드 (GiveTurret or GiveRandomWalls) 포함 여부 확인
+            bool hasInstall = picked.Exists(c =>
+                c.cardType == CardType.GiveTurret || c.cardType == CardType.GiveRandomWalls);
+
+            if (!hasInstall)
+            {
+                // 풀에서 설치 카드 찾기
+                var installCards = pool.FindAll(c =>
+                    c.cardType == CardType.GiveTurret || c.cardType == CardType.GiveRandomWalls);
+
+                if (installCards.Count > 0)
+                {
+                    // 랜덤 설치 카드 1장 선택 후 마지막 슬롯 교체
+                    var replace = installCards[Random.Range(0, installCards.Count)];
+                    picked[picked.Count - 1] = replace;
+                    // 다시 셔플해서 위치 랜덤화
+                    for (int i = picked.Count - 1; i > 0; i--)
+                    {
+                        int j = Random.Range(0, i + 1);
+                        (picked[i], picked[j]) = (picked[j], picked[i]);
+                    }
+                }
+            }
+
+            return picked;
+        }
 
         private List<CardData> FilteredPool()
         {
@@ -83,7 +160,51 @@ public void ShowCards(System.Action onDone = null) { _onDone = onDone; if (cardP
             return filtered;
         }
 
-private void BuildUI(List<CardData> cards) { if (_panel != null) Destroy(_panel); var canvas = FindObjectOfType<Canvas>(); if (canvas == null) { Debug.LogError("[CardManager] No Canvas found! Retrying next frame..."); StartCoroutine(BuildUINextFrame(cards)); return; } BuildUIOnCanvas(canvas, cards); } private System.Collections.IEnumerator BuildUINextFrame(List<CardData> cards) { yield return null; var canvas = FindObjectOfType<Canvas>(); if (canvas == null) { Debug.LogError("[CardManager] Still no Canvas! Cards cannot be shown."); _onDone?.Invoke(); yield break; } BuildUIOnCanvas(canvas, cards); } private void BuildUIOnCanvas(Canvas canvas, List<CardData> cards) { if (_panel != null) Destroy(_panel); Time.timeScale = 0f; _panel = new GameObject("CardSelectPanel"); _panel.transform.SetParent(canvas.transform, false); var bg = _panel.AddComponent<Image>(); bg.color = new Color(0f, 0f, 0f, 0.85f); var bgRt = _panel.GetComponent<RectTransform>(); bgRt.anchorMin = Vector2.zero; bgRt.anchorMax = Vector2.one; bgRt.offsetMin = bgRt.offsetMax = Vector2.zero; MakeText(_panel, "Title", "Choose a Card", new Vector2(0.5f, 0.88f), new Vector2(350f, 50f), 28, Color.white); float[] xAnchors = { 0.18f, 0.5f, 0.82f }; for (int i = 0; i < cards.Count; i++) { int idx = i; MakeCardButton(_panel, cards[i], new Vector2(xAnchors[i], 0.50f), () => OnCardSelected(cards[idx])); } _panel.transform.SetAsLastSibling(); Debug.Log($"[CardManager] Card panel built with {cards.Count} cards on canvas '{canvas.name}'"); }
+        private void BuildUI(List<CardData> cards)
+        {
+            if (_panel != null) Destroy(_panel);
+            var canvas = FindObjectOfType<Canvas>();
+            if (canvas == null)
+            {
+                StartCoroutine(BuildUINextFrame(cards));
+                return;
+            }
+            BuildUIOnCanvas(canvas, cards);
+        }
+
+        private System.Collections.IEnumerator BuildUINextFrame(List<CardData> cards)
+        {
+            yield return null;
+            var canvas = FindObjectOfType<Canvas>();
+            if (canvas == null) { _onDone?.Invoke(); yield break; }
+            BuildUIOnCanvas(canvas, cards);
+        }
+
+        private void BuildUIOnCanvas(Canvas canvas, List<CardData> cards)
+        {
+            if (_panel != null) Destroy(_panel);
+            Time.timeScale = 0f;
+
+            _panel = new GameObject("CardSelectPanel");
+            _panel.transform.SetParent(canvas.transform, false);
+            var bg   = _panel.AddComponent<Image>();
+            bg.color = new Color(0f, 0f, 0f, 0.85f);
+            var bgRt = _panel.GetComponent<RectTransform>();
+            bgRt.anchorMin = Vector2.zero; bgRt.anchorMax = Vector2.one;
+            bgRt.offsetMin = bgRt.offsetMax = Vector2.zero;
+
+            MakeText(_panel, "Title", "Choose a Card",
+                new Vector2(0.5f, 0.88f), new Vector2(350f, 50f), 28, Color.white);
+
+            float[] xAnchors = { 0.18f, 0.5f, 0.82f };
+            for (int i = 0; i < cards.Count; i++)
+            {
+                int idx = i;
+                MakeCardButton(_panel, cards[i], new Vector2(xAnchors[i], 0.50f),
+                    () => OnCardSelected(cards[idx]));
+            }
+            _panel.transform.SetAsLastSibling();
+        }
 
         private void MakeCardButton(GameObject parent, CardData card, Vector2 anchor, System.Action onClick)
         {
@@ -104,6 +225,18 @@ private void BuildUI(List<CardData> cards) { if (_panel != null) Destroy(_panel)
             btn.colors = col;
             btn.onClick.AddListener(() => onClick());
 
+            // 설치 카드는 테두리 강조
+            bool isInstall = card.cardType == CardType.GiveTurret || card.cardType == CardType.GiveRandomWalls;
+            var border   = new GameObject("Border");
+            border.transform.SetParent(go.transform, false);
+            border.transform.SetAsFirstSibling();
+            var borderRt = border.AddComponent<RectTransform>();
+            borderRt.anchorMin = Vector2.zero; borderRt.anchorMax = Vector2.one;
+            borderRt.offsetMin = new Vector2(-2, -2); borderRt.offsetMax = new Vector2(2, 2);
+            border.AddComponent<Image>().color = isInstall
+                ? new Color(1f, 0.9f, 0.3f, 0.6f)   // 설치 카드: 황금 테두리
+                : new Color(1f, 1f, 1f, 0.2f);        // 버프 카드: 흰 테두리
+
             MakeText(go, "Name", card.cardName,
                 new Vector2(0.5f, 0.84f), new Vector2(100f, 36f), 12, Color.white);
 
@@ -116,14 +249,6 @@ private void BuildUI(List<CardData> cards) { if (_panel != null) Destroy(_panel)
             descTmp.text = card.description; descTmp.fontSize = 10;
             descTmp.color = Color.white; descTmp.alignment = TextAlignmentOptions.Center;
             descTmp.enableWordWrapping = true;
-
-            var border   = new GameObject("Border");
-            border.transform.SetParent(go.transform, false);
-            border.transform.SetAsFirstSibling();
-            var borderRt = border.AddComponent<RectTransform>();
-            borderRt.anchorMin = Vector2.zero; borderRt.anchorMax = Vector2.one;
-            borderRt.offsetMin = new Vector2(-2, -2); borderRt.offsetMax = new Vector2(2, 2);
-            border.AddComponent<Image>().color = new Color(1f, 1f, 1f, 0.2f);
         }
 
         private TextMeshProUGUI MakeText(GameObject parent, string name, string text,
@@ -141,7 +266,10 @@ private void BuildUI(List<CardData> cards) { if (_panel != null) Destroy(_panel)
             return tmp;
         }
 
-        private void OnCardSelected(CardData card) { Time.timeScale = 1f; ApplyCard(card);
+        private void OnCardSelected(CardData card)
+        {
+            Time.timeScale = 1f;
+            ApplyCard(card);
             if (_panel != null) Destroy(_panel);
             _onDone?.Invoke();
         }
