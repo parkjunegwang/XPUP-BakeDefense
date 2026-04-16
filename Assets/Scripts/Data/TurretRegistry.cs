@@ -32,6 +32,9 @@ namespace Underdark
 
             [Header("벽 타입 여부 (머지 불가, 카드 제외)")]
             public bool isWall = false;
+
+            [Header("기본 소유 여부 (처음부터 해금된 터렛)")]
+            public bool isDefault = false;
         }
 
         public List<TurretEntry> entries = new List<TurretEntry>();

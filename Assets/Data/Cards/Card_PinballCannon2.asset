@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Add 2 Pinball Cannons
   cardColor: {r: 0.9, g: 0.75, b: 0.05, a: 1}
   cardType: 0
-  turretType: 22
+  turretType: 21
   turretCount: 2
   buffTargetType: 1
   buffAllTypes: 0

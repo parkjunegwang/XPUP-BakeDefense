@@ -18,7 +18,7 @@ MonoBehaviour:
     (Hits going & returning)'
   cardColor: {r: 0.5, g: 1, b: 0.3, a: 1}
   cardType: 0
-  turretType: 23
+  turretType: 22
   turretCount: 1
   buffTargetType: 1
   buffAllTypes: 0

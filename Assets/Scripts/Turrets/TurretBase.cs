@@ -6,6 +6,11 @@ namespace Underdark
     public abstract class TurretBase : MonoBehaviour
     {
         // ── 기본 필드 ──────────────────────────────────────────────────
+        /// <summary>
+        /// 런타임에 TurretManager가 코드로 할당. Inspector 수동 설정 금지.
+        /// 프리팹에 저장된 값은 무시되고 Awake에서 이름 기반으로 자동 결정됨.
+        /// </summary>
+        [HideInInspector]
         public TurretType turretType;
         public int        level = 1;
 
@@ -52,6 +57,18 @@ namespace Underdark
         // ── 초기화 ────────────────────────────────────────────────────
         protected virtual void Awake()
         {
+            // 프리팹 이름에서 TurretType 자동 결정 (Inspector 수동 설정 불필요)
+            // 프리팹 이름 규칙: "PF_RangedTurret" → TurretType.RangedTurret
+            // 이름에서 "PF_", "(Clone)" 등 제거 후 enum 파싱
+            if (turretType == TurretType.None)
+            {
+                string rawName = gameObject.name.Replace("(Clone)", "").Trim();
+                if (rawName.StartsWith("PF_"))
+                    rawName = rawName.Substring(3);
+                if (System.Enum.TryParse<TurretType>(rawName, true, out var parsed) && parsed != TurretType.None)
+                    turretType = parsed;
+            }
+
             CacheSrOrders();
 
             if (bodyRenderer == null)

@@ -17,7 +17,7 @@ MonoBehaviour:
     damage.
   cardColor: {r: 1, g: 0.95, b: 0.2, a: 1}
   cardType: 0
-  turretType: 17
+  turretType: 16
   turretCount: 1
   buffTargetType: 1
   buffAllTypes: 0

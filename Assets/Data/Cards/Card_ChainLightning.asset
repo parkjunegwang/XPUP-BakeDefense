@@ -17,8 +17,8 @@ MonoBehaviour:
     if fewer enemies!
   cardColor: {r: 0.4, g: 0.8, b: 1, a: 1}
   cardType: 0
-  turretType: 15
+  turretType: 14
   turretCount: 1
-  buffTargetType: 15
+  buffTargetType: 1
   buffAllTypes: 0
   buffMultiplier: 1.2

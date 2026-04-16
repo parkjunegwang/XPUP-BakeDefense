@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Fires bolts that slow enemies on hit.
   cardColor: {r: 0.3, g: 0.6, b: 1, a: 1}
   cardType: 0
-  turretType: 11
+  turretType: 10
   turretCount: 1
   buffTargetType: 1
   buffAllTypes: 0

@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Fires a shell that explodes in an area on impact.
   cardColor: {r: 1, g: 0.4, b: 0.1, a: 1}
   cardType: 0
-  turretType: 10
+  turretType: 9
   turretCount: 1
   buffTargetType: 1
   buffAllTypes: 0

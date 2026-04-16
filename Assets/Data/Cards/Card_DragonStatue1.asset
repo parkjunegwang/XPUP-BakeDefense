@@ -18,7 +18,7 @@ MonoBehaviour:
     (Fire breath + burn)'
   cardColor: {r: 1, g: 0.45, b: 0.1, a: 1}
   cardType: 0
-  turretType: 20
+  turretType: 19
   turretCount: 1
   buffTargetType: 1
   buffAllTypes: 0

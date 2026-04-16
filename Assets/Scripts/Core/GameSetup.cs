@@ -47,12 +47,30 @@ namespace Underdark
                 // 타워선택 없이 직접 진입한 경우 (디버그/에디터)
                 var stage = StageManager.Instance?.CurrentStage;
                 if (stage?.startTurretPool != null && stage.startTurretPool.Length > 0)
+                {
                     CardManager.Instance?.SetSessionTurrets(stage.startTurretPool);
+                }
                 else
-                    CardManager.Instance?.SetSessionTurrets(new TurretType[] {
-                        TurretType.RangedTurret, TurretType.ExplosiveCannon,
-                        TurretType.PulseSlower, TurretType.BoomerangTurret
-                    });
+                {
+                    // Registry의 모든 일반 터렛을 세션으로 사용 (에디터 직진입 시 전체 카드 풀 사용)
+                    var tm = FindObjectOfType<TurretManager>();
+                    var reg = tm?.registry ?? Resources.Load<TurretRegistry>("TurretRegistry");
+                    if (reg != null)
+                    {
+                        var allTypes = new System.Collections.Generic.List<TurretType>();
+                        foreach (var e in reg.All)
+                            if (e != null && e.type != TurretType.None && !e.isWall)
+                                allTypes.Add(e.type);
+                        CardManager.Instance?.SetSessionTurrets(allTypes);
+                    }
+                    else
+                    {
+                        CardManager.Instance?.SetSessionTurrets(new TurretType[] {
+                            TurretType.RangedTurret, TurretType.ExplosiveCannon,
+                            TurretType.PulseSlower, TurretType.BoomerangTurret
+                        });
+                    }
+                }
             }
 
             // 2. 초기 카드 선택 (기본 2번)
@@ -136,7 +154,6 @@ namespace Underdark
                 (TurretType.MeleeTurret,         typeof(MeleeTurret),           new Color(0.9f,0.7f,0.2f)),
                 (TurretType.CrossMeleeTurret,    typeof(CrossMeleeTurret),      new Color(0.9f,0.7f,0.2f)),
                 (TurretType.SpikeTrap,           typeof(SpikeTrap),             new Color(0.4f,0.35f,0.3f)),
-                (TurretType.ElectricGate,        typeof(ElectricGate),          new Color(0.9f,0.8f,0.1f)),
                 (TurretType.Wall,                typeof(WallTurret),            new Color(0.55f,0.45f,0.35f)),
                 (TurretType.Wall2x1,             typeof(WallTurret),            new Color(0.50f,0.40f,0.30f)),
                 (TurretType.Wall1x2,             typeof(WallTurret),            new Color(0.50f,0.40f,0.30f)),

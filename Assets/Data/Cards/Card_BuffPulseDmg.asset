@@ -20,6 +20,6 @@ MonoBehaviour:
   cardType: 2
   turretType: 1
   turretCount: 1
-  buffTargetType: 19
+  buffTargetType: 18
   buffAllTypes: 0
   buffMultiplier: 1.2

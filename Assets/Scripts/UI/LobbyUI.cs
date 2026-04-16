@@ -452,7 +452,7 @@ namespace Underdark
 
         public void OnShopClick()
         {
-            Debug.Log("[LobbyUI] 상점 (미구현)");
+            PopupManager.Instance?.Open<ShopPopup>("PF_ShopPopup");
         }
 
         public void OnCollectionClick()

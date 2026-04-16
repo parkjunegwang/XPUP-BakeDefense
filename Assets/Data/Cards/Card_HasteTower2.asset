@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Add 2 Haste Towers
   cardColor: {r: 0.8, g: 0.95, b: 0.2, a: 1}
   cardType: 0
-  turretType: 21
+  turretType: 20
   turretCount: 2
   buffTargetType: 1
   buffAllTypes: 0

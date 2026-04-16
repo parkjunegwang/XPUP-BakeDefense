@@ -17,6 +17,7 @@ MonoBehaviour:
   useCustomShape: 0
   tileShape:
   - {x: 0, y: 0}
+  - {x: 1, y: 0}
   passableTileIndices: 
   levels:
   - level: 1

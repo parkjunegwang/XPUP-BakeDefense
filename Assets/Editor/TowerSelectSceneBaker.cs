@@ -50,7 +50,7 @@ namespace Underdark
             titleTmp.alignment = TextAlignmentOptions.Center;
 
             // Count text
-            var countGo = MakeAnchor(cvGo, "CountText", 0.1f, 0.83f, 0.9f, 0.90f);
+            var countGo = MakeAnchor(cvGo, "CountText", 0.1f, 0.92f, 0.9f, 0.99f);
             var countTmp = countGo.AddComponent<TextMeshProUGUI>();
             countTmp.text = "Select 0 / 4";
             countTmp.fontSize = 28f;
@@ -58,7 +58,7 @@ namespace Underdark
             countTmp.alignment = TextAlignmentOptions.Center;
 
             // Scroll View
-            var scrollGo = MakeAnchor(cvGo, "ScrollView", 0.02f, 0.15f, 0.98f, 0.83f);
+            var scrollGo = MakeAnchor(cvGo, "ScrollView", 0.02f, 0.15f, 0.98f, 0.84f);
             var scrollBg = scrollGo.AddComponent<Image>(); scrollBg.color = new Color(0, 0, 0, 0.01f);
             var scrollView = scrollGo.AddComponent<ScrollRect>();
             scrollView.horizontal = false; scrollView.vertical = true;
@@ -107,24 +107,31 @@ namespace Underdark
             confTxt.fontStyle = FontStyles.Bold;
             confTxt.color = Color.white; confTxt.alignment = TextAlignmentOptions.Center;
 
+            // Slot Container (상단 인벤토리 슬롯 패널, HorizontalLayoutGroup)
+            var slotPanelGo = MakeAnchor(cvGo, "SlotContainer", 0.05f, 0.84f, 0.95f, 0.92f);
+            slotPanelGo.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.2f);
+            var hlg = slotPanelGo.AddComponent<HorizontalLayoutGroup>();
+            hlg.childAlignment          = TextAnchor.MiddleCenter;
+            hlg.spacing                 = 12f;
+            hlg.padding                 = new RectOffset(12, 12, 8, 8);
+            hlg.childForceExpandWidth   = true;
+            hlg.childForceExpandHeight  = true;
+            hlg.childControlWidth       = true;
+            hlg.childControlHeight      = true;
+
             // TowerSelectUI component — buttons wired at runtime via Start()
             var uiGo = new GameObject("TowerSelectUI");
             uiGo.transform.SetParent(cvGo.transform, false);
             uiGo.AddComponent<RectTransform>();
             var ui = uiGo.AddComponent<TowerSelectUI>();
             ui.cardContainer  = contentRect;
+            ui.slotContainer  = slotPanelGo.transform;
             ui.confirmButton  = confGo.GetComponent<Button>();
             ui.backButton     = backGo.GetComponent<Button>();
             ui.titleText      = titleTmp;
             ui.countText      = countTmp;
             ui.gameSceneName  = "GameScene";
             ui.lobbySceneName = "LobbyScene";
-
-            // Inject stage assets
-            var s1 = AssetDatabase.LoadAssetAtPath<StageData>("Assets/Data/Stages/Stage1.asset");
-            var s2 = AssetDatabase.LoadAssetAtPath<StageData>("Assets/Data/Stages/Stage2.asset");
-            var s3 = AssetDatabase.LoadAssetAtPath<StageData>("Assets/Data/Stages/Stage3.asset");
-            ui.stages = new List<StageData> { s1, s2, s3 };
 
             // EventSystem
             var evGo = new GameObject("EventSystem");
