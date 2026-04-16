@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c081db3e03f3d144683fcf1283e7ece0, type: 3}
   m_Name: Stage2
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.StageData
-  stageName: Stage2
+  stageName: Stage 2- test
   description: Zombie Wave!!
   thumbnail: {fileID: 0}
   waves:
@@ -174,4 +174,4 @@ MonoBehaviour:
   startTurretPool: 010000000200000003000000050000000b000000
   startTurretCount: 4
   initialCardPicks: 2
-  mapData: {fileID: 11400000, guid: 1ead53ad3a570574f8cd15db7d1aceea, type: 2}
+  mapData: {fileID: 11400000, guid: 6bdb4909b70a52c488ad17d9bcfe16d1, type: 2}

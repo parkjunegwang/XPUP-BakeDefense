@@ -170,19 +170,15 @@ namespace Underdark
             contentRt.anchoredPosition = Vector2.zero;
             scrollRect.content = contentRt;
 
-            // ── 스테이지 카드 생성 ──────────────────────────────────
-            var stagePaths = new[]
+            // ── 스테이지 카드 생성 (StageRegistry 기반) ────────────
+            // Registry가 없으면 자동 스캔해서 생성
+            var registry = AssetDatabase.LoadAssetAtPath<StageRegistry>("Assets/Data/StageRegistry.asset");
+            if (registry == null)
             {
-                "Assets/Data/Stages/Stage1.asset",
-                "Assets/Data/Stages/Stage2.asset",
-                "Assets/Data/Stages/Stage3.asset",
-            };
-            var stageList = new List<StageData>();
-            foreach (var p in stagePaths)
-            {
-                var sd = AssetDatabase.LoadAssetAtPath<StageData>(p);
-                if (sd != null) stageList.Add(sd);
+                Debug.Log("[LobbySceneBaker] StageRegistry 없음 → 자동 스캔 실행");
+                registry = StageRegistryEditor.ScanAndSave();
             }
+            var stageList = registry != null ? registry.ValidStages() : new List<StageData>();
 
             int cardCount = Mathf.Max(stageList.Count, 1);
             contentRt.sizeDelta = new Vector2(cardCount * (CARD_W + CARD_GAP) + CARD_GAP, 0);

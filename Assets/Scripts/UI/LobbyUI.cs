@@ -54,7 +54,7 @@ namespace Underdark
             if (stages == null || stages.Count == 0)
                 LoadStagesFromResources();
 
-            _selectedIndex = Mathf.Clamp(SaveData.SelectedStageIndex, 0, Mathf.Max(0, stages.Count - 1));
+            _selectedIndex = GetCurrentPlayableIndex();
 
             if (playButton != null)
                 playButton.onClick.AddListener(OnPlayClick);
@@ -91,14 +91,76 @@ namespace Underdark
 
         private IEnumerator InitAfterLayout()
         {
-            yield return null; // 레이아웃 빌드 대기
+            // Canvas 레이아웃이 완전히 계산될 때까지 대기
+            yield return new WaitForEndOfFrame();
+            // 강제 레이아웃 갱신
+            if (scrollContent != null)
+                UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(scrollContent);
+
+            // 첫/마지막 카드가 뷰포트 중앙에 올 수 있도록 Content 양쪽에 패딩 추가
+            ApplyScrollPadding();
+
             UpdateCardVisuals(_selectedIndex);
             UpdateStageInfo(_selectedIndex);
             SnapImmediate(_selectedIndex);
         }
 
+        /// <summary>
+        /// Content 양 끝에 패딩을 줘서 첫/마지막 카드도 뷰포트 중앙에 스냅될 수 있게 함.
+        /// 패딩 = (viewW - cardW) / 2
+        /// 카드들의 anchoredPosition.x를 padding만큼 오른쪽으로 이동하고
+        /// Content sizeDelta.x를 padding * 2 만큼 늘림.
+        /// </summary>
+        private void ApplyScrollPadding()
+        {
+            if (scrollContent == null || _cards.Count == 0) return;
+
+            float cardStride = GetCardStride();
+            float cardW      = cardStride - 16f;
+            float viewW      = GetViewportWidth();
+            float padding    = Mathf.Max(0f, (viewW - cardW) * 0.5f);
+
+            // Content 너비 = 기존 카드 영역 + 양쪽 패딩
+            float cardAreaW = _cards.Count * cardStride + 16f; // CARD_GAP + count*(W+GAP)
+            scrollContent.sizeDelta = new Vector2(cardAreaW + padding * 2f, scrollContent.sizeDelta.y);
+
+            // 카드 x 위치를 padding만큼 오른쪽으로 이동
+            for (int i = 0; i < _cards.Count; i++)
+            {
+                if (_cards[i] == null) continue;
+                var rt = _cards[i].GetComponent<RectTransform>();
+                if (rt == null) continue;
+                float origX = 16f + i * cardStride; // 원래 x
+                rt.anchoredPosition = new Vector2(padding + origX, rt.anchoredPosition.y);
+            }
+        }
+
+        /// <summary>
+        /// 클리어 안 한 스테이지 중 가장 앞 인덱스를 반환.
+        /// 전부 클리어했으면 마지막 스테이지.
+        /// </summary>
+        private int GetCurrentPlayableIndex()
+        {
+            for (int i = 0; i < stages.Count; i++)
+            {
+                if (!SaveData.IsCleared(i))
+                    return i;
+            }
+            // 전부 클리어 → 마지막 스테이지
+            return Mathf.Max(0, stages.Count - 1);
+        }
+
         private void LoadStagesFromResources()
         {
+            // StageRegistry 우선 로드
+            var registry = Resources.Load<StageRegistry>("StageRegistry");
+            if (registry != null)
+            {
+                stages = registry.ValidStages();
+                return;
+            }
+
+            // 폴백: Resources/Stages/*.asset 직접 로드
             stages = new List<StageData>();
             var loaded = Resources.LoadAll<StageData>("Stages");
             var sorted = new List<StageData>(loaded);
@@ -139,7 +201,7 @@ namespace Underdark
             {
                 if (_cards[i] == null) continue;
                 float scale = (i == idx) ? 1.04f : 0.96f;
-                _cards[i].transform.localScale = Vector3.one * scale;
+                _cards[i].transform.localScale = Vector3.one ;
 
                 var ol = _cards[i].GetComponent<Outline>();
                 if (ol != null)
@@ -195,32 +257,60 @@ namespace Underdark
             if (stageScroll == null || scrollContent == null || stages.Count == 0) return 0;
 
             float cardStride = GetCardStride();
-            float contentW   = scrollContent.rect.width;  // 실제 렌더 너비
-            float viewW      = stageScroll.viewport != null
-                ? stageScroll.viewport.rect.width
-                : stageScroll.GetComponent<RectTransform>().rect.width;
+            float contentW   = GetContentWidth();
+            float viewW      = GetViewportWidth();
 
             if (contentW <= viewW) return 0;
 
             float scrolledX = stageScroll.horizontalNormalizedPosition * (contentW - viewW);
-            // 카드 0 중심이 viewW/2에 오는 위치가 scrolledX=0
-            // 카드 i 중심 = 16 + i*stride + cardW/2 = 16 + i*stride + (stride-16)/2
-            float cardCenterOffset = 16f + (cardStride - 16f) * 0.5f; // = stride/2 + 8
+            float padding   = GetCurrentPadding();
+            float cardCenterOffset = padding + 16f + (cardStride - 16f) * 0.5f;
             int nearest = Mathf.RoundToInt((scrolledX + viewW * 0.5f - cardCenterOffset) / cardStride);
             return Mathf.Clamp(nearest, 0, stages.Count - 1);
         }
 
         // ── 스냅 ────────────────────────────────────────────────────
 
+        // contentW, viewW 를 안정적으로 읽기 (rect.width는 레이아웃 전 0일 수 있음)
+        private float GetContentWidth()
+        {
+            float w = scrollContent.rect.width;
+            return w > 0 ? w : scrollContent.sizeDelta.x;
+        }
+
+        private float GetViewportWidth()
+        {
+            var vp = stageScroll.viewport != null
+                ? stageScroll.viewport
+                : stageScroll.GetComponent<RectTransform>();
+            float w = vp.rect.width;
+            return w > 0 ? w : vp.sizeDelta.x;
+        }
+
+        // 현재 적용된 패딩 계산 (ApplyScrollPadding과 동일 공식)
+        private float GetCurrentPadding()
+        {
+            float cardStride = GetCardStride();
+            float cardW      = cardStride - 16f;
+            float viewW      = GetViewportWidth();
+            return Mathf.Max(0f, (viewW - cardW) * 0.5f);
+        }
+
+        // 카드 idx 의 content 내 중심 x (패딩 포함)
+        private float GetCardCenterX(int idx)
+        {
+            float cardStride = GetCardStride();
+            float padding    = GetCurrentPadding();
+            float cardW      = cardStride - 16f;
+            return padding + 16f + idx * cardStride + cardW * 0.5f;
+        }
+
         private void SnapImmediate(int idx)
         {
             if (stageScroll == null || scrollContent == null) return;
 
-            float cardStride = GetCardStride();
-            float contentW   = scrollContent.rect.width;
-            float viewW      = stageScroll.viewport != null
-                ? stageScroll.viewport.rect.width
-                : stageScroll.GetComponent<RectTransform>().rect.width;
+            float contentW = GetContentWidth();
+            float viewW    = GetViewportWidth();
 
             if (contentW <= viewW)
             {
@@ -228,10 +318,8 @@ namespace Underdark
                 return;
             }
 
-            // 카드 idx 중심 x (content 로컬 좌표)
-            float cardCenterX = 16f + idx * cardStride + (cardStride - 16f) * 0.5f;
-            // 카드 중심이 뷰포트 중앙에 오려면 content가 얼마나 이동?
-            float scrolledX = cardCenterX - viewW * 0.5f;
+            float cardCenterX = GetCardCenterX(idx);
+            float scrolledX   = cardCenterX - viewW * 0.5f;
             float t = Mathf.Clamp01(scrolledX / (contentW - viewW));
             stageScroll.horizontalNormalizedPosition = t;
         }
@@ -242,15 +330,12 @@ namespace Underdark
 
             yield return null; // EndDrag 직후 ScrollRect 관성 초기화 대기
 
-            float cardStride = GetCardStride();
-            float contentW   = scrollContent.rect.width;
-            float viewW      = stageScroll.viewport != null
-                ? stageScroll.viewport.rect.width
-                : stageScroll.GetComponent<RectTransform>().rect.width;
+            float contentW = GetContentWidth();
+            float viewW    = GetViewportWidth();
 
             if (contentW <= viewW) yield break;
 
-            float cardCenterX = 16f + idx * cardStride + (cardStride - 16f) * 0.5f;
+            float cardCenterX = GetCardCenterX(idx);
             float scrolledX   = cardCenterX - viewW * 0.5f;
             float targetT     = Mathf.Clamp01(scrolledX / (contentW - viewW));
 
