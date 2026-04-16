@@ -14,7 +14,6 @@ namespace Underdark
                 ("Assets/Prefabs/Turrets/PF_RangedTurret.prefab",    typeof(RangedTurret),         20f, 2.5f, 1.2f),
                 ("Assets/Prefabs/Turrets/PF_MeleeTurret.prefab",     typeof(MeleeTurret),          18f, 1.2f, 1.5f),
                 ("Assets/Prefabs/Turrets/PF_SpikeTrap.prefab",       typeof(SpikeTrap),            12f, 1.5f, 2.0f),
-                ("Assets/Prefabs/Turrets/PF_ElectricGate.prefab",    typeof(ElectricGate),         10f, 1.5f, 1.5f),
                 ("Assets/Prefabs/Turrets/PF_AreaDamage.prefab",      typeof(AreaDamageTurret),     15f, 2.0f, 1.0f),
                 ("Assets/Prefabs/Turrets/PF_ExplosiveCannon.prefab", typeof(ExplosiveCannon),      30f, 2.5f, 0.7f),
                 ("Assets/Prefabs/Turrets/PF_SlowShooter.prefab",     typeof(SlowShooterTurret),    12f, 2.5f, 1.0f),

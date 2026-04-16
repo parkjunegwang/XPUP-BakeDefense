@@ -16,8 +16,8 @@ MonoBehaviour:
   description: Extremely fast attack speed, lower damage.
   cardColor: {r: 1, g: 0.85, b: 0.2, a: 1}
   cardType: 0
-  turretType: 12
+  turretType: 11
   turretCount: 1
-  buffTargetType: 12
+  buffTargetType: 11
   buffAllTypes: 0
   buffMultiplier: 1.2

@@ -21,7 +21,6 @@ namespace Underdark
         RangedTurret,   // 4. 원거리 타워
         MeleeTurret,    // 3. 근거리 타워 (방향 고정)
         SpikeTrap,      // 1. 가시 함정 (2칸, 통과 가능)
-        ElectricGate,   // 2. 전기 기둥 (3칸, 가운데 통과 가능)
         Wall,           // 벽 1x1
         Wall2x1,        // 벽 2x1 (가로)
         Wall1x2,        // 벽 1x2 (세로)

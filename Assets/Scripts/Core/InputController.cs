@@ -201,8 +201,7 @@ private void ShowTurretRange(TurretBase turret)
             switch (turret.turretType)
             {
                 case TurretType.SpikeTrap:
-                case TurretType.ElectricGate:
-                    var tiles = TurretManager.Instance.GetShapeTiles(turret.currentTile, turret.turretType, turret.statData);
+                        var tiles = TurretManager.Instance.GetShapeTiles(turret.currentTile, turret.turretType, turret.statData);
                     if (tiles != null)
                         RangeIndicator.Instance.ShowTiles(tiles, new Color(col.r, col.g, col.b, 0.5f), 2.5f);
                     return;
@@ -264,7 +263,7 @@ private void UpdateRangeIndicator(Vector3 center, TurretStatData sd, bool canPla
             switch (_dragType)
             {
                 case TurretType.SpikeTrap:
-                case TurretType.ElectricGate:
+                
                     if (_lastHighlighted.Count > 0)
                         RangeIndicator.Instance.ShowTiles(_lastHighlighted,
                             new Color(baseCol.r, baseCol.g, baseCol.b, 0.4f));

@@ -17,7 +17,7 @@ MonoBehaviour:
     massive damage!
   cardColor: {r: 0.9, g: 0.3, b: 0.9, a: 1}
   cardType: 0
-  turretType: 18
+  turretType: 17
   turretCount: 1
   buffTargetType: 1
   buffAllTypes: 0

@@ -17,7 +17,7 @@ namespace Underdark
 
         protected override void Awake()
         {
-            turretType = TurretType.ElectricGate;
+           // turretType = TurretType.ElectricGate;
             if (statData == null) { damage = 25f; range = 0.6f; fireRate = 0.8f; hp = 120f; }
             base.Awake();
 

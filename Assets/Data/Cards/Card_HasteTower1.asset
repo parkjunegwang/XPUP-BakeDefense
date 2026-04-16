@@ -18,7 +18,7 @@ MonoBehaviour:
     (Buffs nearby attack speed)'
   cardColor: {r: 0.9, g: 1, b: 0.3, a: 1}
   cardType: 0
-  turretType: 21
+  turretType: 20
   turretCount: 1
   buffTargetType: 1
   buffAllTypes: 0

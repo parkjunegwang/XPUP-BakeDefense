@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Deals damage to all enemies in range each attack.
   cardColor: {r: 0.7, g: 0.2, b: 0.85, a: 1}
   cardType: 0
-  turretType: 9
+  turretType: 8
   turretCount: 1
   buffTargetType: 1
   buffAllTypes: 0

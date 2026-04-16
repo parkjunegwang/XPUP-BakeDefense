@@ -110,7 +110,6 @@ namespace Underdark
             switch (type)
             {
                 case TurretType.SpikeTrap:    return false;
-                case TurretType.ElectricGate: return (idx == 0 || idx == total - 1);
                 default:                      return true;
             }
         }

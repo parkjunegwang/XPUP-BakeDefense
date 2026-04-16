@@ -13,10 +13,10 @@ namespace Underdark
         [MenuItem("Underdark/Connect TurretRegistry to All Scenes")]
         public static void ConnectToAllScenes()
         {
-            var reg = AssetDatabase.LoadAssetAtPath<TurretRegistry>("Assets/Data/TurretRegistry.asset");
+            var reg = AssetDatabase.LoadAssetAtPath<TurretRegistry>("Assets/Resources/TurretRegistry.asset");
             if (reg == null)
             {
-                EditorUtility.DisplayDialog("오류", "Assets/Data/TurretRegistry.asset 를 찾을 수 없습니다.", "확인");
+                EditorUtility.DisplayDialog("오류", "Assets/Resources/TurretRegistry.asset 를 찾을 수 없습니다.", "확인");
                 return;
             }
 
@@ -70,10 +70,83 @@ namespace Underdark
                 "이미 연결된 씬은 건드리지 않았습니다.", "확인");
         }
 
+        // ── 소유 디버그 툴 ───────────────────────────────────────────
+
+        [MenuItem("Underdark/Debug/Turret Ownership - 전체 소유")]
+        public static void OwnAll()
+        {
+            var reg = AssetDatabase.LoadAssetAtPath<TurretRegistry>("Assets/Resources/TurretRegistry.asset");
+            if (reg == null) { Debug.LogError("[Debug] TurretRegistry.asset 없음"); return; }
+
+            foreach (var e in reg.entries)
+            {
+                if (e == null || e.type == TurretType.None) continue;
+                PlayerPrefs.SetInt("owned_turret_" + e.type.ToString(), 1);
+            }
+            PlayerPrefs.Save();
+            Debug.Log($"[Debug] 전체 터렛 소유 설정 완료 ({reg.entries.Count}개)");
+            EditorUtility.DisplayDialog("완료", "모든 터렛을 소유 상태로 설정했습니다.", "확인");
+        }
+
+        [MenuItem("Underdark/Debug/Turret Ownership - 전체 미소유")]
+        public static void UnownAll()
+        {
+            var reg = AssetDatabase.LoadAssetAtPath<TurretRegistry>("Assets/Resources/TurretRegistry.asset");
+            if (reg == null) { Debug.LogError("[Debug] TurretRegistry.asset 없음"); return; }
+
+            foreach (var e in reg.entries)
+            {
+                if (e == null || e.type == TurretType.None) continue;
+                PlayerPrefs.DeleteKey("owned_turret_" + e.type.ToString());
+            }
+            PlayerPrefs.Save();
+            Debug.Log($"[Debug] 전체 터렛 미소유 설정 완료 ({reg.entries.Count}개)");
+            EditorUtility.DisplayDialog("완료", "모든 터렛을 미소유 상태로 초기화했습니다.\n(isDefault 터렛은 게임 실행 시 자동으로 소유됩니다.)", "확인");
+        }
+
+        [MenuItem("Underdark/Debug/Turret Ownership - isDefault만 소유")]
+        public static void OwnDefaultOnly()
+        {
+            var reg = AssetDatabase.LoadAssetAtPath<TurretRegistry>("Assets/Resources/TurretRegistry.asset");
+            if (reg == null) { Debug.LogError("[Debug] TurretRegistry.asset 없음"); return; }
+
+            int ownedCount = 0;
+            foreach (var e in reg.entries)
+            {
+                if (e == null || e.type == TurretType.None) continue;
+                string key = "owned_turret_" + e.type.ToString();
+                if (e.isDefault) { PlayerPrefs.SetInt(key, 1); ownedCount++; }
+                else             PlayerPrefs.DeleteKey(key);
+            }
+            PlayerPrefs.Save();
+            Debug.Log($"[Debug] isDefault 터렛 {ownedCount}개만 소유 설정 완료");
+            EditorUtility.DisplayDialog("완료", $"isDefault 터렛 {ownedCount}개만 소유 상태로 설정했습니다.", "확인");
+        }
+
+        [MenuItem("Underdark/Debug/Turret Ownership - 현재 상태 로그")]
+        public static void LogOwnership()
+        {
+            var reg = AssetDatabase.LoadAssetAtPath<TurretRegistry>("Assets/Resources/TurretRegistry.asset");
+            if (reg == null) { Debug.LogError("[Debug] TurretRegistry.asset 없음"); return; }
+
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("[Debug] 터렛 소유 현황:");
+            int owned = 0, unowned = 0;
+            foreach (var e in reg.entries)
+            {
+                if (e == null || e.type == TurretType.None) continue;
+                bool isOwned = PlayerPrefs.GetInt("owned_turret_" + e.type.ToString(), 0) == 1;
+                sb.AppendLine($"  {(isOwned ? "✓" : "✗")} {e.type}{(e.isDefault ? " [default]" : "")}");
+                if (isOwned) owned++; else unowned++;
+            }
+            sb.AppendLine($"\n소유: {owned}개 / 미소유: {unowned}개");
+            Debug.Log(sb.ToString());
+        }
+
         [MenuItem("Underdark/Validate TurretRegistry")]
         public static void Validate()
         {
-            var reg = AssetDatabase.LoadAssetAtPath<TurretRegistry>("Assets/Data/TurretRegistry.asset");
+            var reg = AssetDatabase.LoadAssetAtPath<TurretRegistry>("Assets/Resources/TurretRegistry.asset");
             if (reg == null) { EditorUtility.DisplayDialog("오류", "TurretRegistry.asset 없음", "확인"); return; }
 
             var missing  = new System.Collections.Generic.List<string>();

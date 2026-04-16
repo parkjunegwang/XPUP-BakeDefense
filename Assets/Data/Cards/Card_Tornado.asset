@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Launches a tornado toward the spawn point, damaging all in its path.
   cardColor: {r: 0.5, g: 0.85, b: 1, a: 1}
   cardType: 0
-  turretType: 13
+  turretType: 12
   turretCount: 1
   buffTargetType: 1
   buffAllTypes: 0

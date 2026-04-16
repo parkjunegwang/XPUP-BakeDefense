@@ -16,8 +16,8 @@ MonoBehaviour:
   description: Add 2 Cross Melee Towers to inventory.
   cardColor: {r: 0.85, g: 0.62, b: 0.1, a: 1}
   cardType: 0
-  turretType: 24
+  turretType: 23
   turretCount: 2
-  buffTargetType: 24
+  buffTargetType: 23
   buffAllTypes: 0
   buffMultiplier: 1.2

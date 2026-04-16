@@ -197,7 +197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 342d04a9cf3f8a04293322d3f0429484, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.AreaDamageTurret
-  turretType: 9
+  turretType: 8
   level: 1
   statData: {fileID: 11400000, guid: 976a206805b96bd4e8f978409c39c9c8, type: 2}
   damage: 15

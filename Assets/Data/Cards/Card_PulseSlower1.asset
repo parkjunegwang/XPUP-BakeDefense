@@ -18,7 +18,7 @@ MonoBehaviour:
     (Slows all in range)'
   cardColor: {r: 0.4, g: 0.8, b: 1, a: 1}
   cardType: 0
-  turretType: 19
+  turretType: 18
   turretCount: 1
   buffTargetType: 1
   buffAllTypes: 0

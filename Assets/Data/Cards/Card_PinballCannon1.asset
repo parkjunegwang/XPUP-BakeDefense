@@ -18,7 +18,7 @@ MonoBehaviour:
     (Bounces off walls)'
   cardColor: {r: 1, g: 0.85, b: 0.1, a: 1}
   cardType: 0
-  turretType: 22
+  turretType: 21
   turretCount: 1
   buffTargetType: 1
   buffAllTypes: 0

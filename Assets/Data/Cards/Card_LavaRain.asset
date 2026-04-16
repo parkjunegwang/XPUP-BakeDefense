@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Rains magma onto empty tiles, creating lava puddles.
   cardColor: {r: 1, g: 0.3, b: 0, a: 1}
   cardType: 0
-  turretType: 14
+  turretType: 13
   turretCount: 1
   buffTargetType: 1
   buffAllTypes: 0
