@@ -78,7 +78,7 @@ namespace Underdark
                 trigger.triggers.Add(endEntry);
             }
 
-            RefreshAll();
+           RefreshAll();
 
             // 레이아웃 계산이 끝난 뒤 스냅 (1프레임 대기)
             StartCoroutine(InitAfterLayout());
@@ -200,6 +200,8 @@ namespace Underdark
                 int captured = idx;
                 btn.onClick.AddListener(() => SelectCard(captured));
             }
+
+           
         }
 
         // ── 초기화 ──────────────────────────────────────────────────

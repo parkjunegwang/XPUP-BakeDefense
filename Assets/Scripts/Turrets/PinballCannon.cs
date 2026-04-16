@@ -34,9 +34,9 @@ namespace Underdark
             if (sprite == null) sprite = GetComponentInChildren<SpriteRenderer>()?.sprite;
             if (sprite == null) sprite = GameSetup.WhiteSquareStatic();
             sr.sprite       = sprite;
-            sr.color        = new Color(1f, 0.85f, 0.1f);
+            //sr.color        = new Color(1f, 0.85f, 0.1f);
             sr.sortingOrder = SLayer.Projectile;
-            go.transform.localScale = Vector3.one * bulletSize;
+          //  go.transform.localScale = Vector3.one * bulletSize;
 
             go.AddComponent<PinballBullet>().Init(path, bulletSpeed, dmg, isCrit, hitRadius);
         }
