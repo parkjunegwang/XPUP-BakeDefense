@@ -16,8 +16,8 @@ namespace Underdark
         {
             var target = FindClosestInRange();
             if (target == null) return;
-
-            Vector2 startPos = transform.position;
+            
+            Vector2 startPos = GetFirePosition();
             Vector2 initDir  = ((Vector2)target.transform.position - startPos).normalized;
 
             var path = SimulatePath(startPos, initDir);
