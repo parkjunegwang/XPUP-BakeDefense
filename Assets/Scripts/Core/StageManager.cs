@@ -99,6 +99,7 @@ namespace Underdark
             if (CurrentWave >= TotalWaves)
             {
                 SaveData.SetCleared(StageIndex, true);
+                SaveData.AddPassLevel(); // 스테이지 클리어 → 패스 레벨 +1
                 GameManager.Instance.TriggerVictory();
                 return;
             }
