@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4524ed871bdffa4d9d55c913c3d2bb2, type: 3}
   m_Name: Card_BuffAllFireRate
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.CardData
-  cardName: All +Speed
-  description: All towers attack 20% faster.
-  cardColor: {r: 0.6, g: 0.2, b: 0.85, a: 1}
+  cardName: "\uC804\uCCB4 \uACF5\uACA9\uC18D\uB3C4 \uAC15\uD654"
+  description: "\uBAA8\uB4E0 \uD130\uB7BF\uC758 \uACF5\uACA9\uC18D\uB3C4\uAC00 20% \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  cardColor: {r: 0.4, g: 1, b: 0.5, a: 1}
   cardType: 3
   turretType: 1
   turretCount: 1

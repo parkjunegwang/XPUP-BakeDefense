@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d4524ed871bdffa4d9d55c913c3d2bb2, type: 3}
-  m_Name: Card_BuffAllRange
+  m_Name: Card_BuffAllDamage
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.CardData
-  cardName: "\uC804\uCCB4 \uC0AC\uAC70\uB9AC \uAC15\uD654"
-  description: "\uBAA8\uB4E0 \uD130\uB7BF\uC758 \uC0AC\uAC70\uB9AC\uAC00 20% \uC99D\uAC00\uD569\uB2C8\uB2E4."
-  cardColor: {r: 0.35, g: 0.75, b: 1, a: 1}
-  cardType: 4
+  cardName: "\uC804\uCCB4 \uACF5\uACA9\uB825 \uAC15\uD654"
+  description: "\uBAA8\uB4E0 \uD130\uB7BF\uC758 \uACF5\uACA9\uB825\uC774 20% \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  cardColor: {r: 1, g: 0.35, b: 0.35, a: 1}
+  cardType: 2
   turretType: 1
   turretCount: 1
   buffTargetType: 1
