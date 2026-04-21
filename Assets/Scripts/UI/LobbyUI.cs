@@ -459,7 +459,12 @@ namespace Underdark
 
         public void OnCollectionClick()
         {
-            Debug.Log("[LobbyUI] 컬렉션 (미구현)");
+            PopupManager.Instance?.Open<CollectionPopup>("PF_CollectionPopup");
+        }
+
+        public void OnSeasonPassClick()
+        {
+            PopupManager.Instance?.Open<SeasonPassPopup>("PF_SeasonPassPopup");
         }
     }
 }

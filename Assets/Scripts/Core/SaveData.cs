@@ -95,6 +95,70 @@ namespace Underdark
             PlayerPrefs.Save();
         }
 
+        // ── 시즌패스 ─────────────────────────────────────────────────
+
+        private const string KEY_PASS_LEVEL    = "pass_level";
+        private const string KEY_PASS_OWNED    = "pass_owned";
+        private const string KEY_PASS_CLAIMED  = "pass_claimed_";   // + "free_N" or "paid_N"
+
+        public const int PASS_MAX_LEVEL = 20;
+
+        /// <summary>현재 패스 레벨 (0~20)</summary>
+        public static int PassLevel
+        {
+            get => PlayerPrefs.GetInt(KEY_PASS_LEVEL, 0);
+            set
+            {
+                PlayerPrefs.SetInt(KEY_PASS_LEVEL, Mathf.Clamp(value, 0, PASS_MAX_LEVEL));
+                PlayerPrefs.Save();
+            }
+        }
+
+        /// <summary>유료 패스 구매 여부</summary>
+        public static bool PassOwned
+        {
+            get => PlayerPrefs.GetInt(KEY_PASS_OWNED, 0) == 1;
+            set { PlayerPrefs.SetInt(KEY_PASS_OWNED, value ? 1 : 0); PlayerPrefs.Save(); }
+        }
+
+        /// <summary>특정 레벨의 무료/유료 보상 수령 여부</summary>
+        public static bool IsPassClaimed(int level, bool paid)
+        {
+            string key = KEY_PASS_CLAIMED + (paid ? "paid_" : "free_") + level;
+            return PlayerPrefs.GetInt(key, 0) == 1;
+        }
+
+        /// <summary>특정 레벨의 무료/유료 보상 수령 처리</summary>
+        public static void SetPassClaimed(int level, bool paid)
+        {
+            string key = KEY_PASS_CLAIMED + (paid ? "paid_" : "free_") + level;
+            PlayerPrefs.SetInt(key, 1);
+            PlayerPrefs.Save();
+        }
+
+        /// <summary>스테이지 클리어 시 패스 레벨 1 증가 (최대치 제한)</summary>
+        public static void AddPassLevel()
+        {
+            if (PassLevel < PASS_MAX_LEVEL) PassLevel = PassLevel + 1;
+        }
+
+        // ── 골드 / 보석 ──────────────────────────────────────────────
+
+        private const string KEY_GOLD = "gold";
+        private const string KEY_GEM  = "gem";
+
+        public static int Gold
+        {
+            get => PlayerPrefs.GetInt(KEY_GOLD, 0);
+            set { PlayerPrefs.SetInt(KEY_GOLD, Mathf.Max(0, value)); PlayerPrefs.Save(); }
+        }
+
+        public static int Gem
+        {
+            get => PlayerPrefs.GetInt(KEY_GEM, 0);
+            set { PlayerPrefs.SetInt(KEY_GEM, Mathf.Max(0, value)); PlayerPrefs.Save(); }
+        }
+
         // ── 전체 초기화 (디버그용) ───────────────────────────────────
 
         public static void ResetAll()

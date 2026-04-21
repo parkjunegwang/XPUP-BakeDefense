@@ -1,0 +1,235 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aae13a9233eac7949a09486a37c5f209, type: 3}
+  m_Name: PassRewardTable
+  m_EditorClassIdentifier: Assembly-CSharp::Underdark.PassRewardData
+  entries:
+  - level: 1
+    freeReward:
+      type: 0
+      amount: 100
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 1
+      amount: 50
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 2
+    freeReward:
+      type: 0
+      amount: 200
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 1
+      amount: 100
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 3
+    freeReward:
+      type: 2
+      amount: 1
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 0
+      amount: 500
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 4
+    freeReward:
+      type: 0
+      amount: 300
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 1
+      amount: 150
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 5
+    freeReward:
+      type: 1
+      amount: 5
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 2
+      amount: 3
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 6
+    freeReward:
+      type: 0
+      amount: 400
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 1
+      amount: 200
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 7
+    freeReward:
+      type: 2
+      amount: 2
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 0
+      amount: 800
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 8
+    freeReward:
+      type: 0
+      amount: 500
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 1
+      amount: 250
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 9
+    freeReward:
+      type: 1
+      amount: 10
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 2
+      amount: 5
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 10
+    freeReward:
+      type: 0
+      amount: 600
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 1
+      amount: 300
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 11
+    freeReward:
+      type: 2
+      amount: 3
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 0
+      amount: 1200
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 12
+    freeReward:
+      type: 0
+      amount: 700
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 1
+      amount: 350
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 13
+    freeReward:
+      type: 1
+      amount: 15
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 2
+      amount: 8
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 14
+    freeReward:
+      type: 0
+      amount: 800
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 1
+      amount: 400
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 15
+    freeReward:
+      type: 2
+      amount: 5
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 0
+      amount: 1500
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 16
+    freeReward:
+      type: 0
+      amount: 900
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 1
+      amount: 450
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 17
+    freeReward:
+      type: 1
+      amount: 20
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 2
+      amount: 10
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 18
+    freeReward:
+      type: 0
+      amount: 1000
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 1
+      amount: 500
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 19
+    freeReward:
+      type: 2
+      amount: 10
+      specificCard: {fileID: 0}
+      displayName: 
+    paidReward:
+      type: 0
+      amount: 2000
+      specificCard: {fileID: 0}
+      displayName: 
+  - level: 20
+    freeReward:
+      type: 3
+      amount: 1
+      specificCard: {fileID: 0}
+      displayName: "\u2605 \uC804\uC124 \uC0C1\uC790"
+    paidReward:
+      type: 3
+      amount: 3
+      specificCard: {fileID: 0}
+      displayName: "\u2605\u2605 \uD504\uB9AC\uBBF8\uC5C4 \uC0C1\uC790"
