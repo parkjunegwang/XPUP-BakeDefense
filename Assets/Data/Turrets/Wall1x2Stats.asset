@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Wall1x2Stats
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.TurretStatData
   turretType: 7
-  autoScale: 1
+  autoScale: 0
   useCustomShape: 0
   tileShape:
   - {x: 0, y: 0}
-  - {x: 1, y: 0}
+  - {x: 0, y: 1}
   passableTileIndices: 
   levels:
   - level: 1
