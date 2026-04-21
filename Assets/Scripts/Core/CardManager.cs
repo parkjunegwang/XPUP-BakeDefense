@@ -214,7 +214,7 @@ namespace Underdark
             rt.anchorMin = anchor; rt.anchorMax = anchor;
             rt.pivot = new Vector2(0.5f, 0.5f);
             rt.anchoredPosition = Vector2.zero;
-            rt.sizeDelta = new Vector2(108f, 200f);
+            rt.sizeDelta = new Vector2(300f, 620f);
 
             var img   = go.AddComponent<Image>();
             img.color = card.cardColor;
@@ -238,7 +238,7 @@ namespace Underdark
                 : new Color(1f, 1f, 1f, 0.2f);        // 버프 카드: 흰 테두리
 
             MakeText(go, "Name", card.cardName,
-                new Vector2(0.5f, 0.84f), new Vector2(100f, 36f), 12, Color.white);
+                new Vector2(0.5f, 0.84f), new Vector2(250f, 70f), 37, Color.white);
 
             var descGo = new GameObject("Desc");
             descGo.transform.SetParent(go.transform, false);
@@ -246,7 +246,7 @@ namespace Underdark
             descRt.anchorMin = new Vector2(0.05f, 0.22f); descRt.anchorMax = new Vector2(0.95f, 0.76f);
             descRt.offsetMin = descRt.offsetMax = Vector2.zero;
             var descTmp = descGo.AddComponent<TextMeshProUGUI>();
-            descTmp.text = card.description; descTmp.fontSize = 10;
+            descTmp.text = card.description; descTmp.fontSize = 40;
             descTmp.color = Color.white; descTmp.alignment = TextAlignmentOptions.Center;
             descTmp.enableWordWrapping = true;
         }
