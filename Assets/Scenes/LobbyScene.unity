@@ -2391,6 +2391,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.LobbyUI
   towerSelectScene: TowerSelectScene
+  towerSelectPopupName: PF_TowerSelectPopup
+  lobbyCanvasRect: {fileID: 42551314}
+  slideOutDuration: 0.45
   stageCardPrefab: {fileID: 9019440676614214729, guid: 9c95cd193646b8b43915ee03a670dacc, type: 3}
   goldText: {fileID: 2137350490}
   gemText: {fileID: 978225685}

@@ -15,6 +15,8 @@ namespace Underdark
     {
         [Header("Scenes")]
         public string towerSelectScene = "TowerSelectScene";
+        public string towerSelectPopupName = "PF_TowerSelectPopup";
+
 
         [Header("Stage Card Prefab")]
         [Tooltip("StageCard 프리팹 - 이걸 복제해서 스테이지 카드를 만듦")]
@@ -449,8 +451,14 @@ namespace Underdark
         {
             if (!SaveData.IsUnlocked(_selectedIndex)) return;
             SaveData.SelectedStageIndex = _selectedIndex;
-            SceneManager.LoadScene(towerSelectScene);
+
+            // TowerSelectPopup 프리팹이 있으면 팝업으로, 없으면 씬으로 폴백
+            if (PopupManager.Instance != null && !string.IsNullOrEmpty(towerSelectPopupName))
+                PopupManager.Instance.Open<TowerSelectPopup>(towerSelectPopupName);
+            else
+                SceneManager.LoadScene(towerSelectScene);
         }
+
 
         public void OnShopClick()
         {

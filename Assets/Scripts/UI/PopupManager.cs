@@ -135,6 +135,15 @@ namespace Underdark
             _stack.Clear();
         }
 
+        /// <summary>씬 전환 전 호출. 모든 팝업 닫고 캐시도 비움.</summary>
+        public void CloseAllAndClearCache()
+        {
+            CloseAll();
+            foreach (var kv in _cache)
+                if (kv.Value != null) Destroy(kv.Value.gameObject);
+            _cache.Clear();
+        }
+
         public void Close(Popup popup)
         {
             if (!_stack.Contains(popup)) return;

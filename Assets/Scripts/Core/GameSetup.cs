@@ -35,6 +35,11 @@ namespace Underdark
         {
             yield return null; // 한 프레임 대기 (StageManager.Start 완료 후)
 
+            // 카메라 인트로가 있으면 완전히 끝날 때까지 대기
+            var intro = FindObjectOfType<GameSceneIntro>();
+            if (intro != null)
+                yield return new WaitUntil(() => GameSceneIntro.IsComplete);
+
             // CardManager 세션 타워 고정 (인벤에는 추가 안 함 - 카드 선택으로만 받음)
             var selected = SaveData.SelectedTurrets;
             if (selected != null && selected.Length > 0)

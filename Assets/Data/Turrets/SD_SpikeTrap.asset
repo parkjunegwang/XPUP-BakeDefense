@@ -18,7 +18,7 @@ MonoBehaviour:
   tileShape:
   - {x: 0, y: 0}
   - {x: 1, y: 0}
-  passableTileIndices: 
+  passableTileIndices: 0000000000000000
   levels:
   - level: 1
     damage: 30

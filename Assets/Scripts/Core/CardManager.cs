@@ -163,7 +163,7 @@ namespace Underdark
         private void BuildUI(List<CardData> cards)
         {
             if (_panel != null) Destroy(_panel);
-            var canvas = FindObjectOfType<Canvas>();
+            var canvas = FindGameSceneCanvas();
             if (canvas == null)
             {
                 StartCoroutine(BuildUINextFrame(cards));
@@ -175,9 +175,21 @@ namespace Underdark
         private System.Collections.IEnumerator BuildUINextFrame(List<CardData> cards)
         {
             yield return null;
-            var canvas = FindObjectOfType<Canvas>();
+            var canvas = FindGameSceneCanvas();
             if (canvas == null) { _onDone?.Invoke(); yield break; }
             BuildUIOnCanvas(canvas, cards);
+        }
+
+        /// <summary>DontDestroyOnLoad Canvas(PopupCanvas 등)를 제외하고 씬 내 Canvas만 반환</summary>
+        private Canvas FindGameSceneCanvas()
+        {
+            foreach (var c in FindObjectsByType<Canvas>(FindObjectsSortMode.None))
+            {
+                // DontDestroyOnLoad 오브젝트는 씬 이름이 "DontDestroyOnLoad"
+                if (c.gameObject.scene.name == "DontDestroyOnLoad") continue;
+                return c;
+            }
+            return null;
         }
 
         private void BuildUIOnCanvas(Canvas canvas, List<CardData> cards)
@@ -214,7 +226,7 @@ namespace Underdark
             rt.anchorMin = anchor; rt.anchorMax = anchor;
             rt.pivot = new Vector2(0.5f, 0.5f);
             rt.anchoredPosition = Vector2.zero;
-            rt.sizeDelta = new Vector2(300f, 620f);
+            rt.sizeDelta = new Vector2(108f, 200f);
 
             var img   = go.AddComponent<Image>();
             img.color = card.cardColor;
@@ -238,7 +250,7 @@ namespace Underdark
                 : new Color(1f, 1f, 1f, 0.2f);        // 버프 카드: 흰 테두리
 
             MakeText(go, "Name", card.cardName,
-                new Vector2(0.5f, 0.84f), new Vector2(250f, 70f), 37, Color.white);
+                new Vector2(0.5f, 0.84f), new Vector2(100f, 36f), 12, Color.white);
 
             var descGo = new GameObject("Desc");
             descGo.transform.SetParent(go.transform, false);
@@ -246,7 +258,7 @@ namespace Underdark
             descRt.anchorMin = new Vector2(0.05f, 0.22f); descRt.anchorMax = new Vector2(0.95f, 0.76f);
             descRt.offsetMin = descRt.offsetMax = Vector2.zero;
             var descTmp = descGo.AddComponent<TextMeshProUGUI>();
-            descTmp.text = card.description; descTmp.fontSize = 40;
+            descTmp.text = card.description; descTmp.fontSize = 10;
             descTmp.color = Color.white; descTmp.alignment = TextAlignmentOptions.Center;
             descTmp.enableWordWrapping = true;
         }

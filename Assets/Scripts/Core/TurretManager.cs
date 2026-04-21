@@ -162,7 +162,26 @@ namespace Underdark
             var sd    = GetStatData(type);
             var tiles = GetShapeTiles(tile, type, sd);
             if (tiles == null) return false;
-            foreach (var t in tiles) if (!t.IsPlaceable()) return false;
+
+            // IsPassable 터렛(SpikeTrap 등)은 경로를 막지 않으므로 길막 시뮬 생략
+            bool isPassable = !ShouldBlockTile(type, 0, tiles.Count, sd);
+            foreach (var t in tiles)
+            {
+                if (isPassable)
+                {
+                    // 통과형: EndBuffer·SpawnPoint·EndPoint·이미 터렛 있는 타일·유효 State만 차단
+                    if (t.isEndBuffer) return false;
+                    if (t.tileType == TileType.SpawnPoint || t.tileType == TileType.EndPoint) return false;
+                    var state = GameManager.Instance.CurrentState;
+                    if (state != GameState.Preparation && state != GameState.WaveInProgress) return false;
+                    if (t.placedTurret != null) return false;
+                }
+                else
+                {
+                    if (!t.IsPlaceable()) return false;
+                }
+            }
+            if (isPassable) return true;
             return SimulatePlace(tiles, type, sd);
         }
 
@@ -217,9 +236,28 @@ namespace Underdark
             var tiles  = GetShapeTiles(tile, type, sd);
 
             if (tiles == null)                             { UIManager.Instance?.ShowMessage("Not enough space!"); return; }
-            foreach (var t in tiles)
-                if (!t.IsPlaceable())                      { UIManager.Instance?.ShowMessage("Cannot place here!"); return; }
-            if (!SimulatePlace(tiles, type, sd))           { UIManager.Instance?.ShowMessage("Path would be blocked!"); return; }
+
+            bool isPassable = !ShouldBlockTile(type, 0, tiles.Count, sd);
+            if (isPassable)
+            {
+                // 통과형 터렛: EndBuffer·이미 점유·유효 State만 체크, 길막 시뮬 생략
+                foreach (var t in tiles)
+                {
+                    if (t.isEndBuffer || t.placedTurret != null ||
+                        t.tileType == TileType.SpawnPoint || t.tileType == TileType.EndPoint)
+                        { UIManager.Instance?.ShowMessage("Cannot place here!"); return; }
+                    var st = GameManager.Instance.CurrentState;
+                    if (st != GameState.Preparation && st != GameState.WaveInProgress)
+                        { UIManager.Instance?.ShowMessage("Cannot place here!"); return; }
+                }
+            }
+            else
+            {
+                foreach (var t in tiles)
+                    if (!t.IsPlaceable())                  { UIManager.Instance?.ShowMessage("Cannot place here!"); return; }
+                if (!SimulatePlace(tiles, type, sd))       { UIManager.Instance?.ShowMessage("Path would be blocked!"); return; }
+            }
+
             if (!InventoryManager.Instance.Consume(type))  { UIManager.Instance?.ShowMessage("No stock! Get from cards."); return; }
             if (prefab == null) { Debug.LogWarning($"No prefab for: {type}"); return; }
 
