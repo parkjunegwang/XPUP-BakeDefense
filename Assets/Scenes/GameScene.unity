@@ -878,8 +878,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0aee77f1d683d4b4e9f1c66a501764ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.GameSceneIntro
-  startOffsetMultiplier: 2
-  targetY: 0
+  startDelay: 0.3
   duration: 0.7
   easeCurve:
     serializedVersion: 2
@@ -887,6 +886,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  lobbyBgSprite: {fileID: 0}
 --- !u!1 &370262159
 GameObject:
   m_ObjectHideFlags: 0

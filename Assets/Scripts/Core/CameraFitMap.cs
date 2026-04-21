@@ -43,6 +43,8 @@ namespace Underdark
 
         private System.Collections.IEnumerator FitNextFrame()
         {
+
+
             yield return null;
             FitToMap();
         }
