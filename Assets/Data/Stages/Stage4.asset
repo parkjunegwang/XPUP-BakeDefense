@@ -12,118 +12,118 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c081db3e03f3d144683fcf1283e7ece0, type: 3}
   m_Name: Stage4
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.StageData
-  stageName: Stage 4 - Iron March
-  description: "\uD0F1\uCEE4 \uBE44\uC911 \uC99D\uAC00. \uD654\uB825\uC774 \uD544\uC694\uD569\uB2C8\uB2E4."
+  stageName: Stage 4 - Skirmish
+  description: "소규모 교전. 적이 더 강해졌습니다."
   thumbnail: {fileID: 0}
   waves:
-  - waveName: Vanguard
+  - waveName: Wave 1
     groups:
     - statData: {fileID: 0}
-      count: 10
-      spawnInterval: 0
-      hp: 60
-      speed: 1
-      reward: 14
-      isBoss: 0
-      bossHpMult: 1
-    waveCompleteXp: -1
-  - waveName: Heavy
-    groups:
-    - statData: {fileID: 0}
-      count: 6
-      spawnInterval: 0
-      hp: 100
-      speed: 0.8
-      reward: 22
-      isBoss: 0
-      bossHpMult: 1
-    waveCompleteXp: -1
-  - waveName: Swarm
-    groups:
-    - statData: {fileID: 0}
-      count: 18
+      count: 9
       spawnInterval: 0
       hp: 50
-      speed: 1.4
+      speed: 0.8
       reward: 10
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
-  - waveName: Mixed
+  - waveName: Wave 2
     groups:
     - statData: {fileID: 0}
-      count: 8
+      count: 5
       spawnInterval: 0
-      hp: 90
-      speed: 0.9
-      reward: 20
-      isBoss: 0
-      bossHpMult: 1
-    - statData: {fileID: 0}
-      count: 8
-      spawnInterval: 0
-      hp: 50
-      speed: 1.8
-      reward: 12
+      hp: 150
+      speed: 0.7
+      reward: 30
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
-  - waveName: Armor
+  - waveName: Wave 3
     groups:
     - statData: {fileID: 0}
-      count: 10
+      count: 14
       spawnInterval: 0
-      hp: 120
+      hp: 50
+      speed: 1.1
+      reward: 10
+      isBoss: 0
+      bossHpMult: 1
+    waveCompleteXp: -1
+  - waveName: Wave 4
+    groups:
+    - statData: {fileID: 0}
+      count: 7
+      spawnInterval: 0
+      hp: 90
       speed: 0.8
-      reward: 25
+      reward: 18
       isBoss: 0
       bossHpMult: 1
     - statData: {fileID: 0}
       count: 5
       spawnInterval: 0
-      hp: 55
-      speed: 1.6
-      reward: 12
-      isBoss: 0
-      bossHpMult: 1
-    waveCompleteXp: -1
-  - waveName: Rush
-    groups:
-    - statData: {fileID: 0}
-      count: 20
-      spawnInterval: 0
-      hp: 55
-      speed: 1.6
+      hp: 50
+      speed: 1.1
       reward: 10
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
-  - waveName: Elite
+  - waveName: Wave 5
     groups:
     - statData: {fileID: 0}
-      count: 8
+      count: 5
       spawnInterval: 0
-      hp: 100
+      hp: 120
+      speed: 0.7
+      reward: 24
+      isBoss: 0
+      bossHpMult: 1
+    - statData: {fileID: 0}
+      count: 7
+      spawnInterval: 0
+      hp: 50
+      speed: 0.8
+      reward: 10
+      isBoss: 0
+      bossHpMult: 1
+    waveCompleteXp: -1
+  - waveName: Wave 6
+    groups:
+    - statData: {fileID: 0}
+      count: 18
+      spawnInterval: 0
+      hp: 50
       speed: 1.1
-      reward: 22
+      reward: 10
+      isBoss: 0
+      bossHpMult: 1
+    waveCompleteXp: -1
+  - waveName: Wave 7
+    groups:
+    - statData: {fileID: 0}
+      count: 6
+      spawnInterval: 0
+      hp: 90
+      speed: 0.8
+      reward: 18
       isBoss: 0
       bossHpMult: 1
     - statData: {fileID: 0}
       count: 4
       spawnInterval: 0
       hp: 150
-      speed: 0.8
-      reward: 40
+      speed: 0.7
+      reward: 30
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
-  - waveName: Raid
+  - waveName: Wave 8
     groups:
     - statData: {fileID: 0}
-      count: 15
+      count: 9
       spawnInterval: 0
-      hp: 80
-      speed: 1.2
+      hp: 90
+      speed: 0.9
       reward: 18
       isBoss: 0
       bossHpMult: 1
@@ -131,31 +131,31 @@ MonoBehaviour:
       count: 5
       spawnInterval: 0
       hp: 120
-      speed: 0.9
-      reward: 30
+      speed: 0.7
+      reward: 24
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
   - waveName: Boss
     groups:
     - statData: {fileID: 0}
-      count: 10
+      count: 9
       spawnInterval: 0
-      hp: 80
-      speed: 1.2
-      reward: 15
+      hp: 50
+      speed: 0.9
+      reward: 10
       isBoss: 0
       bossHpMult: 1
     - statData: {fileID: 0}
-      count: 2
+      count: 1
       spawnInterval: 0
-      hp: 800
-      speed: 0.9
-      reward: 150
+      hp: 900
+      speed: 0.7
+      reward: 180
       isBoss: 1
       bossHpMult: 1
     waveCompleteXp: -1
-  startTurretPool: 
+  startTurretPool: 010000000200000003000000050000000b000000
   startTurretCount: 4
   initialCardPicks: 2
-  mapData: {fileID: 0}
+  mapData: {fileID: 11400000, guid: 6bdb4909b70a52c488ad17d9bcfe16d1, type: 2}

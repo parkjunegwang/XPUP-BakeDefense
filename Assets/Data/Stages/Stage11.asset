@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c081db3e03f3d144683fcf1283e7ece0, type: 3}
-  m_Name: Stage10
+  m_Name: Stage11
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.StageData
-  stageName: Stage 10 - Crossroads
-  description: "다양한 적 유형이 혼합되어 공격합니다."
+  stageName: Stage 11 - Tempest
+  description: "폭풍처럼 밀려오는 파상 공세."
   thumbnail: {fileID: 0}
   waves:
   - waveName: Wave 1
@@ -21,9 +21,9 @@ MonoBehaviour:
     - statData: {fileID: 0}
       count: 11
       spawnInterval: 0
-      hp: 80
-      speed: 1.0
-      reward: 16
+      hp: 90
+      speed: 1.1
+      reward: 18
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
@@ -32,9 +32,9 @@ MonoBehaviour:
     - statData: {fileID: 0}
       count: 7
       spawnInterval: 0
-      hp: 220
-      speed: 0.8
-      reward: 44
+      hp: 240
+      speed: 1.0
+      reward: 48
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
@@ -43,9 +43,9 @@ MonoBehaviour:
     - statData: {fileID: 0}
       count: 18
       spawnInterval: 0
-      hp: 80
-      speed: 1.4
-      reward: 16
+      hp: 90
+      speed: 1.5
+      reward: 18
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
@@ -54,17 +54,17 @@ MonoBehaviour:
     - statData: {fileID: 0}
       count: 9
       spawnInterval: 0
-      hp: 136
-      speed: 1.0
-      reward: 27
+      hp: 150
+      speed: 1.1
+      reward: 30
       isBoss: 0
       bossHpMult: 1
     - statData: {fileID: 0}
       count: 7
       spawnInterval: 0
-      hp: 80
-      speed: 1.4
-      reward: 16
+      hp: 90
+      speed: 1.5
+      reward: 18
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
@@ -73,17 +73,17 @@ MonoBehaviour:
     - statData: {fileID: 0}
       count: 7
       spawnInterval: 0
-      hp: 178
-      speed: 0.8
-      reward: 35
+      hp: 195
+      speed: 1.0
+      reward: 39
       isBoss: 0
       bossHpMult: 1
     - statData: {fileID: 0}
       count: 9
       spawnInterval: 0
-      hp: 80
-      speed: 1.0
-      reward: 16
+      hp: 90
+      speed: 1.1
+      reward: 18
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
@@ -92,9 +92,9 @@ MonoBehaviour:
     - statData: {fileID: 0}
       count: 22
       spawnInterval: 0
-      hp: 80
-      speed: 1.4
-      reward: 16
+      hp: 90
+      speed: 1.5
+      reward: 18
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
@@ -103,17 +103,17 @@ MonoBehaviour:
     - statData: {fileID: 0}
       count: 8
       spawnInterval: 0
-      hp: 136
-      speed: 1.0
-      reward: 27
+      hp: 150
+      speed: 1.1
+      reward: 30
       isBoss: 0
       bossHpMult: 1
     - statData: {fileID: 0}
       count: 6
       spawnInterval: 0
-      hp: 220
-      speed: 0.8
-      reward: 44
+      hp: 240
+      speed: 1.0
+      reward: 48
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
@@ -122,17 +122,17 @@ MonoBehaviour:
     - statData: {fileID: 0}
       count: 11
       spawnInterval: 0
-      hp: 136
-      speed: 1.1
-      reward: 27
+      hp: 150
+      speed: 1.2
+      reward: 30
       isBoss: 0
       bossHpMult: 1
     - statData: {fileID: 0}
       count: 7
       spawnInterval: 0
-      hp: 178
-      speed: 0.8
-      reward: 35
+      hp: 195
+      speed: 1.0
+      reward: 39
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
@@ -141,17 +141,17 @@ MonoBehaviour:
     - statData: {fileID: 0}
       count: 11
       spawnInterval: 0
-      hp: 80
-      speed: 1.1
-      reward: 16
+      hp: 90
+      speed: 1.2
+      reward: 18
       isBoss: 0
       bossHpMult: 1
     - statData: {fileID: 0}
       count: 1
       spawnInterval: 0
-      hp: 2500
-      speed: 0.8
-      reward: 500
+      hp: 3000
+      speed: 1.0
+      reward: 600
       isBoss: 1
       bossHpMult: 1
     waveCompleteXp: -1

@@ -10,148 +10,148 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c081db3e03f3d144683fcf1283e7ece0, type: 3}
-  m_Name: Stage10
+  m_Name: Stage28
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.StageData
-  stageName: Stage 10 - Crossroads
-  description: "다양한 적 유형이 혼합되어 공격합니다."
+  stageName: Stage 28 - Oblivion
+  description: "망각 속으로 사라질 마지막 기회입니다."
   thumbnail: {fileID: 0}
   waves:
   - waveName: Wave 1
     groups:
     - statData: {fileID: 0}
-      count: 11
+      count: 17
       spawnInterval: 0
-      hp: 80
-      speed: 1.0
-      reward: 16
+      hp: 320
+      speed: 1.5
+      reward: 64
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
   - waveName: Wave 2
     groups:
     - statData: {fileID: 0}
-      count: 7
+      count: 13
       spawnInterval: 0
-      hp: 220
-      speed: 0.8
-      reward: 44
+      hp: 850
+      speed: 1.4
+      reward: 170
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
   - waveName: Wave 3
     groups:
     - statData: {fileID: 0}
-      count: 18
+      count: 30
       spawnInterval: 0
-      hp: 80
-      speed: 1.4
-      reward: 16
+      hp: 320
+      speed: 2.3
+      reward: 64
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
   - waveName: Wave 4
     groups:
     - statData: {fileID: 0}
-      count: 9
+      count: 15
       spawnInterval: 0
-      hp: 136
-      speed: 1.0
-      reward: 27
+      hp: 532
+      speed: 1.5
+      reward: 106
       isBoss: 0
       bossHpMult: 1
     - statData: {fileID: 0}
-      count: 7
+      count: 13
       spawnInterval: 0
-      hp: 80
-      speed: 1.4
-      reward: 16
+      hp: 320
+      speed: 2.3
+      reward: 64
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
   - waveName: Wave 5
     groups:
     - statData: {fileID: 0}
-      count: 7
+      count: 13
       spawnInterval: 0
-      hp: 178
-      speed: 0.8
-      reward: 35
+      hp: 691
+      speed: 1.4
+      reward: 138
       isBoss: 0
       bossHpMult: 1
     - statData: {fileID: 0}
-      count: 9
+      count: 15
       spawnInterval: 0
-      hp: 80
-      speed: 1.0
-      reward: 16
+      hp: 320
+      speed: 1.5
+      reward: 64
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
   - waveName: Wave 6
     groups:
     - statData: {fileID: 0}
-      count: 22
+      count: 34
       spawnInterval: 0
-      hp: 80
-      speed: 1.4
-      reward: 16
+      hp: 320
+      speed: 2.3
+      reward: 64
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
   - waveName: Wave 7
     groups:
     - statData: {fileID: 0}
-      count: 8
+      count: 14
       spawnInterval: 0
-      hp: 136
-      speed: 1.0
-      reward: 27
+      hp: 532
+      speed: 1.5
+      reward: 106
       isBoss: 0
       bossHpMult: 1
     - statData: {fileID: 0}
-      count: 6
+      count: 12
       spawnInterval: 0
-      hp: 220
-      speed: 0.8
-      reward: 44
+      hp: 850
+      speed: 1.4
+      reward: 170
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
   - waveName: Wave 8
     groups:
     - statData: {fileID: 0}
-      count: 11
+      count: 17
       spawnInterval: 0
-      hp: 136
-      speed: 1.1
-      reward: 27
+      hp: 532
+      speed: 1.6
+      reward: 106
       isBoss: 0
       bossHpMult: 1
     - statData: {fileID: 0}
-      count: 7
+      count: 13
       spawnInterval: 0
-      hp: 178
-      speed: 0.8
-      reward: 35
+      hp: 691
+      speed: 1.4
+      reward: 138
       isBoss: 0
       bossHpMult: 1
     waveCompleteXp: -1
   - waveName: Boss
     groups:
     - statData: {fileID: 0}
-      count: 11
+      count: 17
       spawnInterval: 0
-      hp: 80
-      speed: 1.1
-      reward: 16
+      hp: 320
+      speed: 1.6
+      reward: 64
       isBoss: 0
       bossHpMult: 1
     - statData: {fileID: 0}
       count: 1
       spawnInterval: 0
-      hp: 2500
-      speed: 0.8
-      reward: 500
+      hp: 11500
+      speed: 1.4
+      reward: 2300
       isBoss: 1
       bossHpMult: 1
     waveCompleteXp: -1
