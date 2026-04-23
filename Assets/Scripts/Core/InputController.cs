@@ -43,13 +43,17 @@ namespace Underdark
             _ghostSr.color        = new Color(1f, 1f, 1f, 0.45f);
             _ghostSr.sortingOrder = SLayer.Ghost;
             _ghost.SetActive(false);
+            DontDestroyOnLoad(_ghost);
 
             var riGo = new GameObject("RangeIndicator");
             riGo.AddComponent<RangeIndicator>();
+            DontDestroyOnLoad(riGo);
         }
 
         private void Update()
         {
+            if (!GameSetup.MapReady) return;
+
             Vector2 screenPos = Vector2.zero;
             bool released = false;
 
@@ -69,7 +73,9 @@ namespace Underdark
                          || t0.phase.ReadValue() == UnityEngine.InputSystem.TouchPhase.Canceled;
             }
 
-            Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 10f));
+            var mainCam = Camera.main;
+            if (mainCam == null) return;
+            Vector3 worldPos = mainCam.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 10f));
             worldPos.z = 0f;
 
             if (_isDragging)
@@ -393,8 +399,5 @@ private Tile RaycastTile(Vector3 worldPos)
                 && UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
         }
 
-        // 레거시 호환
-        public void SelectTurretFromUI(TurretType type, Color col) => StartDragFromUI(type, col);
-        public void CancelSelection() => CancelDrag();
     }
 }

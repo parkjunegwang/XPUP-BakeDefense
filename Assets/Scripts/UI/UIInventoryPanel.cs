@@ -163,8 +163,5 @@ namespace Underdark
 
             _buttons[type] = go;
         }
-
-        // SetSelectedSlot은 더 이상 필요없지만 호환용으로 유지
-        public void SetSelectedSlot(TurretType type) { }
     }
 }

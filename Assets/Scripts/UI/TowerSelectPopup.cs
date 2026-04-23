@@ -7,9 +7,8 @@ using TMPro;
 namespace Underdark
 {
     /// <summary>
-    /// 터렛 선택 팝업. LobbyScene에서 PopupManager를 통해 열린다.
-    /// 열기: PopupManager.Instance.Open<TowerSelectPopup>("PF_TowerSelectPopup");
-    /// 확인 후 SceneManager.LoadScene()으로 게임씬에 바로 진입. (GameSceneIntro가 카메라 연출 담당)
+    /// 터렛 선택 팝업. GameScene의 PopupCanvas에서 PopupManager를 통해 열린다.
+    /// 확인 후 GameSetup.StartGame()을 호출해 맵 생성 + 카메라 슬라이드 시작.
     /// </summary>
     public class TowerSelectPopup : Popup
     {
@@ -406,9 +405,20 @@ namespace Underdark
 
             SaveData.SelectedTurrets = final.ToArray();
 
-            // 팝업 전부 닫고 캐시 비움 (DontDestroyOnLoad 팝업이 GameScene UI를 가리는 문제 방지)
+            // 팝업 전부 닫기
             PopupManager.Instance?.CloseAllAndClearCache();
-            SceneManager.LoadScene(gameSceneName);
+
+            // 로비 UI 찾아서 GameSetup에 전달
+            var lobbyUI = GameObject.Find("LobbyUI");
+            if (GameSetup.Instance != null)
+            {
+                GameSetup.Instance.StartGame(lobbyUI);
+            }
+            else
+            {
+                // 폴백: 직접 씬 로드
+                SceneManager.LoadScene(gameSceneName);
+            }
         }
 
         // ── 설명 텍스트 ──────────────────────────────────────────────

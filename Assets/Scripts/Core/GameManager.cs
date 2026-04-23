@@ -12,17 +12,9 @@ namespace Underdark
         public int xpPerKill   = 5;
         public int xpToLevelUp = 100;
 
-        [Header("Start Inventory")]
-        public TurretType[] startTurretPool = {
-            TurretType.RangedTurret, TurretType.MeleeTurret,
-            TurretType.SpikeTrap,   TurretType.Wall
-        };
-        public int startTurretCount = 2;
-
         public GameState CurrentState { get; private set; } = GameState.Preparation;
         public int XP    { get; private set; }
         public int Level { get; private set; } = 1;
-        public int XPToNext => xpToLevelUp;
 
         // 카드 선택 중 중복 레벨업 방지
         private bool _pendingLevelUp = false;
@@ -40,18 +32,11 @@ namespace Underdark
             UIManager.Instance?.RefreshXP(XP, xpToLevelUp, Level);
         }
 
-public void GiveStartTurrets() { }
-
         public void SetState(GameState state)
         {
             CurrentState = state;
             Debug.Log($"[GameManager] State → {state}");
         }
-
-        // 골드 호환 shim
-        public bool SpendGold(int _) => true;
-        public void AddGold(int _) { }
-        public int Gold => 0;
 
         // ── XP / 레벨업 ───────────────────────────────────────────────
         public void AddXP(int amount)
@@ -120,7 +105,14 @@ public void GiveStartTurrets() { }
             UIManager.Instance?.ShowGameOver();
         }
 
-public void TriggerVictory() { SetState(GameState.Victory); if (CardManager.Instance != null && CardManager.Instance.cardPool?.Count > 0) CardManager.Instance.ShowCards(() => UIManager.Instance?.ShowVictory()); else UIManager.Instance?.ShowVictory(); }
+        public void TriggerVictory()
+        {
+            SetState(GameState.Victory);
+            if (CardManager.Instance != null && CardManager.Instance.cardPool?.Count > 0)
+                CardManager.Instance.ShowCards(() => UIManager.Instance?.ShowVictory());
+            else
+                UIManager.Instance?.ShowVictory();
+        }
 
         public void RestartGame()
         {

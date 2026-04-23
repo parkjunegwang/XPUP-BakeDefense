@@ -25,8 +25,8 @@ namespace Underdark
         public Button startWaveBtn;
         public Button restartBtn;
         public Button victoryRestartBtn;
-        public Button lobbyBtn;          // 게임오버 → 로비
-        public Button victoryLobbyBtn;   // 클리어 → 로비
+        public Button lobbyBtn;
+        public Button victoryLobbyBtn;
         public Button debugXPBtn;
 
         private float _messageDuration = 2f;
@@ -38,11 +38,28 @@ namespace Underdark
             Instance = this;
         }
 
-        private void Start() { }
-
-public void InitButtons()
-        { 
-            if (startWaveBtn != null) startWaveBtn.onClick.AddListener(() => { if (StageManager.Instance != null) StageManager.Instance.StartNextWave(); else WaveManager.Instance?.StartNextWave(); }); restartBtn?.onClick.AddListener(() => { if (StageManager.Instance != null) StageManager.Instance.RestartStage(); else GameManager.Instance.RestartGame(); }); victoryRestartBtn?.onClick.AddListener(() => { if (StageManager.Instance != null) StageManager.Instance.RestartStage(); else GameManager.Instance.RestartGame(); }); lobbyBtn?.onClick.AddListener(() => StageManager.Instance?.GoToLobby()); victoryLobbyBtn?.onClick.AddListener(() => StageManager.Instance?.GoToLobby()); debugXPBtn?.onClick.AddListener(() => GameManager.Instance?.AddXP(50)); }
+        public void InitButtons()
+        {
+            if (startWaveBtn != null)
+                startWaveBtn.onClick.AddListener(() =>
+                {
+                    if (StageManager.Instance != null) StageManager.Instance.StartNextWave();
+                    else WaveManager.Instance?.StartNextWave();
+                });
+            restartBtn?.onClick.AddListener(() =>
+            {
+                if (StageManager.Instance != null) StageManager.Instance.RestartStage();
+                else GameManager.Instance.RestartGame();
+            });
+            victoryRestartBtn?.onClick.AddListener(() =>
+            {
+                if (StageManager.Instance != null) StageManager.Instance.RestartStage();
+                else GameManager.Instance.RestartGame();
+            });
+            lobbyBtn?.onClick.AddListener(() => StageManager.Instance?.GoToLobby());
+            victoryLobbyBtn?.onClick.AddListener(() => StageManager.Instance?.GoToLobby());
+            debugXPBtn?.onClick.AddListener(() => GameManager.Instance?.AddXP(50));
+        }
 
         private void Update()
         {
@@ -53,9 +70,6 @@ public void InitButtons()
                     messageText?.gameObject.SetActive(false);
             }
         }
-
-        // 골드 호환 (빈 메서드)
-        public void RefreshGold(int _) { }
 
         public void RefreshXP(int xp, int maxXP, int level)
         {
@@ -68,10 +82,9 @@ public void InitButtons()
             }
         }
 
-public void ShowWaveUI(int waveNumber)
+        public void ShowWaveUI(int waveNumber)
         {
-            // 보스 여부는 WaveData의 group.isBoss로 관리되므로 여기선 일반 표시
-            if (waveText != null) waveText.text = $"Wave {waveNumber}";
+            if (waveText != null) waveText.text  = $"Wave {waveNumber}";
             if (waveText != null) waveText.color = Color.white;
             startWaveBtn?.gameObject.SetActive(false);
         }
@@ -82,11 +95,11 @@ public void ShowWaveUI(int waveNumber)
             startWaveBtn?.gameObject.SetActive(true);
         }
 
-public void ShowMessage(string msg)
+        public void ShowMessage(string msg)
         {
             if (messageText == null) return;
             messageText.text = msg;
-            messageText.raycastTarget = false; // 클릭 이벤트 통과
+            messageText.raycastTarget = false;
             messageText.gameObject.SetActive(true);
             _messageTimer = _messageDuration;
         }

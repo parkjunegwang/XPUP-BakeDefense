@@ -474,5 +474,10 @@ namespace Underdark
         {
             PopupManager.Instance?.Open<SeasonPassPopup>("PF_SeasonPassPopup");
         }
+
+        public void DoHideUI()
+        { 
+        
+        }
     }
 }

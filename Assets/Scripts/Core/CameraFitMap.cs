@@ -36,20 +36,18 @@ namespace Underdark
 
         private void Start()
         {
-            // MapManager가 Start()에서 GenerateMap을 호출하므로
-            // 한 프레임 뒤에 맞추기
-            StartCoroutine(FitNextFrame());
+            // 카메라는 항상 켜져 있어야 함 (로비 UI 표시 용도)
+            // 슬라이드 연출은 GameSetup이 카메라 위치를 직접 조작해서 처리
+            _cam.enabled = true;
         }
 
         private System.Collections.IEnumerator FitNextFrame()
         {
-
-
             yield return null;
             FitToMap();
         }
 
-public void FitToMap()
+        public void FitToMap()
         {
             var map = MapManager.Instance;
             if (map == null) return;
@@ -61,6 +59,9 @@ public void FitToMap()
             Vector3 topRight  = map.GridToWorld(map.columns - 1, map.rows - 1);
             Vector3 botLeft   = map.GridToWorld(0, 0);
             Vector3 mapCenter = (topRight + botLeft) * 0.5f;
+
+            // MapManager가 Y 오프셋 위에 있으므로 월드 좌표에 오프셋 반영
+            mapCenter += map.transform.position;
 
             float screenAspect = (float)Screen.width / Screen.height;
 
@@ -74,7 +75,7 @@ public void FitToMap()
             _cam.orthographicSize = orthoSize;
             transform.position    = camPos;
 
-            Debug.Log($"[CameraFitMap] OrthoSize={orthoSize:F2} Aspect={screenAspect:F2}");
+            Debug.Log($"[CameraFitMap] OrthoSize={orthoSize:F2} Aspect={screenAspect:F2} CamPos={camPos}");
 
             // 카메라 크기 확정 후 배경 생성
             var bg = GetComponent<MapBackground>();

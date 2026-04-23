@@ -13,164 +13,148 @@ MonoBehaviour:
   m_Name: Stage1
   m_EditorClassIdentifier: Assembly-CSharp::Underdark.StageData
   stageName: Stage 1 - Entrance
-  description: Zombie Wave!!
+  description: "\uD29C\uD1A0\uB9AC\uC5BC. \uC801\uC774 \uC18C\uC218\uC774\uACE0 \uB290\uB9BD\uB2C8\uB2E4."
   thumbnail: {fileID: 0}
   waves:
-  - waveName: Wave 1 - Scouts
+  - waveName: Scout
     groups:
-    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
-      count: 1
-      spawnInterval: 0
-      hp: 30
-      speed: 0.8
-      reward: 100
-      isBoss: 0
-      bossHpMult: 1
-    waveCompleteXp: 0
-  - waveName: Wave 2 - Assault
-    groups:
-    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
-      count: 1
-      spawnInterval: 0
-      hp: 30
-      speed: 0.8
-      reward: 20
-      isBoss: 0
-      bossHpMult: 1
-    - statData: {fileID: 11400000, guid: 71f32271c9a4be04680fe3957d900085, type: 2}
+    - statData: {fileID: 0}
       count: 3
       spawnInterval: 0
       hp: 30
       speed: 0.8
-      reward: 20
+      reward: 10
       isBoss: 0
       bossHpMult: 1
-    waveCompleteXp: 0
-  - waveName: 'Wave 4 '
+    waveCompleteXp: -1
+  - waveName: Patrol
     groups:
-    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
+    - statData: {fileID: 0}
       count: 5
       spawnInterval: 0
       hp: 35
       speed: 0.9
-      reward: 20
+      reward: 10
       isBoss: 0
       bossHpMult: 1
-    waveCompleteXp: 0
-  - waveName: Wave 5
+    waveCompleteXp: -1
+  - waveName: Rush
     groups:
-    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
-      count: 5
+    - statData: {fileID: 0}
+      count: 8
       spawnInterval: 0
-      hp: 45
-      speed: 0.8
-      reward: 20
+      hp: 35
+      speed: 1
+      reward: 10
       isBoss: 0
       bossHpMult: 1
-    - statData: {fileID: 11400000, guid: 71f32271c9a4be04680fe3957d900085, type: 2}
-      count: 5
+    waveCompleteXp: -1
+  - waveName: Vanguard
+    groups:
+    - statData: {fileID: 0}
+      count: 6
       spawnInterval: 0
-      hp: 55
+      hp: 40
       speed: 0.9
+      reward: 10
+      isBoss: 0
+      bossHpMult: 1
+    - statData: {fileID: 0}
+      count: 3
+      spawnInterval: 0
+      hp: 50
+      speed: 0.8
       reward: 15
       isBoss: 0
       bossHpMult: 1
-    waveCompleteXp: 0
-  - waveName: Wave 6
+    waveCompleteXp: -1
+  - waveName: Heavy
     groups:
-    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
-      count: 5
+    - statData: {fileID: 0}
+      count: 8
       spawnInterval: 0
-      hp: 65
-      speed: 0.8
-      reward: 25
+      hp: 45
+      speed: 0.9
+      reward: 12
       isBoss: 0
       bossHpMult: 1
-    - statData: {fileID: 11400000, guid: fe9bfa6e61a329e42b1ffbd29cd9f160, type: 2}
+    - statData: {fileID: 0}
       count: 4
       spawnInterval: 0
-      hp: 65
-      speed: 0.9
-      reward: 5
-      isBoss: 0
-      bossHpMult: 1
-    waveCompleteXp: 0
-  - waveName: Wave 7 - speed
-    groups:
-    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
-      count: 10
-      spawnInterval: 0.2
-      hp: 40
-      speed: 1.8
+      hp: 55
+      speed: 0.8
       reward: 15
       isBoss: 0
       bossHpMult: 1
-    - statData: {fileID: 11400000, guid: 71f32271c9a4be04680fe3957d900085, type: 2}
+    waveCompleteXp: -1
+  - waveName: Speed
+    groups:
+    - statData: {fileID: 0}
+      count: 10
+      spawnInterval: 0
+      hp: 35
+      speed: 1.6
+      reward: 10
+      isBoss: 0
+      bossHpMult: 1
+    waveCompleteXp: -1
+  - waveName: Mixed
+    groups:
+    - statData: {fileID: 0}
+      count: 8
+      spawnInterval: 0
+      hp: 40
+      speed: 1
+      reward: 10
+      isBoss: 0
+      bossHpMult: 1
+    - statData: {fileID: 0}
       count: 5
       spawnInterval: 0
-      hp: 45
-      speed: 1.8
+      hp: 35
+      speed: 1.6
       reward: 10
       isBoss: 0
       bossHpMult: 1
-    waveCompleteXp: 0
-  - waveName: Wave 8 - Bonus
+    waveCompleteXp: -1
+  - waveName: Assault
     groups:
-    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
+    - statData: {fileID: 0}
       count: 10
-      spawnInterval: 0.3
-      hp: 30
-      speed: 1.8
-      reward: 10
+      spawnInterval: 0
+      hp: 50
+      speed: 1.1
+      reward: 12
       isBoss: 0
       bossHpMult: 1
-    - statData: {fileID: 11400000, guid: 71f32271c9a4be04680fe3957d900085, type: 2}
-      count: 10
-      spawnInterval: 0.2
-      hp: 30
-      speed: 1.8
-      reward: 10
+    - statData: {fileID: 0}
+      count: 3
+      spawnInterval: 0
+      hp: 80
+      speed: 0.8
+      reward: 20
       isBoss: 0
       bossHpMult: 1
-    waveCompleteXp: 0
-  - waveName: Wave 9 -Boss
+    waveCompleteXp: -1
+  - waveName: Boss Wave
     groups:
-    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
+    - statData: {fileID: 0}
       count: 5
       spawnInterval: 0
-      hp: 30
-      speed: 1.8
-      reward: 5
+      hp: 40
+      speed: 1
+      reward: 10
       isBoss: 0
       bossHpMult: 1
-    - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
+    - statData: {fileID: 0}
       count: 1
       spawnInterval: 0
-      hp: 250
-      speed: 1.2
-      reward: 5
+      hp: 300
+      speed: 0.7
+      reward: 80
       isBoss: 1
       bossHpMult: 1
-    waveCompleteXp: 0
-  - waveName: Wave 10- Boss
-    groups:
-    - statData: {fileID: 11400000, guid: 94a559e85660859428e715d22054d948, type: 2}
-      count: 10
-      spawnInterval: 1.1
-      hp: 400
-      speed: 0.6
-      reward: 15
-      isBoss: 0
-      bossHpMult: 1
-    - statData: {fileID: 11400000, guid: 0324c969f0754604ba829df3b728fe74, type: 2}
-      count: 2
-      spawnInterval: 1
-      hp: 500
-      speed: 1.2
-      reward: 5
-      isBoss: 1
-      bossHpMult: 1
-    waveCompleteXp: 0
+    waveCompleteXp: -1
   startTurretPool: 010000000200000003000000050000000b000000
   startTurretCount: 4
   initialCardPicks: 2

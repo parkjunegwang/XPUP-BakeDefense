@@ -20,15 +20,55 @@ MonoBehaviour:
   - {x: 1, y: 0}
   - {x: 0, y: 1}
   - {x: 1, y: 1}
-  passableTileIndices: 
+  passableTileIndices:
   levels:
   - level: 1
-    damage: 4
+    damage: 10
     range: 2.2
-    fireRate: 1
+    fireRate: 1.0
     hp: 0
     attackTiles: 1
     critChance: 0.05
+    critMultiplier: 2
+    bodySprite: {fileID: 0}
+    barrelSprite: {fileID: 0}
+  - level: 2
+    damage: 18
+    range: 2.5
+    fireRate: 1.1
+    hp: 0
+    attackTiles: 1
+    critChance: 0.05
+    critMultiplier: 2
+    bodySprite: {fileID: 0}
+    barrelSprite: {fileID: 0}
+  - level: 3
+    damage: 28
+    range: 2.8
+    fireRate: 1.2
+    hp: 0
+    attackTiles: 1
+    critChance: 0.08
+    critMultiplier: 2
+    bodySprite: {fileID: 0}
+    barrelSprite: {fileID: 0}
+  - level: 4
+    damage: 37
+    range: 3.0
+    fireRate: 1.35
+    hp: 0
+    attackTiles: 1
+    critChance: 0.08
+    critMultiplier: 2
+    bodySprite: {fileID: 0}
+    barrelSprite: {fileID: 0}
+  - level: 5
+    damage: 45
+    range: 3.2
+    fireRate: 1.5
+    hp: 0
+    attackTiles: 1
+    critChance: 0.1
     critMultiplier: 2
     bodySprite: {fileID: 0}
     barrelSprite: {fileID: 0}

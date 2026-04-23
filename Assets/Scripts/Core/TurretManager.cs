@@ -75,20 +75,6 @@ namespace Underdark
             return tiles;
         }
 
-        public List<Tile> GetOccupiedTiles(Tile origin, int sizeX, int sizeY = 1)
-        {
-            var list = new List<Tile>();
-            var map  = MapManager.Instance;
-            for (int dy = 0; dy < sizeY; dy++)
-                for (int dx = 0; dx < sizeX; dx++)
-                {
-                    var t = map.GetTile(origin.gridX + dx, origin.gridY + dy);
-                    if (t == null) return null;
-                    list.Add(t);
-                }
-            return list;
-        }
-
         // ── 경로 체크 ─────────────────────────────────────────────────
 
         public bool CheckAllPathsExist()
@@ -453,17 +439,5 @@ namespace Underdark
         }
 
         public List<TurretBase> GetAll() => _all;
-
-        // 하위 호환: turretDefs 리스트 (읽기 전용)
-        public IReadOnlyList<TurretDef> turretDefs
-        {
-            get
-            {
-                if (registry == null) return new List<TurretDef>();
-                var list = new List<TurretDef>();
-                foreach (var e in registry.All) list.Add(registry.GetDef(e.type));
-                return list;
-            }
-        }
     }
 }

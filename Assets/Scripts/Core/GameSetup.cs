@@ -7,7 +7,12 @@ namespace Underdark
     [DefaultExecutionOrder(100)]
     public class GameSetup : MonoBehaviour
     {
+        public static GameSetup Instance { get; private set; }
+
         private bool _init;
+
+        /// <summary>BuildMap + FitToMap 완료 후 true.</summary>
+        public static bool MapReady { get; private set; }
 
         [Header("=== Fallback Prefabs (Registry 연결 안 됐을 때만 사용) ===")]
         public GameObject projectilePrefab;
@@ -16,31 +21,113 @@ namespace Underdark
         public GameObject tilePrefab;
         public GameObject monsterPrefab;
 
+        private void Awake()
+        {
+            if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+            Instance = this;
+        }
+
         private void Start()
         {
             if (_init) return;
             _init = true;
+            MapReady = false;
             EnsureManagers();
             EnsurePrefabs();
             ConnectPrefabsToManagers();
             BuildUI();
-            BuildMap();
-            FindObjectOfType<MapManager>()?.ApplyWallsFromMapData();
             new GameObject("InputController").AddComponent<InputController>();
-            Debug.Log("[GameSetup] Done");
-            StartCoroutine(DoInitialSetup());
+            Debug.Log("[GameSetup] Done - 로비 대기 중");
         }
 
-        private System.Collections.IEnumerator DoInitialSetup()
+        /// <summary>
+        /// TowerSelectPopup.OnConfirm()에서 호출.
+        /// 1. 로비 UI 숨기기  2. 맵 생성  3. 카메라 슬라이드  4. 게임 UI 표시  5. 카드 선택
+        /// </summary>
+        public void StartGame(GameObject lobbyUIGo = null)
         {
-            yield return null; // 한 프레임 대기 (StageManager.Start 완료 후)
+            StartCoroutine(DoStartGame(lobbyUIGo));
+        }
 
-            // 카메라 인트로가 있으면 완전히 끝날 때까지 대기
-            var intro = FindObjectOfType<GameSceneIntro>();
-            if (intro != null)
-                yield return new WaitUntil(() => GameSceneIntro.IsComplete);
+        private System.Collections.IEnumerator DoStartGame(GameObject lobbyUIGo)
+        {
+            yield return null; // StageManager.Start 완료 대기
 
-            // CardManager 세션 타워 고정 (인벤에는 추가 안 함 - 카드 선택으로만 받음)
+            // 1. 로비 UI 숨기기
+            // GameCanvas는 활성 상태이므로 Find로 찾고, 그 자식 "LobbyUI"를 직접 탐색
+            GameObject lobbyTarget = lobbyUIGo;
+            if (lobbyTarget == null)
+            {
+                var canvas = GameObject.Find("GameCanvas");
+                if (canvas != null)
+                {
+                    var lobbyT = canvas.transform.Find("LobbyUI");
+                    if (lobbyT != null) lobbyTarget = lobbyT.gameObject;
+                }
+            }
+            if (lobbyTarget != null)
+                lobbyTarget.SetActive(false);
+            else
+                Debug.LogWarning("[GameSetup] LobbyUI 오브젝트를 찾을 수 없습니다.");
+
+            // 2. 맵 생성
+            BuildMap();
+            FindObjectOfType<MapManager>()?.ApplyWallsFromMapData();
+
+            // 3. 카메라 FitToMap (위치 확정 + 배경 생성)
+            var cameraFit = FindObjectOfType<CameraFitMap>(true);
+            if (cameraFit == null)
+            {
+                Debug.LogWarning("[GameSetup] CameraFitMap을 찾을 수 없습니다!");
+                MapReady = true;
+                yield break;
+            }
+
+            var cam = cameraFit.GetComponent<Camera>();
+
+            // FitToMap: 카메라 크기/위치 확정 + MapBackground.CreateBackground() 호출됨
+            cameraFit.FitToMap();
+            MapReady = true;
+
+            // 4. 카메라 슬라이드 연출 (아래서 위로)
+            // FitToMap이 targetPos에서 배경을 생성했으므로, 카메라만 startPos로 이동 후 올라옴
+            if (cam != null)
+            {
+                var slideCurve = new AnimationCurve(
+                    new Keyframe(0f, 0f, 0f, 2f),
+                    new Keyframe(1f, 1f, 0f, 0f)
+                );
+                float slideDuration = 0.9f;
+                Vector3 targetPos   = cam.transform.position;       // FitToMap이 확정한 최종 위치
+                float   slideOffset = cam.orthographicSize * 2f;    // 화면 높이만큼 아래서 시작
+                Vector3 startPos    = new Vector3(targetPos.x, targetPos.y - slideOffset, targetPos.z);
+
+                cam.transform.position = startPos;
+
+                float elapsed = 0f;
+                while (elapsed < slideDuration)
+                {
+                    elapsed += Time.unscaledDeltaTime;
+                    float t     = Mathf.Clamp01(elapsed / slideDuration);
+                    float eased = slideCurve.Evaluate(t);
+                    cam.transform.position = Vector3.Lerp(startPos, targetPos, eased);
+                    yield return null;
+                }
+                cam.transform.position = targetPos;
+            }
+
+            // 5. 게임 UI 활성화 (GameCanvas/GameUI - 비활성 상태라 Find로 못 찾으므로 Canvas 자식 탐색)
+            var gameCanvas = GameObject.Find("GameCanvas");
+            if (gameCanvas != null)
+            {
+                var gameUITransform = gameCanvas.transform.Find("GameUI");
+                if (gameUITransform != null)
+                    gameUITransform.gameObject.SetActive(true);
+                else
+                    Debug.LogWarning("[GameSetup] GameCanvas/GameUI를 찾을 수 없습니다.");
+            }
+
+            // 6. 카드 세션 타워 설정
             var selected = SaveData.SelectedTurrets;
             if (selected != null && selected.Length > 0)
             {
@@ -49,7 +136,7 @@ namespace Underdark
             }
             else
             {
-                // 타워선택 없이 직접 진입한 경우 (디버그/에디터)
+                // 에디터 직진입 시 전체 카드 풀 사용
                 var stage = StageManager.Instance?.CurrentStage;
                 if (stage?.startTurretPool != null && stage.startTurretPool.Length > 0)
                 {
@@ -57,7 +144,6 @@ namespace Underdark
                 }
                 else
                 {
-                    // Registry의 모든 일반 터렛을 세션으로 사용 (에디터 직진입 시 전체 카드 풀 사용)
                     var tm = FindObjectOfType<TurretManager>();
                     var reg = tm?.registry ?? Resources.Load<TurretRegistry>("TurretRegistry");
                     if (reg != null)
@@ -78,7 +164,7 @@ namespace Underdark
                 }
             }
 
-            // 2. 초기 카드 선택 (기본 2번)
+            // 7. 초기 카드 선택 팝업
             if (CardManager.Instance == null ||
                 CardManager.Instance.cardPool == null ||
                 CardManager.Instance.cardPool.Count == 0)
@@ -102,6 +188,7 @@ namespace Underdark
 
         private void EnsureManagers()
         {
+            EnsureManager<PopupManager>("PopupManager");
             EnsureManager<InventoryManager>("InventoryManager");
             EnsureManager<CardManager>("CardManager");
         }
@@ -123,6 +210,8 @@ namespace Underdark
                 tilePrefab.AddComponent<BoxCollider2D>();
                 tilePrefab.AddComponent<Tile>();
                 tilePrefab.SetActive(false);
+                // Additive 씬 전환 시 LobbyScene 언로드로 날아가지 않도록 보호
+                DontDestroyOnLoad(tilePrefab);
             }
 
             // 프로젝타일 프리팹
@@ -131,11 +220,15 @@ namespace Underdark
                 projectilePrefab = MakeGO("_ProjPfb", new Color(1f,1f,0.2f), 0.18f, SLayer.Projectile);
                 projectilePrefab.AddComponent<Projectile>();
                 projectilePrefab.SetActive(false);
+                DontDestroyOnLoad(projectilePrefab);
             }
 
             // 몬스터 프리팹
             if (monsterPrefab == null)
+            {
                 monsterPrefab = BuildMonsterFallback();
+                DontDestroyOnLoad(monsterPrefab);
+            }
 
             // Registry가 있으면 빠진 prefab만 fallback 생성
             if (tm?.registry != null)
@@ -197,12 +290,6 @@ namespace Underdark
             go.AddComponent(turretScript);
             go.SetActive(false);
             return go;
-        }
-
-        private GameObject MakeTurretFallback<T>(Color col) where T : TurretBase
-        {
-            var go = MakeGO($"_Pfb_{typeof(T).Name}", col, 0.70f, SLayer.Turret);
-            go.AddComponent<T>(); go.SetActive(false); return go;
         }
 
         private void ConnectPrefabsToManagers()
